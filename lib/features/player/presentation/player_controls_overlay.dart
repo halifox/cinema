@@ -192,8 +192,7 @@ class PlayerControlsOverlay extends HookWidget {
             child: GlassProgressIndicator.circular(
               useOwnLayer: true,
               size: 34,
-              strokeWidth: 3,
-                color: AppTheme.seedColor  ),
+              strokeWidth: 3 ),
           ),
         Positioned(
           left: horizontalInset,
