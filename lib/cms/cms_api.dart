@@ -9,7 +9,7 @@ part 'cms_api.g.dart';
 abstract class CmsApi {
   factory CmsApi(Dio dio, {String? baseUrl}) = _CmsApi;
 
-  @GET('/api.php/provide/vod/')
+  @GET('/api.php/provide/vod/at/json/')
   Future<CmsResponseDto> categories({
     @Query('ac') String action = 'list',
     @Query('pg') int page = 1,

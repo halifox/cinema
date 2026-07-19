@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../cms/cms_models.dart';
 import '../../../features/detail/presentation/vod_detail_page.dart';
@@ -12,104 +13,135 @@ class VodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        Navigator.of(context).push(
-          CupertinoPageRoute<void>(
-            builder: (routeContext) =>
-                VodDetailPage(vodId: item.id, initialItem: item),
-          ),
-        );
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Hero(
-              tag: 'vod-cover-${item.id}',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ColoredBox(
-                      color: CupertinoColors.secondarySystemBackground
-                          .resolveFrom(context),
-                      child: item.picture.isEmpty
-                          ? buildCachedImageError(
-                              context,
-                              '',
-                              StateError('empty'),
-                            )
-                          : CachedNetworkImage(
-                              imageUrl: item.picture,
-                              fit: BoxFit.cover,
-                              progressIndicatorBuilder: buildCachedImageLoading,
-                              errorWidget: buildCachedImageError,
-                            ),
+    final metadata = [
+      if (item.year.isNotEmpty) item.year,
+      if (item.displayScore.isNotEmpty) '豆瓣 ${item.displayScore}',
+    ].join(' · ');
+
+    return Semantics(
+      button: true,
+      label: item.name,
+      excludeSemantics: true,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          Navigator.of(context).push(
+            CupertinoPageRoute<void>(
+              builder: (routeContext) =>
+                  VodDetailPage(vodId: item.id, initialItem: item),
+            ),
+          );
+        },
+        child: Hero(
+          tag: 'vod-cover-${item.id}',
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(26),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                ColoredBox(
+                  color: CupertinoColors.secondarySystemBackground.resolveFrom(
+                    context,
+                  ),
+                  child: item.picture.isEmpty
+                      ? buildCachedImageError(
+                          context,
+                          '',
+                          StateError('empty'),
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: item.picture,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                          progressIndicatorBuilder: buildCachedImageLoading,
+                          errorWidget: buildCachedImageError,
+                        ),
+                ),
+                const DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: [0, .12, .62, 1],
+                      colors: [
+                        Color(0x18000000),
+                        Color(0x00000000),
+                        Color(0x08000000),
+                        Color(0x76000000),
+                      ],
                     ),
-                    if (item.remarks.isNotEmpty)
-                      Positioned(
-                        left: 8,
-                        right: 8,
-                        bottom: 8,
-                        child: Align(
-                          alignment: Alignment.bottomLeft,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: const Color(0xC8202020),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
-                                vertical: 4,
-                              ),
-                              child: Text(
-                                item.remarks,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: CupertinoColors.white,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
+                  ),
+                ),
+                if (item.remarks.isNotEmpty)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 128),
+                      child: GlassContainer(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        shape: const LiquidRoundedSuperellipse(
+                          borderRadius: 26,
+                        ),
+                        quality: GlassQuality.minimal,
+                        useOwnLayer: true,
+                        child: Text(
+                          item.remarks,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: CupertinoColors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
-                  ],
+                    ),
+                  ),
+                Positioned(
+                  left: 4,
+                  right: 4,
+                  bottom: 4,
+                  child: GlassContainer(
+                    padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+                    shape: const LiquidRoundedSuperellipse(borderRadius: 26),
+                    quality: GlassQuality.minimal,
+                    useOwnLayer: true,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: CupertinoColors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (metadata.isNotEmpty)
+                          Text(
+                            metadata,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Color(0xB8EBEBF5),
+                              fontSize: 11,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            item.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: CupertinoColors.label.resolveFrom(context),
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            [
-              if (item.year.isNotEmpty) item.year,
-              if (item.displayScore.isNotEmpty) '豆瓣 ${item.displayScore}',
-            ].join(' · '),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: CupertinoColors.secondaryLabel.resolveFrom(context),
-              fontSize: 12,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -127,9 +159,9 @@ class VodGridSliver extends StatelessWidget {
       sliver: SliverGrid(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 14,
-          mainAxisSpacing: 18,
-          childAspectRatio: .56,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 328 / 422,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => VodCard(item: items[index]),

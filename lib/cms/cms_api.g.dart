@@ -34,7 +34,7 @@ class _CmsApi implements CmsApi {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api.php/provide/vod/',
+            '/api.php/provide/vod/at/json/',
             queryParameters: queryParameters,
             data: _data,
           )
