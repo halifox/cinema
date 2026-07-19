@@ -123,22 +123,22 @@ class VodEpisodeSortAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassPullDownButton(
-        icon: const Icon(CupertinoIcons.arrow_up_arrow_down),
-        menuWidth: 160,
-        items: [
-          GlassMenuItem(
-            title: '正序',
-            icon: const Icon(CupertinoIcons.arrow_up),
-            trailing: descending ? null : const Icon(CupertinoIcons.check_mark),
-            onTap: () => onSelected(false),
-          ),
-          GlassMenuItem(
-            title: '倒序',
-            icon: const Icon(CupertinoIcons.arrow_down),
-            trailing: descending ? const Icon(CupertinoIcons.check_mark) : null,
-            onTap: () => onSelected(true),
-          ),
-        ],
+      icon: const Icon(CupertinoIcons.arrow_up_arrow_down),
+      menuWidth: 160,
+      items: [
+        GlassMenuItem(
+          title: '正序',
+          icon: const Icon(CupertinoIcons.arrow_up),
+          trailing: descending ? null : const Icon(CupertinoIcons.check_mark),
+          onTap: () => onSelected(false),
+        ),
+        GlassMenuItem(
+          title: '倒序',
+          icon: const Icon(CupertinoIcons.arrow_down),
+          trailing: descending ? const Icon(CupertinoIcons.check_mark) : null,
+          onTap: () => onSelected(true),
+        ),
+      ],
     );
   }
 }
@@ -163,19 +163,18 @@ class VodSourceAction extends StatelessWidget {
         : 0;
 
     return GlassPullDownButton(
-        icon: const Icon(CupertinoIcons.arrow_branch),
-        menuWidth: 220,
-        items: [
-          for (final (index, source) in sources.indexed)
-            GlassMenuItem(
-              title: source.name,
-              subtitle: '${source.episodes.length} 集',
-              trailing: index == effectiveSourceIndex
-                  ? const Icon(CupertinoIcons.check_mark)
-                  : null,
-              onTap: () => onSourceSelected(index),
-            ),
-        ],
+      icon: const Icon(CupertinoIcons.arrow_branch),
+      menuWidth: 160,
+      items: [
+        for (final (index, source) in sources.indexed)
+          GlassMenuItem(
+            title: "路线${index + 1}",
+            trailing: index == effectiveSourceIndex
+                ? const Icon(CupertinoIcons.check_mark)
+                : null,
+            onTap: () => onSourceSelected(index),
+          ),
+      ],
     );
   }
 }
@@ -249,9 +248,8 @@ class VodDetailCoverSliver extends ConsumerWidget {
               child: detail.when(
                 data: (item) => VodDetailCoverImage(item: item),
                 loading: () => VodDetailCoverImage(item: initialItem),
-                error: (error, stackTrace) => VodDetailCoverImage(
-                  item: initialItem,
-                ),
+                error: (error, stackTrace) =>
+                    VodDetailCoverImage(item: initialItem),
               ),
             ),
           ),
