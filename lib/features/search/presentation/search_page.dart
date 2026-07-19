@@ -5,8 +5,10 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../shared/presentation/hooks/glass_large_title_hook.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
 import '../../library/data/library_database.dart';
-import '../application/search_history_provider.dart';
 import 'search_results_page.dart';
+final searchHistoryProvider = StreamProvider<List<String>>((ref) {
+  return ref.watch(libraryDatabaseProvider).watchSearchHistory();
+});
 
 class SearchPage extends HookConsumerWidget {
   const SearchPage({required this.onDismiss, super.key});

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinema/features/favorites/presentation/favorite_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -9,7 +10,6 @@ import '../../../cms/cms_providers.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
 import '../../../shared/presentation/widgets/cached_image_feedback.dart';
 import '../../../shared/presentation/widgets/content_state.dart';
-import '../../favorites/application/favorites_provider.dart';
 import '../../library/data/library_database.dart';
 import '../../player/presentation/continue_playing_button.dart';
 import '../../player/presentation/player_page.dart';
