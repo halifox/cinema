@@ -66,6 +66,7 @@ class PlayerControlsOverlay extends HookWidget {
       preserveState: false,
     ).data;
     final effectiveError = error ?? playbackError;
+    final episodeName = source.episodes[episodeIndex].name;
     final durationMilliseconds = duration.inMilliseconds.toDouble();
     final maximumPosition = durationMilliseconds <= 0
         ? 1.0
@@ -225,7 +226,7 @@ class PlayerControlsOverlay extends HookWidget {
                 alignment: Alignment.centerLeft,
                 shape: const LiquidRoundedSuperellipse(borderRadius: 46),
                 child: Text(
-                  title,
+                  '${title} · ${episodeName}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
