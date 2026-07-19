@@ -121,9 +121,31 @@ class SearchResultsNotifier extends AsyncNotifier<PagePagingData<VodItem>>
   }
 }
 
-final vodDetailProvider = FutureProvider.family<VodItem, int>((ref, id) async {
-  final response = await ref.watch(cmsApiProvider).detail(id: id);
-  final page = response.toPage();
-  if (page.items.isEmpty) throw StateError('没有找到该影片');
-  return page.items.first;
-});
+typedef VodDetailArguments = ({int id, VodItem? initialItem});
+
+final vodDetailProvider =
+    StreamProvider.family<VodItem, VodDetailArguments>(
+      (ref, arguments) {
+        final api = ref.watch(cmsApiProvider);
+        return streamVodDetail(api: api, arguments: arguments);
+      },
+    );
+
+Stream<VodItem> streamVodDetail({
+  required CmsApi api,
+  required VodDetailArguments arguments,
+}) async* {
+  final initialItem = arguments.initialItem;
+  if (initialItem != null) {
+    yield initialItem;
+  }
+
+  try {
+    final response = await api.detail(id: arguments.id);
+    final page = response.toPage();
+    if (page.items.isEmpty) throw StateError('没有找到该影片');
+    yield page.items.first;
+  } on Object {
+    if (initialItem == null) rethrow;
+  }
+}

@@ -15,10 +15,45 @@ import '../../player/presentation/continue_playing_button.dart';
 import '../../player/presentation/player_page.dart';
 
 final vodViewingProgressProvider =
-    StreamProvider.family<VodViewingProgress?, int>((ref, vodId) {
+    StreamProvider.autoDispose.family<VodViewingProgress?, int>((ref, vodId) {
       return ref
           .watch(libraryDatabaseProvider)
           .watchViewingProgress(vodId: vodId);
+    });
+
+typedef VodResumeData = ({
+  VodItem item,
+  VodViewingProgress progress,
+  PlaySource source,
+  PlayEpisode episode,
+});
+
+final vodResumeDataProvider =
+    Provider.autoDispose.family<VodResumeData?, VodDetailArguments>((
+      ref,
+      arguments,
+    ) {
+      final detail = ref.watch(vodDetailProvider(arguments));
+      final progress = ref.watch(vodViewingProgressProvider(arguments.id));
+      if (!detail.hasValue || !progress.hasValue) return null;
+
+      final viewingProgress = progress.requireValue;
+      if (viewingProgress == null) return null;
+
+      final item = detail.requireValue;
+      final target = resolveResumeTarget(
+        sources: parsePlaySources(
+          playFrom: item.playFrom,
+          playUrl: item.playUrl,
+        ),
+        progress: viewingProgress,
+      );
+      return (
+        item: item,
+        progress: viewingProgress,
+        source: target.source,
+        episode: target.episode,
+      );
     });
 
 class VodDetailPage extends HookConsumerWidget {
@@ -33,22 +68,10 @@ class VodDetailPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final detail = ref.watch(vodDetailProvider(vodId));
-    final item = detail.value ?? initialItem;
-    final isFavorite = ref.watch(vodFavoriteProvider(vodId)).value ?? false;
-    final viewingProgress = ref.watch(vodViewingProgressProvider(vodId)).value;
-    final sources = parsePlaySources(
-      playFrom: item.playFrom,
-      playUrl: item.playUrl,
-    );
-    final resumeTarget = viewingProgress == null
-        ? null
-        : resolveResumeTarget(
-            sources: sources,
-            progress: viewingProgress,
-          );
+    final detailArguments = (id: vodId, initialItem: initialItem);
+    final resumeData = ref.watch(vodResumeDataProvider(detailArguments));
     final scrollController = useScrollController();
-    final scrollOffset = useState(0.0);
+    final scrollOffset = useValueNotifier(0.0);
 
     useEffect(() {
       void onScroll() {
@@ -59,7 +82,28 @@ class VodDetailPage extends HookConsumerWidget {
       return () {
         scrollController.removeListener(onScroll);
       };
-    }, [scrollController]);
+    }, [scrollController, scrollOffset]);
+
+    final continuePlayingBar = resumeData == null
+        ? null
+        : ContinuePlayingButton(
+            title: '继续播放',
+            subtitle:
+                '${resumeData.progress.sourceName} · '
+                '${resumeData.progress.episodeName} · '
+                '${formatPlaybackPosition(
+                  milliseconds: resumeData.progress.positionMilliseconds,
+                )}',
+            onTap: () => openEpisode(
+              context: context,
+              item: resumeData.item,
+              source: resumeData.source,
+              episode: resumeData.episode,
+              initialPosition: Duration(
+                milliseconds: resumeData.progress.positionMilliseconds,
+              ),
+            ),
+          );
 
     return GlassScaffold(
       edgeToEdge: true,
@@ -73,224 +117,293 @@ class VodDetailPage extends HookConsumerWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          GlassIconButton(
-            icon: Icon(
-              isFavorite
-                  ? CupertinoIcons.rectangle_stack_fill
-                  : CupertinoIcons.rectangle_stack_badge_plus,
-            ),
-            useOwnLayer: true,
-            onPressed: () => ref
-                .read(libraryDatabaseProvider)
-                .toggleFavorite(item: item),
+          VodFavoriteAction(
+            vodId: vodId,
+            detailArguments: detailArguments,
           ),
         ],
       ),
-      bottomBar: viewingProgress == null
-          ? null
-          : ContinuePlayingButton(
-              title: '继续播放',
-              subtitle:
-                  '${viewingProgress.sourceName} · '
-                  '${viewingProgress.episodeName} · '
-                  '${formatPlaybackPosition(
-                    milliseconds: viewingProgress.positionMilliseconds,
-                  )}',
-              onTap: () {
-                final target = resumeTarget!;
-                openEpisode(
-                  context: context,
-                  item: item,
-                  source: target.source,
-                  episode: target.episode,
-                  initialPosition: Duration(
-                    milliseconds: viewingProgress.positionMilliseconds,
-                  ),
-                );
-              },
-            ),
-      bottomBarHeight: viewingProgress == null ? null : 84,
+      bottomBar: continuePlayingBar,
+      bottomBarHeight: continuePlayingBar == null ? null : 84,
       body: CustomScrollView(
         controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),
         slivers: [
-          SliverToBoxAdapter(
-            child: ClipRect(
-              child: SizedBox(
-                height: 500,
-                child: Transform.translate(
-                  offset: Offset(0, scrollOffset.value * .5),
-                  child: Hero(
-                    tag: 'vod-cover-${item.id}',
-                    child: item.picture.isEmpty
-                        ? buildCachedImageError(
-                            context,
-                            '',
-                            StateError('empty'),
-                          )
-                        : CachedNetworkImage(
-                            imageUrl: item.picture,
-                            fit: BoxFit.cover,
-                            alignment: Alignment.topCenter,
-                            progressIndicatorBuilder: buildCachedImageLoading,
-                            errorWidget: buildCachedImageError,
-                          ),
-                  ),
-                  ),
-                ),
-              ),
-            ),
-          detail.when(
-            data: (detailItem) {
-              final detailSources = parsePlaySources(
-                playFrom: detailItem.playFrom,
-                playUrl: detailItem.playUrl,
-              );
-              final actors = splitCmsValues(value: detailItem.actor);
-              final directors = splitCmsValues(value: detailItem.director);
-              final categories = splitCmsValues(value: detailItem.category);
-              return SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  22,
-                  24,
-                  22,
-                  viewingProgress == null ? 44 : 120,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 8,
-                  children: [
-                    Text(
-                      detailItem.name,
-                      style: TextStyle(
-                        color: CupertinoColors.label.resolveFrom(context),
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        height: 1.16,
-                        letterSpacing: -.7,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: buildMetadataChips(item: detailItem),
-                    ),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final actor in actors)
-                          GlassChip(
-                            icon: const Icon(CupertinoIcons.person_2),
-                            label: actor,
-                            onTap: () {},
-                          ),
-                      ],
-                    ),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final director in directors)
-                          GlassChip(
-                            icon: const Icon(CupertinoIcons.video_camera),
-                            label: director,
-                            onTap: () {},
-                          ),
-                      ],
-                    ),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final category in categories)
-                          GlassChip(
-                            icon: const Icon(CupertinoIcons.tag),
-                            label: category,
-                            onTap: () {},
-                          ),
-                      ],
-                    ),
-                    if (detailItem.summary.isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      GlassCard(
-                        child: DetailTextBlock(
-                          title: '简介',
-                          text: detailItem.summary,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 24),
-                    Text(
-                      '选集播放',
-                      style: TextStyle(
-                        color: CupertinoColors.label.resolveFrom(context),
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    if (detailSources.isEmpty)
-                      Text(
-                        '暂无可播放线路',
-                        style: TextStyle(
-                          color: CupertinoColors.secondaryLabel.resolveFrom(
-                            context,
-                          ),
-                        ),
-                      )
-                    else
-                      for (final source in detailSources) ...[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 10),
-                          child: Text(
-                            source.name,
-                            style: TextStyle(
-                              color: CupertinoColors.secondaryLabel.resolveFrom(
-                                context,
-                              ),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final episode in source.episodes)
-                              GlassChip(
-                                icon: const Icon(CupertinoIcons.play_fill),
-                                label: episode.name,
-                                onTap: () => openEpisode(
-                                  context: context,
-                                  item: detailItem,
-                                  source: source,
-                                  episode: episode,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ],
-                  ],
-                ),
-              ),
-              );
-            },
-            loading: () => const ContentStateSliver.loading(),
-            error: (error, stackTrace) => ContentStateSliver.error(
-              error: error,
-              onRetry: () => ref.invalidate(vodDetailProvider(vodId)),
-            ),
+          VodDetailCoverSliver(
+            detailArguments: detailArguments,
+            scrollOffset: scrollOffset,
+          ),
+          VodDetailContentSliver(
+            detailArguments: detailArguments,
+            hasResumeData: resumeData != null,
           ),
         ],
       ),
     );
   }
+}
+
+class VodFavoriteAction extends ConsumerWidget {
+  const VodFavoriteAction({
+    required this.vodId,
+    required this.detailArguments,
+    super.key,
+  });
+
+  final int vodId;
+  final VodDetailArguments detailArguments;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final detail = ref.watch(vodDetailProvider(detailArguments));
+    final isFavorite = ref.watch(vodFavoriteProvider(vodId));
+
+    return detail.when(
+      data: (item) => isFavorite.when(
+        data: (favorite) => GlassIconButton(
+          icon: Icon(
+            favorite
+                ? CupertinoIcons.rectangle_stack_fill
+                : CupertinoIcons.rectangle_stack_badge_plus,
+          ),
+          useOwnLayer: true,
+          onPressed: () => ref
+              .read(libraryDatabaseProvider)
+              .toggleFavorite(item: item),
+        ),
+        loading: buildToolbarLoading,
+        error: (error, stackTrace) => GlassIconButton(
+          icon: const Icon(CupertinoIcons.refresh),
+          useOwnLayer: true,
+          onPressed: () => ref.invalidate(vodFavoriteProvider(vodId)),
+        ),
+      ),
+      loading: buildToolbarLoading,
+      error: (error, stackTrace) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class VodDetailCoverSliver extends ConsumerWidget {
+  const VodDetailCoverSliver({
+    required this.detailArguments,
+    required this.scrollOffset,
+    super.key,
+  });
+
+  final VodDetailArguments detailArguments;
+  final ValueNotifier<double> scrollOffset;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final detail = ref.watch(vodDetailProvider(detailArguments));
+    return SliverToBoxAdapter(
+      child: ClipRect(
+        child: SizedBox(
+          height: 500,
+          child: ValueListenableBuilder<double>(
+            valueListenable: scrollOffset,
+            builder: (context, offset, child) => Transform.translate(
+              offset: Offset(0, offset * .5),
+              child: child,
+            ),
+            child: detail.when(
+              data: (item) => Hero(
+                tag: 'vod-cover-${item.id}',
+                child: item.picture.isEmpty
+                    ? buildCachedImageError(
+                        context,
+                        '',
+                        StateError('empty'),
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: item.picture,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
+                        progressIndicatorBuilder: buildCachedImageLoading,
+                        errorWidget: buildCachedImageError,
+                      ),
+              ),
+              loading: () => const Center(
+                child: CupertinoActivityIndicator(),
+              ),
+              error: (error, stackTrace) => buildCachedImageError(
+                context,
+                '',
+                error,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class VodDetailContentSliver extends ConsumerWidget {
+  const VodDetailContentSliver({
+    required this.detailArguments,
+    required this.hasResumeData,
+    super.key,
+  });
+
+  final VodDetailArguments detailArguments;
+  final bool hasResumeData;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final detail = ref.watch(vodDetailProvider(detailArguments));
+    return detail.when(
+      data: (item) => SliverToBoxAdapter(
+        child: VodDetailContent(
+          item: item,
+          hasResumeData: hasResumeData,
+        ),
+      ),
+      loading: () => const ContentStateSliver.loading(),
+      error: (error, stackTrace) => ContentStateSliver.error(
+        error: error,
+        onRetry: () => ref.invalidate(vodDetailProvider(detailArguments)),
+      ),
+    );
+  }
+}
+
+class VodDetailContent extends StatelessWidget {
+  const VodDetailContent({
+    required this.item,
+    required this.hasResumeData,
+    super.key,
+  });
+
+  final VodItem item;
+  final bool hasResumeData;
+
+  @override
+  Widget build(BuildContext context) {
+    final sources = parsePlaySources(
+      playFrom: item.playFrom,
+      playUrl: item.playUrl,
+    );
+    final actors = splitCmsValues(value: item.actor);
+    final directors = splitCmsValues(value: item.director);
+    final categories = splitCmsValues(value: item.category);
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(22, 24, 22, hasResumeData ? 120 : 44),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
+        children: [
+          Text(
+            item.name,
+            style: TextStyle(
+              color: CupertinoColors.label.resolveFrom(context),
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
+              height: 1.16,
+              letterSpacing: -.7,
+            ),
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: buildMetadataChips(item: item),
+          ),
+          buildValueChips(
+            values: actors,
+            icon: CupertinoIcons.person_2,
+          ),
+          buildValueChips(
+            values: directors,
+            icon: CupertinoIcons.video_camera,
+          ),
+          buildValueChips(values: categories, icon: CupertinoIcons.tag),
+          if (item.summary.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            GlassCard(
+              child: DetailTextBlock(title: '简介', text: item.summary),
+            ),
+          ],
+          const SizedBox(height: 24),
+          Text(
+            '选集播放',
+            style: TextStyle(
+              color: CupertinoColors.label.resolveFrom(context),
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (sources.isEmpty)
+            Text(
+              '暂无可播放线路',
+              style: TextStyle(
+                color: CupertinoColors.secondaryLabel.resolveFrom(context),
+              ),
+            )
+          else
+            for (final source in sources) ...[
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 10),
+                child: Text(
+                  source.name,
+                  style: TextStyle(
+                    color: CupertinoColors.secondaryLabel.resolveFrom(
+                      context,
+                    ),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final episode in source.episodes)
+                    GlassChip(
+                      icon: const Icon(CupertinoIcons.play_fill),
+                      label: episode.name,
+                      onTap: () => openEpisode(
+                        context: context,
+                        item: item,
+                        source: source,
+                        episode: episode,
+                      ),
+                    ),
+                ],
+              ),
+            ],
+        ],
+      ),
+    );
+  }
+}
+
+Widget buildToolbarLoading() {
+  return const SizedBox(
+    width: 44,
+    height: 44,
+    child: Center(child: CupertinoActivityIndicator(radius: 10)),
+  );
+}
+
+Widget buildValueChips({
+  required List<String> values,
+  required IconData icon,
+}) {
+  return Wrap(
+    spacing: 8,
+    runSpacing: 8,
+    children: [
+      for (final value in values)
+        GlassChip(icon: Icon(icon), label: value, onTap: () {}),
+    ],
+  );
 }
 
 List<Widget> buildMetadataChips({required VodItem item}) {
