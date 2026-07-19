@@ -188,7 +188,7 @@ class PlayerControlsOverlay extends HookWidget {
             hiddenOffset: const Offset(0, 1),
             child: GlassContainer(
               useOwnLayer: true,
-              quality: GlassQuality.premium,
+              quality: GlassQuality.minimal,
               padding: const EdgeInsets.all(8),
               shape: const LiquidRoundedSuperellipse(borderRadius: 44),
               child: Row(
