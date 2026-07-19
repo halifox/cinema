@@ -318,14 +318,6 @@ class VodDetailContent extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            '选集播放',
-            style: TextStyle(
-              color: CupertinoColors.label.resolveFrom(context),
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
           if (sources.isEmpty)
             Text(
               '暂无可播放线路',
@@ -336,11 +328,11 @@ class VodDetailContent extends StatelessWidget {
           else
             for (final source in sources) ...[
               Text(
-                source.name,
+                "数据源:${source.name}",
                 style: TextStyle(
-                  color: CupertinoColors.secondaryLabel.resolveFrom(context),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                  color: CupertinoColors.label.resolveFrom(context),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               Wrap(
