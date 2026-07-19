@@ -12,7 +12,7 @@ typedef VodResumeData = ({
   PlayEpisode episode,
 });
 
-final vodResumeDataProvider = Provider.autoDispose
+final vodResumeDataProvider = Provider
     .family<VodResumeData?, VodDetailArguments>((ref, arguments) {
       final detail = ref.watch(vodDetailProvider(arguments));
       final progress = ref.watch(vodViewingProgressProvider(arguments.id));
