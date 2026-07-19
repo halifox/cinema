@@ -164,6 +164,18 @@ class PlayerControlsOverlay extends HookWidget {
       return () => controlsTimer.value?.cancel();
     }, const []);
 
+    useEffect(() {
+      if (effectiveError == null) return null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        showPlaybackToast(
+          message: '播放失败：$effectiveError',
+          type: GlassToastType.error,
+        );
+      });
+      return null;
+    }, [effectiveError]);
+
     final controlsVisible = overlayState.value == PlayerOverlayState.controls;
     const horizontalInset = 24.0;
     const topInset = 18.0;
@@ -182,21 +194,6 @@ class PlayerControlsOverlay extends HookWidget {
               size: 34,
               strokeWidth: 3,
                 color: AppTheme.seedColor  ),
-          ),
-        if (effectiveError != null)
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 80),
-              child: Text(
-                '播放失败\n$effectiveError',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: CupertinoColors.white,
-                  fontSize: 15,
-                  height: 1.4,
-                ),
-              ),
-            ),
           ),
         Positioned(
           left: horizontalInset,
