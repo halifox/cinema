@@ -1,20 +1,12 @@
-import 'package:cinema/features/library/data/library_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-import '../../../cms/cms_models.dart';
 import '../../../shared/presentation/hooks/glass_large_title_hook.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
 import '../../history/presentation/vod_history_page.dart';
+import '../../library/application/library_providers.dart';
 import '../../library/presentation/vod_library_grid.dart';
-final favoritesProvider = StreamProvider<List<VodItem>>((ref) {
-  return ref.watch(libraryDatabaseProvider).watchFavoriteVods();
-});
-
-final vodFavoriteProvider = StreamProvider.family<bool, int>((ref, vodId) {
-  return ref.watch(libraryDatabaseProvider).watchFavorite(vodId: vodId);
-});
 
 class FavoritePage extends HookConsumerWidget {
   const FavoritePage({super.key});

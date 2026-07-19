@@ -1,14 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../shared/presentation/hooks/glass_large_title_hook.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
-import '../../library/data/library_database.dart';
+import '../../../shared/presentation/widgets/content_state.dart';
+import '../../library/application/library_providers.dart';
 import 'search_results_page.dart';
-final searchHistoryProvider = StreamProvider<List<String>>((ref) {
-  return ref.watch(libraryDatabaseProvider).watchSearchHistory();
-});
 
 class SearchPage extends HookConsumerWidget {
   const SearchPage({required this.onDismiss, super.key});
@@ -47,7 +47,7 @@ class SearchHistory extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final history = ref.watch(searchHistoryProvider).value ?? const [];
+    final history = ref.watch(searchHistoryProvider);
     final keyboardHeight = MediaQuery.viewInsetsOf(context).bottom;
     return CustomScrollView(
       controller: titleController.scrollController,
@@ -65,80 +65,101 @@ class SearchHistory extends ConsumerWidget {
             8,
           ),
         ),
-        if (history.isEmpty)
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Padding(
-              padding: EdgeInsets.only(bottom: keyboardHeight + 50),
-              child: const SearchHistoryEmptyState(),
-            ),
-          )
-        else
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                18,
-                16,
-                18,
-                MediaQuery.paddingOf(context).bottom + keyboardHeight + 72,
-              ),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: GlassGroupedSection(
-                  margin: EdgeInsets.zero,
-                  shape: const LiquidRoundedSuperellipse(borderRadius: 28),
-                  useOwnLayer: true,
-                  quality: GlassQuality.premium,
-                  children: [
-                    for (final query in history.reversed)
-                      GlassListTile(
-                        title: Text(
-                          query,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        contentPadding: const EdgeInsets.only(
-                          top: 6,
-                          bottom: 6,
-                          left: 26,
-                          right: 6,
-                        ),
-                        titleStyle: TextStyle(
-                          color: CupertinoColors.label.resolveFrom(context),
-                          fontSize: 17,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        onTap: () {
-                          ref
-                              .read(libraryDatabaseProvider)
-                              .recordSearch(query: query);
-                          Navigator.of(context).push(
-                            CupertinoPageRoute<void>(
-                              builder: (routeContext) =>
-                                  SearchResultsPage(query: query),
-                            ),
-                          );
-                        },
-                        trailing: Semantics(
-                          button: true,
-                          label: '删除搜索记录：$query',
-                          child: GlassIconButton(
-                            icon: const Icon(
-                              CupertinoIcons.trash,
-                              color: CupertinoColors.systemRed,
-                            ),
-                            onPressed: () => ref
-                                .read(libraryDatabaseProvider)
-                                .removeSearch(query: query),
-                          ),
-                        ),
+        ...history.when(
+          data: (items) => [
+            if (items.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: keyboardHeight + 50),
+                  child: const SearchHistoryEmptyState(),
+                ),
+              )
+            else
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    18,
+                    16,
+                    18,
+                    MediaQuery.paddingOf(context).bottom +
+                        keyboardHeight +
+                        72,
+                  ),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: GlassGroupedSection(
+                      margin: EdgeInsets.zero,
+                      shape: const LiquidRoundedSuperellipse(
+                        borderRadius: 28,
                       ),
-                  ],
+                      useOwnLayer: true,
+                      quality: GlassQuality.premium,
+                      children: [
+                        for (final query in items.reversed)
+                          GlassListTile(
+                            title: Text(
+                              query,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            contentPadding: const EdgeInsets.only(
+                              top: 6,
+                              bottom: 6,
+                              left: 26,
+                              right: 6,
+                            ),
+                            titleStyle: TextStyle(
+                              color: CupertinoColors.label.resolveFrom(
+                                context,
+                              ),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            onTap: () {
+                              unawaited(
+                                ref
+                                    .read(libraryCommandsProvider)
+                                    .recordSearch(query: query),
+                              );
+                              Navigator.of(context).push(
+                                CupertinoPageRoute<void>(
+                                  builder: (routeContext) =>
+                                      SearchResultsPage(query: query),
+                                ),
+                              );
+                            },
+                            trailing: Semantics(
+                              button: true,
+                              label: '删除搜索记录：$query',
+                              child: GlassIconButton(
+                                icon: const Icon(
+                                  CupertinoIcons.trash,
+                                  color: CupertinoColors.systemRed,
+                                ),
+                                onPressed: () => unawaited(
+                                  ref
+                                      .read(libraryCommandsProvider)
+                                      .removeSearch(query: query),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
+          ],
+          loading: () => [const ContentStateSliver.loading()],
+          error: (error, stackTrace) => [
+            ContentStateSliver.error(
+              error: error,
+              onRetry: () => ref.invalidate(searchHistoryProvider),
             ),
-          ),
+          ],
+        ),
       ],
     );
   }

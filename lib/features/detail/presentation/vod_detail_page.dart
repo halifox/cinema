@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinema/features/favorites/presentation/favorite_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -10,48 +11,10 @@ import '../../../cms/cms_providers.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
 import '../../../shared/presentation/widgets/cached_image_feedback.dart';
 import '../../../shared/presentation/widgets/content_state.dart';
-import '../../library/data/library_database.dart';
+import '../../library/application/library_providers.dart';
 import '../../player/presentation/continue_playing_button.dart';
 import '../../player/presentation/player_page.dart';
-
-final vodViewingProgressProvider = StreamProvider.autoDispose
-    .family<VodViewingProgress?, int>((ref, vodId) {
-      return ref
-          .watch(libraryDatabaseProvider)
-          .watchViewingProgress(vodId: vodId);
-    });
-
-typedef VodResumeData = ({
-  VodItem item,
-  VodViewingProgress progress,
-  PlaySource source,
-  PlayEpisode episode,
-});
-
-final vodResumeDataProvider = Provider.autoDispose
-    .family<VodResumeData?, VodDetailArguments>((ref, arguments) {
-      final detail = ref.watch(vodDetailProvider(arguments));
-      final progress = ref.watch(vodViewingProgressProvider(arguments.id));
-      if (!detail.hasValue || !progress.hasValue) return null;
-
-      final viewingProgress = progress.requireValue;
-      if (viewingProgress == null) return null;
-
-      final item = detail.requireValue;
-      final target = resolveResumeTarget(
-        sources: parsePlaySources(
-          playFrom: item.playFrom,
-          playUrl: item.playUrl,
-        ),
-        progress: viewingProgress,
-      );
-      return (
-        item: item,
-        progress: viewingProgress,
-        source: target.source,
-        episode: target.episode,
-      );
-    });
+import '../application/vod_detail_providers.dart';
 
 class VodDetailPage extends HookConsumerWidget {
   const VodDetailPage({
@@ -161,8 +124,11 @@ class VodFavoriteAction extends ConsumerWidget {
                 : CupertinoIcons.rectangle_stack_badge_plus,
           ),
           useOwnLayer: true,
-          onPressed: () =>
-              ref.read(libraryDatabaseProvider).toggleFavorite(item: item),
+          onPressed: () => unawaited(
+            ref
+                .read(libraryCommandsProvider)
+                .toggleFavorite(item: item),
+          ),
         ),
         loading: buildToolbarLoading,
         error: (error, stackTrace) => GlassIconButton(
@@ -462,33 +428,6 @@ String formatPlaybackPosition({required int milliseconds}) {
   final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
   final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
   return hours > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
-}
-
-({PlaySource source, PlayEpisode episode}) resolveResumeTarget({
-  required List<PlaySource> sources,
-  required VodViewingProgress progress,
-}) {
-  final sourceIndex = sources.indexWhere(
-    (source) =>
-        source.name == progress.sourceName &&
-        source.episodes.any((episode) => episode.url == progress.episodeUrl),
-  );
-  if (sourceIndex < 0) {
-    final storedEpisode = PlayEpisode(
-      name: progress.episodeName,
-      url: progress.episodeUrl,
-    );
-    return (
-      source: PlaySource(name: progress.sourceName, episodes: [storedEpisode]),
-      episode: storedEpisode,
-    );
-  }
-
-  final source = sources[sourceIndex];
-  final episode = source.episodes.firstWhere(
-    (candidate) => candidate.url == progress.episodeUrl,
-  );
-  return (source: source, episode: episode);
 }
 
 class DetailTextBlock extends StatelessWidget {

@@ -9,16 +9,27 @@ import '../../../shared/presentation/widgets/ambient_glow_background.dart';
 import '../../../shared/presentation/widgets/content_state.dart';
 import '../../../shared/presentation/widgets/cupertino_paging_sliver_view.dart';
 import '../../../shared/presentation/widgets/vod_card.dart';
+import '../application/home_controller.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoryPage = ref.watch(categoriesProvider);
-    final selectedPrimaryId = useState<int?>(null);
-    final selectedSecondaryId = useState<int?>(null);
+    final catalog = ref.watch(homeCatalogProvider);
+    final filterController = ref.read(homeFilterProvider.notifier);
     final scrollController = useScrollController();
+
+    void selectPrimary({required int id}) {
+      filterController.selectPrimary(id: id);
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 380),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    }
 
     return GlassScaffold(
       edgeToEdge: true,
@@ -41,47 +52,30 @@ class HomePage extends HookConsumerWidget {
               height: MediaQuery.paddingOf(context).top + 14,
             ),
           ),
-          categoryPage.when(
+          catalog.when(
             data: (data) {
-              final primary = data.categories
-                  .where((item) => item.parentId == 0)
-                  .toList(growable: false);
-              if (primary.isEmpty) {
+              final primaryId = data.selectedPrimaryId;
+              final activeTypeId = data.activeTypeId;
+              if (primaryId == null || activeTypeId == null) {
                 return const ContentStateSliver.empty(
                   icon: CupertinoIcons.square_grid_2x2,
                   title: '暂无分类',
                   message: '分类接口没有返回可用内容。',
                 );
               }
-              final primaryId = selectedPrimaryId.value ?? primary.first.id;
-              final secondary = data.categories
-                  .where((item) => item.parentId == primaryId)
-                  .toList(growable: false);
-              final effectiveSecondaryId =
-                  selectedSecondaryId.value ??
-                  (secondary.isEmpty ? null : secondary.first.id);
-              final activeTypeId = effectiveSecondaryId ?? primaryId;
               return SliverMainAxisGroup(
                 slivers: [
                   SliverToBoxAdapter(
                     child: CategoryRows(
-                      primary: primary,
-                      secondary: secondary,
+                      primary: data.primary,
+                      secondary: data.secondary,
                       selectedPrimaryId: primaryId,
-                      selectedSecondaryId: effectiveSecondaryId,
-                      onPrimarySelected: (id) {
-                        selectedPrimaryId.value = id;
-                        selectedSecondaryId.value = null;
-                        if (scrollController.hasClients) {
-                          scrollController.animateTo(
-                            0,
-                            duration: const Duration(milliseconds: 380),
-                            curve: Curves.easeOutCubic,
-                          );
-                        }
-                      },
+                      selectedSecondaryId: data.selectedSecondaryId,
+                      onPrimarySelected: (id) => selectPrimary(id: id),
                       onSecondarySelected: (id) {
-                        selectedSecondaryId.value = id;
+                        if (id != null) {
+                          filterController.selectSecondary(id: id);
+                        }
                       },
                     ),
                   ),

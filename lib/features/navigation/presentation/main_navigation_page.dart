@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -5,7 +7,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../favorites/presentation/favorite_page.dart';
 import '../../home/presentation/home_page.dart';
-import '../../library/data/library_database.dart';
+import '../../library/application/library_providers.dart';
 import '../../search/presentation/search_page.dart';
 import '../../search/presentation/search_results_page.dart';
 
@@ -40,27 +42,42 @@ enum MainContentTab {
   };
 }
 
+typedef MainNavigationState = ({
+  MainContentTab selectedTab,
+  bool isSearching,
+});
+
 class MainNavigationPage extends HookConsumerWidget {
   const MainNavigationPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedTab = useState(MainContentTab.home);
-    final lastContentTab = useState(MainContentTab.home);
-    final isSearching = useState(false);
+    final navigation = useState<MainNavigationState>(
+      (selectedTab: MainContentTab.home, isSearching: false),
+    );
     final searchController = useTextEditingController();
+
+    void showTab({required MainContentTab tab}) {
+      navigation.value = (selectedTab: tab, isSearching: false);
+    }
+
+    void setSearchActive({required bool active}) {
+      navigation.value = (
+        selectedTab: navigation.value.selectedTab,
+        isSearching: active,
+      );
+    }
 
     return Stack(
       children: [
-        isSearching.value
+        navigation.value.isSearching
             ? SearchPage(
                 onDismiss: () {
                   FocusManager.instance.primaryFocus?.unfocus();
-                  selectedTab.value = lastContentTab.value;
-                  isSearching.value = false;
+                  setSearchActive(active: false);
                 },
               )
-            : selectedTab.value.buildPage(),
+            : navigation.value.selectedTab.buildPage(),
         Positioned(
           left: 0,
           right: 0,
@@ -68,13 +85,10 @@ class MainNavigationPage extends HookConsumerWidget {
           child: SafeArea(
             top: false,
             child: GlassTabBar.searchable(
-              selectedIndex: lastContentTab.value.index,
-              isSearchActive: isSearching.value,
+              selectedIndex: navigation.value.selectedTab.index,
+              isSearchActive: navigation.value.isSearching,
               onTabSelected: (index) {
-                final tab = MainContentTab.values[index];
-                selectedTab.value = tab;
-                lastContentTab.value = tab;
-                isSearching.value = false;
+                showTab(tab: MainContentTab.values[index]);
               },
               searchConfig: GlassSearchBarConfig(
                 controller: searchController,
@@ -85,9 +99,11 @@ class MainNavigationPage extends HookConsumerWidget {
                 onSubmitted: (value) {
                   final query = value.trim();
                   if (query.isEmpty) return;
-                  ref
-                      .read(libraryDatabaseProvider)
-                      .recordSearch(query: query);
+                  unawaited(
+                    ref
+                        .read(libraryCommandsProvider)
+                        .recordSearch(query: query),
+                  );
                   searchController.clear();
                   FocusManager.instance.primaryFocus?.unfocus();
                   Navigator.of(context).push(
@@ -98,13 +114,7 @@ class MainNavigationPage extends HookConsumerWidget {
                   );
                 },
                 onSearchToggle: (active) {
-                  if (active) {
-                    lastContentTab.value = selectedTab.value;
-                    isSearching.value = true;
-                  } else {
-                    selectedTab.value = lastContentTab.value;
-                    isSearching.value = false;
-                  }
+                  setSearchActive(active: active);
                 },
               ),
               barHeight: 62,

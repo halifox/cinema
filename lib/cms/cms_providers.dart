@@ -64,9 +64,10 @@ final categoriesProvider = FutureProvider<CmsPage<VodItem>>((ref) async {
 });
 
 final catalogProvider =
-    AsyncNotifierProvider.family<CatalogNotifier, PagePagingData<VodItem>, int>(
-      CatalogNotifier.new,
-    );
+    AsyncNotifierProvider.autoDispose
+        .family<CatalogNotifier, PagePagingData<VodItem>, int>(
+          CatalogNotifier.new,
+        );
 
 class CatalogNotifier extends AsyncNotifier<PagePagingData<VodItem>>
     with PagePagingNotifierMixin<VodItem> {
@@ -92,11 +93,12 @@ class CatalogNotifier extends AsyncNotifier<PagePagingData<VodItem>>
 }
 
 final searchResultsProvider =
-    AsyncNotifierProvider.family<
-      SearchResultsNotifier,
-      PagePagingData<VodItem>,
-      String
-    >(SearchResultsNotifier.new);
+    AsyncNotifierProvider.autoDispose
+        .family<
+          SearchResultsNotifier,
+          PagePagingData<VodItem>,
+          String
+        >(SearchResultsNotifier.new);
 
 class SearchResultsNotifier extends AsyncNotifier<PagePagingData<VodItem>>
     with PagePagingNotifierMixin<VodItem> {
@@ -124,7 +126,7 @@ class SearchResultsNotifier extends AsyncNotifier<PagePagingData<VodItem>>
 typedef VodDetailArguments = ({int id, VodItem? initialItem});
 
 final vodDetailProvider =
-    StreamProvider.family<VodItem, VodDetailArguments>(
+    StreamProvider.autoDispose.family<VodItem, VodDetailArguments>(
       (ref, arguments) {
         final api = ref.watch(cmsApiProvider);
         return streamVodDetail(api: api, arguments: arguments);

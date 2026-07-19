@@ -2,15 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-import '../../../cms/cms_models.dart';
 import '../../../shared/presentation/hooks/glass_large_title_hook.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
-import '../../library/data/library_database.dart';
+import '../../library/application/library_providers.dart';
 import '../../library/presentation/vod_library_grid.dart';
-
-final vodHistoryProvider = StreamProvider<List<VodItem>>((ref) {
-  return ref.watch(libraryDatabaseProvider).watchViewingHistory();
-});
 
 class VodHistoryPage extends HookConsumerWidget {
   const VodHistoryPage({super.key});
@@ -71,7 +66,9 @@ class VodHistoryPage extends HookConsumerWidget {
                   ],
                 );
                 if (shouldClear != true || !context.mounted) return;
-                await ref.read(libraryDatabaseProvider).clearViewingHistory();
+                await ref
+                    .read(libraryCommandsProvider)
+                    .clearViewingHistory();
               },
             ),
           ),
