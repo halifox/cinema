@@ -1282,6 +1282,16 @@ class $VodViewingHistoriesTable extends VodViewingHistories
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _positionMillisecondsMeta =
+      const VerificationMeta('positionMilliseconds');
+  @override
+  late final GeneratedColumn<int> positionMilliseconds = GeneratedColumn<int>(
+    'position_milliseconds',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _watchedAtMeta = const VerificationMeta(
     'watchedAt',
   );
@@ -1299,6 +1309,7 @@ class $VodViewingHistoriesTable extends VodViewingHistories
     sourceName,
     episodeName,
     episodeUrl,
+    positionMilliseconds,
     watchedAt,
   ];
   @override
@@ -1346,6 +1357,17 @@ class $VodViewingHistoriesTable extends VodViewingHistories
     } else if (isInserting) {
       context.missing(_episodeUrlMeta);
     }
+    if (data.containsKey('position_milliseconds')) {
+      context.handle(
+        _positionMillisecondsMeta,
+        positionMilliseconds.isAcceptableOrUnknown(
+          data['position_milliseconds']!,
+          _positionMillisecondsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMillisecondsMeta);
+    }
     if (data.containsKey('watched_at')) {
       context.handle(
         _watchedAtMeta,
@@ -1379,6 +1401,10 @@ class $VodViewingHistoriesTable extends VodViewingHistories
         DriftSqlType.string,
         data['${effectivePrefix}episode_url'],
       )!,
+      positionMilliseconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position_milliseconds'],
+      )!,
       watchedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}watched_at'],
@@ -1398,12 +1424,14 @@ class VodViewingHistory extends DataClass
   final String sourceName;
   final String episodeName;
   final String episodeUrl;
+  final int positionMilliseconds;
   final DateTime watchedAt;
   const VodViewingHistory({
     required this.vodId,
     required this.sourceName,
     required this.episodeName,
     required this.episodeUrl,
+    required this.positionMilliseconds,
     required this.watchedAt,
   });
   @override
@@ -1413,6 +1441,7 @@ class VodViewingHistory extends DataClass
     map['source_name'] = Variable<String>(sourceName);
     map['episode_name'] = Variable<String>(episodeName);
     map['episode_url'] = Variable<String>(episodeUrl);
+    map['position_milliseconds'] = Variable<int>(positionMilliseconds);
     map['watched_at'] = Variable<DateTime>(watchedAt);
     return map;
   }
@@ -1423,6 +1452,7 @@ class VodViewingHistory extends DataClass
       sourceName: Value(sourceName),
       episodeName: Value(episodeName),
       episodeUrl: Value(episodeUrl),
+      positionMilliseconds: Value(positionMilliseconds),
       watchedAt: Value(watchedAt),
     );
   }
@@ -1437,6 +1467,9 @@ class VodViewingHistory extends DataClass
       sourceName: serializer.fromJson<String>(json['sourceName']),
       episodeName: serializer.fromJson<String>(json['episodeName']),
       episodeUrl: serializer.fromJson<String>(json['episodeUrl']),
+      positionMilliseconds: serializer.fromJson<int>(
+        json['positionMilliseconds'],
+      ),
       watchedAt: serializer.fromJson<DateTime>(json['watchedAt']),
     );
   }
@@ -1448,6 +1481,7 @@ class VodViewingHistory extends DataClass
       'sourceName': serializer.toJson<String>(sourceName),
       'episodeName': serializer.toJson<String>(episodeName),
       'episodeUrl': serializer.toJson<String>(episodeUrl),
+      'positionMilliseconds': serializer.toJson<int>(positionMilliseconds),
       'watchedAt': serializer.toJson<DateTime>(watchedAt),
     };
   }
@@ -1457,12 +1491,14 @@ class VodViewingHistory extends DataClass
     String? sourceName,
     String? episodeName,
     String? episodeUrl,
+    int? positionMilliseconds,
     DateTime? watchedAt,
   }) => VodViewingHistory(
     vodId: vodId ?? this.vodId,
     sourceName: sourceName ?? this.sourceName,
     episodeName: episodeName ?? this.episodeName,
     episodeUrl: episodeUrl ?? this.episodeUrl,
+    positionMilliseconds: positionMilliseconds ?? this.positionMilliseconds,
     watchedAt: watchedAt ?? this.watchedAt,
   );
   VodViewingHistory copyWithCompanion(VodViewingHistoriesCompanion data) {
@@ -1477,6 +1513,9 @@ class VodViewingHistory extends DataClass
       episodeUrl: data.episodeUrl.present
           ? data.episodeUrl.value
           : this.episodeUrl,
+      positionMilliseconds: data.positionMilliseconds.present
+          ? data.positionMilliseconds.value
+          : this.positionMilliseconds,
       watchedAt: data.watchedAt.present ? data.watchedAt.value : this.watchedAt,
     );
   }
@@ -1488,14 +1527,21 @@ class VodViewingHistory extends DataClass
           ..write('sourceName: $sourceName, ')
           ..write('episodeName: $episodeName, ')
           ..write('episodeUrl: $episodeUrl, ')
+          ..write('positionMilliseconds: $positionMilliseconds, ')
           ..write('watchedAt: $watchedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(vodId, sourceName, episodeName, episodeUrl, watchedAt);
+  int get hashCode => Object.hash(
+    vodId,
+    sourceName,
+    episodeName,
+    episodeUrl,
+    positionMilliseconds,
+    watchedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1504,6 +1550,7 @@ class VodViewingHistory extends DataClass
           other.sourceName == this.sourceName &&
           other.episodeName == this.episodeName &&
           other.episodeUrl == this.episodeUrl &&
+          other.positionMilliseconds == this.positionMilliseconds &&
           other.watchedAt == this.watchedAt);
 }
 
@@ -1512,12 +1559,14 @@ class VodViewingHistoriesCompanion extends UpdateCompanion<VodViewingHistory> {
   final Value<String> sourceName;
   final Value<String> episodeName;
   final Value<String> episodeUrl;
+  final Value<int> positionMilliseconds;
   final Value<DateTime> watchedAt;
   const VodViewingHistoriesCompanion({
     this.vodId = const Value.absent(),
     this.sourceName = const Value.absent(),
     this.episodeName = const Value.absent(),
     this.episodeUrl = const Value.absent(),
+    this.positionMilliseconds = const Value.absent(),
     this.watchedAt = const Value.absent(),
   });
   VodViewingHistoriesCompanion.insert({
@@ -1525,16 +1574,19 @@ class VodViewingHistoriesCompanion extends UpdateCompanion<VodViewingHistory> {
     required String sourceName,
     required String episodeName,
     required String episodeUrl,
+    required int positionMilliseconds,
     required DateTime watchedAt,
   }) : sourceName = Value(sourceName),
        episodeName = Value(episodeName),
        episodeUrl = Value(episodeUrl),
+       positionMilliseconds = Value(positionMilliseconds),
        watchedAt = Value(watchedAt);
   static Insertable<VodViewingHistory> custom({
     Expression<int>? vodId,
     Expression<String>? sourceName,
     Expression<String>? episodeName,
     Expression<String>? episodeUrl,
+    Expression<int>? positionMilliseconds,
     Expression<DateTime>? watchedAt,
   }) {
     return RawValuesInsertable({
@@ -1542,6 +1594,8 @@ class VodViewingHistoriesCompanion extends UpdateCompanion<VodViewingHistory> {
       if (sourceName != null) 'source_name': sourceName,
       if (episodeName != null) 'episode_name': episodeName,
       if (episodeUrl != null) 'episode_url': episodeUrl,
+      if (positionMilliseconds != null)
+        'position_milliseconds': positionMilliseconds,
       if (watchedAt != null) 'watched_at': watchedAt,
     });
   }
@@ -1551,6 +1605,7 @@ class VodViewingHistoriesCompanion extends UpdateCompanion<VodViewingHistory> {
     Value<String>? sourceName,
     Value<String>? episodeName,
     Value<String>? episodeUrl,
+    Value<int>? positionMilliseconds,
     Value<DateTime>? watchedAt,
   }) {
     return VodViewingHistoriesCompanion(
@@ -1558,6 +1613,7 @@ class VodViewingHistoriesCompanion extends UpdateCompanion<VodViewingHistory> {
       sourceName: sourceName ?? this.sourceName,
       episodeName: episodeName ?? this.episodeName,
       episodeUrl: episodeUrl ?? this.episodeUrl,
+      positionMilliseconds: positionMilliseconds ?? this.positionMilliseconds,
       watchedAt: watchedAt ?? this.watchedAt,
     );
   }
@@ -1577,6 +1633,9 @@ class VodViewingHistoriesCompanion extends UpdateCompanion<VodViewingHistory> {
     if (episodeUrl.present) {
       map['episode_url'] = Variable<String>(episodeUrl.value);
     }
+    if (positionMilliseconds.present) {
+      map['position_milliseconds'] = Variable<int>(positionMilliseconds.value);
+    }
     if (watchedAt.present) {
       map['watched_at'] = Variable<DateTime>(watchedAt.value);
     }
@@ -1590,6 +1649,7 @@ class VodViewingHistoriesCompanion extends UpdateCompanion<VodViewingHistory> {
           ..write('sourceName: $sourceName, ')
           ..write('episodeName: $episodeName, ')
           ..write('episodeUrl: $episodeUrl, ')
+          ..write('positionMilliseconds: $positionMilliseconds, ')
           ..write('watchedAt: $watchedAt')
           ..write(')'))
         .toString();
@@ -2838,6 +2898,7 @@ typedef $$VodViewingHistoriesTableCreateCompanionBuilder =
       required String sourceName,
       required String episodeName,
       required String episodeUrl,
+      required int positionMilliseconds,
       required DateTime watchedAt,
     });
 typedef $$VodViewingHistoriesTableUpdateCompanionBuilder =
@@ -2846,6 +2907,7 @@ typedef $$VodViewingHistoriesTableUpdateCompanionBuilder =
       Value<String> sourceName,
       Value<String> episodeName,
       Value<String> episodeUrl,
+      Value<int> positionMilliseconds,
       Value<DateTime> watchedAt,
     });
 
@@ -2904,6 +2966,11 @@ class $$VodViewingHistoriesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get positionMilliseconds => $composableBuilder(
+    column: $table.positionMilliseconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get watchedAt => $composableBuilder(
     column: $table.watchedAt,
     builder: (column) => ColumnFilters(column),
@@ -2957,6 +3024,11 @@ class $$VodViewingHistoriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get positionMilliseconds => $composableBuilder(
+    column: $table.positionMilliseconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get watchedAt => $composableBuilder(
     column: $table.watchedAt,
     builder: (column) => ColumnOrderings(column),
@@ -3007,6 +3079,11 @@ class $$VodViewingHistoriesTableAnnotationComposer
 
   GeneratedColumn<String> get episodeUrl => $composableBuilder(
     column: $table.episodeUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get positionMilliseconds => $composableBuilder(
+    column: $table.positionMilliseconds,
     builder: (column) => column,
   );
 
@@ -3077,12 +3154,14 @@ class $$VodViewingHistoriesTableTableManager
                 Value<String> sourceName = const Value.absent(),
                 Value<String> episodeName = const Value.absent(),
                 Value<String> episodeUrl = const Value.absent(),
+                Value<int> positionMilliseconds = const Value.absent(),
                 Value<DateTime> watchedAt = const Value.absent(),
               }) => VodViewingHistoriesCompanion(
                 vodId: vodId,
                 sourceName: sourceName,
                 episodeName: episodeName,
                 episodeUrl: episodeUrl,
+                positionMilliseconds: positionMilliseconds,
                 watchedAt: watchedAt,
               ),
           createCompanionCallback:
@@ -3091,12 +3170,14 @@ class $$VodViewingHistoriesTableTableManager
                 required String sourceName,
                 required String episodeName,
                 required String episodeUrl,
+                required int positionMilliseconds,
                 required DateTime watchedAt,
               }) => VodViewingHistoriesCompanion.insert(
                 vodId: vodId,
                 sourceName: sourceName,
                 episodeName: episodeName,
                 episodeUrl: episodeUrl,
+                positionMilliseconds: positionMilliseconds,
                 watchedAt: watchedAt,
               ),
           withReferenceMapper: (p0) => p0

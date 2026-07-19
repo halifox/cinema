@@ -26,7 +26,7 @@ class CinemaApp extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return CupertinoApp(
       debugShowCheckedModeBanner: false,
-      title: '光影',
+      title: 'comics',
       theme: AppTheme.system(),
       home: const MainNavigationPage(),
     );

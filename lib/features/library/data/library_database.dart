@@ -75,6 +75,8 @@ class VodViewingHistories extends Table {
 
   TextColumn get episodeUrl => text()();
 
+  IntColumn get positionMilliseconds => integer()();
+
   DateTimeColumn get watchedAt => dateTime()();
 
   @override
@@ -90,6 +92,22 @@ class SearchHistories extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {normalizedQuery};
+}
+
+class VodViewingProgress {
+  const VodViewingProgress({
+    required this.sourceName,
+    required this.episodeName,
+    required this.episodeUrl,
+    required this.positionMilliseconds,
+    required this.watchedAt,
+  });
+
+  final String sourceName;
+  final String episodeName;
+  final String episodeUrl;
+  final int positionMilliseconds;
+  final DateTime watchedAt;
 }
 
 @DriftDatabase(
@@ -200,10 +218,27 @@ class LibraryDatabase extends _$LibraryDatabase {
     );
   }
 
+  Stream<VodViewingProgress?> watchViewingProgress({required int vodId}) {
+    final query = select(vodViewingHistories)
+      ..where((row) => row.vodId.equals(vodId));
+    return query.watchSingleOrNull().map(
+      (progress) => progress == null
+          ? null
+          : VodViewingProgress(
+              sourceName: progress.sourceName,
+              episodeName: progress.episodeName,
+              episodeUrl: progress.episodeUrl,
+              positionMilliseconds: progress.positionMilliseconds,
+              watchedAt: progress.watchedAt,
+            ),
+    );
+  }
+
   Future<void> recordViewing({
     required VodItem item,
     required PlaySource source,
     required PlayEpisode episode,
+    required int positionMilliseconds,
   }) async {
     await transaction(() async {
       await upsertVod(item: item);
@@ -213,6 +248,7 @@ class LibraryDatabase extends _$LibraryDatabase {
           sourceName: source.name,
           episodeName: episode.name,
           episodeUrl: episode.url,
+          positionMilliseconds: positionMilliseconds,
           watchedAt: DateTime.now(),
         ),
       );

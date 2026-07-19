@@ -14,12 +14,14 @@ class PlayerPage extends HookConsumerWidget {
     required this.item,
     required this.source,
     required this.episode,
+    this.initialPosition = Duration.zero,
     super.key,
   });
 
   final VodItem item;
   final PlaySource source;
   final PlayEpisode episode;
+  final Duration initialPosition;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,21 +29,53 @@ class PlayerPage extends HookConsumerWidget {
       () => VideoPlayerController.networkUrl(Uri.parse(episode.url)),
       [episode.url],
     );
-    final initialization = useMemoized(controller.initialize, [controller]);
+    final initialization = useMemoized(() async {
+      await controller.initialize();
+      if (initialPosition > Duration.zero &&
+          initialPosition < controller.value.duration) {
+        await controller.seekTo(initialPosition);
+      }
+    }, [controller, initialPosition]);
     final initialized = useFuture(initialization);
+    final saveTimer = useRef<Timer?>(null);
     useListenable(controller);
     useEffect(() {
-      unawaited(
-        ref.read(libraryDatabaseProvider).recordViewing(
+      Future<void> saveProgress() {
+        final position = controller.value.isInitialized
+            ? controller.value.position
+            : initialPosition;
+        return ref.read(libraryDatabaseProvider).recordViewing(
           item: item,
           source: source,
           episode: episode,
-        ),
-      );
+          positionMilliseconds: position.inMilliseconds,
+        );
+      }
+
+      void scheduleProgressSave() {
+        if (!controller.value.isInitialized || saveTimer.value != null) return;
+        saveTimer.value = Timer(const Duration(seconds: 2), () {
+          saveTimer.value = null;
+          unawaited(saveProgress());
+        });
+      }
+
+      controller.addListener(scheduleProgressSave);
+      unawaited(saveProgress());
       return () {
+        controller.removeListener(scheduleProgressSave);
+        saveTimer.value?.cancel();
+        unawaited(saveProgress());
         controller.dispose();
       };
-    }, [controller, item.id, source.name, episode.name, episode.url]);
+    }, [
+      controller,
+      item.id,
+      source.name,
+      episode.name,
+      episode.url,
+      initialPosition,
+    ]);
 
     return GlassScaffold(
       edgeToEdge: true,

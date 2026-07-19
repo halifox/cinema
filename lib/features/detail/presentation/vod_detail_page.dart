@@ -11,7 +11,15 @@ import '../../../shared/presentation/widgets/cached_image_feedback.dart';
 import '../../../shared/presentation/widgets/content_state.dart';
 import '../../favorites/application/favorites_provider.dart';
 import '../../library/data/library_database.dart';
+import '../../player/presentation/continue_playing_button.dart';
 import '../../player/presentation/player_page.dart';
+
+final vodViewingProgressProvider =
+    StreamProvider.family<VodViewingProgress?, int>((ref, vodId) {
+      return ref
+          .watch(libraryDatabaseProvider)
+          .watchViewingProgress(vodId: vodId);
+    });
 
 class VodDetailPage extends HookConsumerWidget {
   const VodDetailPage({
@@ -28,6 +36,7 @@ class VodDetailPage extends HookConsumerWidget {
     final detail = ref.watch(vodDetailProvider(vodId));
     final item = detail.value ?? initialItem;
     final isFavorite = ref.watch(vodFavoriteProvider(vodId)).value ?? false;
+    final viewingProgress = ref.watch(vodViewingProgressProvider(vodId)).value;
     final sources = parsePlaySources(
       playFrom: item.playFrom,
       playUrl: item.playUrl,
@@ -72,6 +81,38 @@ class VodDetailPage extends HookConsumerWidget {
           ),
         ],
       ),
+      bottomBar: viewingProgress == null
+          ? null
+          : ContinuePlayingButton(
+              title: '继续播放',
+              subtitle:
+                  '${viewingProgress.sourceName} · '
+                  '${viewingProgress.episodeName} · '
+                  '${formatPlaybackPosition(
+                    milliseconds: viewingProgress.positionMilliseconds,
+                  )}',
+              onTap: () => openEpisode(
+                context: context,
+                item: item,
+                source: PlaySource(
+                  name: viewingProgress.sourceName,
+                  episodes: [
+                    PlayEpisode(
+                      name: viewingProgress.episodeName,
+                      url: viewingProgress.episodeUrl,
+                    ),
+                  ],
+                ),
+                episode: PlayEpisode(
+                  name: viewingProgress.episodeName,
+                  url: viewingProgress.episodeUrl,
+                ),
+                initialPosition: Duration(
+                  milliseconds: viewingProgress.positionMilliseconds,
+                ),
+              ),
+            ),
+      bottomBarHeight: viewingProgress == null ? null : 84,
       body: CustomScrollView(
         controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(
@@ -114,7 +155,12 @@ class VodDetailPage extends HookConsumerWidget {
           else
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(22, 24, 22, 44),
+                padding: EdgeInsets.fromLTRB(
+                  22,
+                  24,
+                  22,
+                  viewingProgress == null ? 44 : 120,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -274,6 +320,7 @@ void openEpisode({
   required VodItem item,
   required PlaySource source,
   required PlayEpisode episode,
+  Duration initialPosition = Duration.zero,
 }) {
   Navigator.of(context).push(
     CupertinoPageRoute<void>(
@@ -281,9 +328,18 @@ void openEpisode({
         item: item,
         source: source,
         episode: episode,
+        initialPosition: initialPosition,
       ),
     ),
   );
+}
+
+String formatPlaybackPosition({required int milliseconds}) {
+  final duration = Duration(milliseconds: milliseconds);
+  final hours = duration.inHours;
+  final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+  final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+  return hours > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
 }
 
 class DetailTextBlock extends StatelessWidget {
