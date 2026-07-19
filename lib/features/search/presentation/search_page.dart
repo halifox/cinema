@@ -29,7 +29,6 @@ class SearchPage extends HookConsumerWidget {
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
           onDismiss();
         },
         child: SearchHistory(titleController: titleController),
