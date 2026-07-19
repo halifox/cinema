@@ -52,7 +52,7 @@ abstract class VodItem with _$VodItem {
     @JsonKey(name: 'vod_actor') @Default('') String actor,
     @JsonKey(name: 'vod_director') @Default('') String director,
     @JsonKey(name: 'vod_class') @Default('') String category,
-    @JsonKey(name: 'vod_blurb') @Default('') String summary,
+    @JsonKey(name: 'vod_content') @Default('') String summary,
     @JsonKey(name: 'vod_duration') @Default('') String duration,
     @JsonKey(name: 'vod_play_from') @Default('') String playFrom,
     @JsonKey(name: 'vod_play_url') @Default('') String playUrl,

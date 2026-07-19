@@ -78,7 +78,9 @@ class VodDetailPage extends HookConsumerWidget {
         actions: [
           GlassIconButton(
             icon: Icon(
-              isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+              isFavorite
+                  ? CupertinoIcons.rectangle_stack_fill
+                  : CupertinoIcons.rectangle_stack_badge_plus,
             ),
             useOwnLayer: true,
             onPressed: () => ref
@@ -178,24 +180,42 @@ class VodDetailPage extends HookConsumerWidget {
                       runSpacing: 8,
                       children: buildMetadataChips(item: item),
                     ),
-                    if (actors.isNotEmpty)
-                      DetailChipSection(
-                        title: '主演',
-                        icon: CupertinoIcons.person_2,
-                        values: actors,
-                      ),
-                    if (directors.isNotEmpty)
-                      DetailChipSection(
-                        title: '导演',
-                        icon: CupertinoIcons.video_camera,
-                        values: directors,
-                      ),
-                    if (categories.isNotEmpty)
-                      DetailChipSection(
-                        title: '类型',
-                        icon: CupertinoIcons.tag,
-                        values: categories,
-                      ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final actor in actors)
+                          GlassChip(
+                            icon: const Icon(CupertinoIcons.person_2),
+                            label: actor,
+                            onTap: () {},
+                          ),
+                      ],
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final director in directors)
+                          GlassChip(
+                            icon: const Icon(CupertinoIcons.video_camera),
+                            label: director,
+                            onTap: () {},
+                          ),
+                      ],
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final category in categories)
+                          GlassChip(
+                            icon: const Icon(CupertinoIcons.tag),
+                            label: category,
+                            onTap: () {},
+                          ),
+                      ],
+                    ),
                     if (item.summary.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       GlassCard(
@@ -401,52 +421,6 @@ class DetailTextBlock extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class DetailChipSection extends StatelessWidget {
-  const DetailChipSection({
-    required this.title,
-    required this.icon,
-    required this.values,
-    super.key,
-  });
-
-  final String title;
-  final IconData icon;
-  final List<String> values;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: CupertinoColors.label.resolveFrom(context),
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final value in values)
-                GlassChip(
-                  icon: Icon(icon),
-                  label: value,
-                  onTap: () {},
-                ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }
