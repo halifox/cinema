@@ -10,7 +10,6 @@ class EpisodeListPanel extends HookWidget {
     required this.episodeIndex,
     required this.width,
     required this.onSelected,
-    required this.onClose,
     super.key,
   });
 
@@ -18,54 +17,106 @@ class EpisodeListPanel extends HookWidget {
   final int episodeIndex;
   final double width;
   final ValueChanged<int> onSelected;
-  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
     const tileHeight = 48.0;
+    const indicatorInset = 2.0;
     final initialScrollOffset = (episodeIndex * tileHeight - tileHeight * 2)
         .clamp(0.0, double.infinity)
         .toDouble();
     final scrollController = useScrollController(
       initialScrollOffset: initialScrollOffset,
     );
+    final hasSelection =
+        episodeIndex >= 0 && episodeIndex < source.episodes.length;
+    final labelColor =
+        CupertinoTheme.of(context).textTheme.textStyle.color ??
+        CupertinoColors.label;
 
     return GlassContainer(
       useOwnLayer: true,
       width: width,
       quality: GlassQuality.premium,
-      padding: const EdgeInsets.fromLTRB(8, 10, 8, 8),
-      shape: const LiquidRoundedSuperellipse(borderRadius: 28),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 10, right: 2, bottom: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    source.name.isEmpty ? '选集' : source.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: CupertinoColors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
+      shape: const LiquidRoundedSuperellipse(borderRadius: 26),
+      child: ShaderMask(
+        shaderCallback: (bounds) {
+          return const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              CupertinoColors.transparent,
+              CupertinoColors.black,
+              CupertinoColors.black,
+              CupertinoColors.transparent,
+            ],
+            stops: [0.0, 0.1, 0.9, 1.0],
+          ).createShader(bounds);
+        },
+        blendMode: BlendMode.dstIn,
+        child: Stack(
+          children: [
+            if (hasSelection)
+              TweenAnimationBuilder<double>(
+                tween: Tween<double>(
+                  begin: episodeIndex.toDouble(),
+                  end: episodeIndex.toDouble(),
+                ),
+                duration: const Duration(milliseconds: 360),
+                curve: Curves.easeOutBack,
+                child: GlassContainer(
+                  useOwnLayer: true,
+                  quality: GlassQuality.premium,
+                  height: tileHeight - indicatorInset * 2,
+                  allowElevation: true,
+                  glowIntensity: .7,
+                  shape: const LiquidRoundedSuperellipse(borderRadius: 14),
+                  settings: const LiquidGlassSettings(
+                    glassColor: Color(0x42FFFFFF),
+                    thickness: 34,
+                    blur: 7,
+                    chromaticAberration: .16,
+                    lightIntensity: 1,
+                    ambientStrength: .18,
+                    ambientRim: .32,
+                    saturation: 1.8,
+                  ),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: const Color(0x14FFFFFF),
+                      border: Border.all(
+                        color: const Color(0x70FFFFFF),
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(26),
                     ),
                   ),
                 ),
-                GlassIconButton(
-                  useOwnLayer: true,
-                  icon: const Icon(CupertinoIcons.xmark, size: 18),
-                  onPressed: onClose,
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
+                builder: (context, animatedIndex, child) {
+                  return AnimatedBuilder(
+                    animation: scrollController,
+                    child: child,
+                    builder: (context, child) {
+                      final scrollOffset = scrollController.hasClients
+                          ? scrollController.offset
+                          : initialScrollOffset;
+                      return Positioned(
+                        left: 6,
+                        right: 6,
+                        top:
+                            4 +
+                            animatedIndex * tileHeight +
+                            indicatorInset -
+                            scrollOffset,
+                        child: IgnorePointer(child: child),
+                      );
+                    },
+                  );
+                },
+              ),
+            ListView.builder(
               controller: scrollController,
-              padding: EdgeInsets.zero,
+              padding: const EdgeInsets.all(4),
               itemExtent: tileHeight,
               itemCount: source.episodes.length,
               itemBuilder: (context, index) {
@@ -74,31 +125,23 @@ class EpisodeListPanel extends HookWidget {
                 return Semantics(
                   selected: selected,
                   child: GlassListTile(
-                    leading: Icon(
-                      selected
-                          ? CupertinoIcons.play_fill
-                          : CupertinoIcons.play,
-                      size: 17,
-                    ),
                     title: Text(
                       episode.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     titleStyle: TextStyle(
-                      color: CupertinoColors.white,
+                      color: labelColor,
                       fontSize: 16,
-                      fontWeight: selected
-                          ? FontWeight.w700
-                          : FontWeight.w500,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                     ),
                     onTap: () => onSelected(index),
                   ),
                 );
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

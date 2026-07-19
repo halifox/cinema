@@ -97,39 +97,42 @@ class PlayerPage extends HookConsumerWidget {
       playbackPosition,
     ]);
 
-    return CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.black,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (initialized.connectionState == ConnectionState.done &&
-              !initialized.hasError)
-            Center(
-              child: AspectRatio(
-                aspectRatio: controller.value.aspectRatio == 0
-                    ? 16 / 9
-                    : controller.value.aspectRatio,
-                child: VideoPlayer(controller),
+    return CupertinoTheme(
+      data: CupertinoTheme.of(context).copyWith(brightness: Brightness.dark),
+      child: CupertinoPageScaffold(
+        backgroundColor: CupertinoColors.black,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (initialized.connectionState == ConnectionState.done &&
+                !initialized.hasError)
+              Center(
+                child: AspectRatio(
+                  aspectRatio: controller.value.aspectRatio == 0
+                      ? 16 / 9
+                      : controller.value.aspectRatio,
+                  child: VideoPlayer(controller),
+                ),
+              ),
+            SafeArea(
+              child: PlayerControlsOverlay(
+                title: item.name,
+                source: source,
+                episodeIndex: episodeIndex.value,
+                showEpisodeControls:
+                    item.parentTypeId != 1 && source.episodes.length > 1,
+                controller: controller,
+                loading: initialized.connectionState != ConnectionState.done,
+                error: initialized.error,
+                onExit: () => Navigator.of(context).pop(),
+                onEpisodeSelected: (index) {
+                  if (index == episodeIndex.value) return;
+                  episodeIndex.value = index;
+                },
               ),
             ),
-          SafeArea(
-            child: PlayerControlsOverlay(
-              title: item.name,
-              source: source,
-              episodeIndex: episodeIndex.value,
-              showEpisodeControls:
-                  item.parentTypeId != 1 && source.episodes.length > 1,
-              controller: controller,
-              loading: initialized.connectionState != ConnectionState.done,
-              error: initialized.error,
-              onExit: () => Navigator.of(context).pop(),
-              onEpisodeSelected: (index) {
-                if (index == episodeIndex.value) return;
-                episodeIndex.value = index;
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -315,8 +315,11 @@ class PlayerControlsOverlay extends HookWidget {
               source: source,
               episodeIndex: episodeIndex,
               width: episodePanelWidth,
-              onSelected: (index) => selectEpisode(index: index),
-              onClose: () => showControls(),
+              onSelected: (index) {
+                controlsTimer.value?.cancel();
+                onEpisodeSelected(index);
+                overlayState.value = PlayerOverlayState.episodes;
+              },
             ),
           ),
         ),
