@@ -158,26 +158,21 @@ class PlayerControlsOverlay extends HookWidget {
             hiddenOffset: const Offset(0, -1),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: compact ? 400 : 520,
-                ),
-                child: GlassContainer(
-                  useOwnLayer: true,
-                  quality: GlassQuality.premium,
-                  height: 46,
-                  padding: const EdgeInsets.symmetric(horizontal: 17),
-                  alignment: Alignment.centerLeft,
-                  shape: const LiquidRoundedSuperellipse(borderRadius: 46),
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: CupertinoColors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                    ),
+              child: GlassContainer(
+                useOwnLayer: true,
+                quality: GlassQuality.premium,
+                height: 46,
+                padding: const EdgeInsets.symmetric(horizontal: 17),
+                alignment: Alignment.centerLeft,
+                shape: const LiquidRoundedSuperellipse(borderRadius: 46),
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: CupertinoColors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
