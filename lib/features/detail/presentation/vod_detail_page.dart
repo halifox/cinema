@@ -75,7 +75,6 @@ class VodDetailPage extends HookConsumerWidget {
       appBar: GlassAppBar(
         leading: GlassIconButton(
           icon: const Icon(CupertinoIcons.chevron_back),
-          useOwnLayer: true,
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
@@ -132,17 +131,13 @@ class VodEpisodeSortAction extends StatelessWidget {
           GlassMenuItem(
             title: '正序',
             icon: const Icon(CupertinoIcons.arrow_up),
-            trailing: descending
-                ? null
-                : const Icon(CupertinoIcons.check_mark),
+            trailing: descending ? null : const Icon(CupertinoIcons.check_mark),
             onTap: () => onSelected(false),
           ),
           GlassMenuItem(
             title: '倒序',
             icon: const Icon(CupertinoIcons.arrow_down),
-            trailing: descending
-                ? const Icon(CupertinoIcons.check_mark)
-                : null,
+            trailing: descending ? const Icon(CupertinoIcons.check_mark) : null,
             onTap: () => onSelected(true),
           ),
         ],
@@ -215,7 +210,6 @@ class VodFavoriteAction extends ConsumerWidget {
                 ? CupertinoIcons.rectangle_stack_fill
                 : CupertinoIcons.rectangle_stack_badge_plus,
           ),
-          useOwnLayer: true,
           onPressed: () => unawaited(
             ref.read(libraryCommandsProvider).toggleFavorite(item: item),
           ),
@@ -223,7 +217,6 @@ class VodFavoriteAction extends ConsumerWidget {
         loading: buildToolbarLoading,
         error: (error, stackTrace) => GlassIconButton(
           icon: const Icon(CupertinoIcons.refresh),
-          useOwnLayer: true,
           onPressed: () => ref.invalidate(vodFavoriteProvider(vodId)),
         ),
       ),
@@ -371,34 +364,28 @@ class VodDetailContentSliver extends ConsumerWidget {
               SliverPadding(
                 padding: EdgeInsets.fromLTRB(22, 0, 22, bottomPadding),
                 sliver: SliverGrid(
-                  gridDelegate:
-                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 160,
                     mainAxisExtent: 42,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
                   ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final episodeIndex = episodesDescending
-                          ? selectedSource.episodes.length - index - 1
-                          : index;
-                      final episode = selectedSource.episodes[episodeIndex];
-                      return GlassChip(
-                        useOwnLayer: true,
-                        quality: .minimal,
-                        icon: const Icon(CupertinoIcons.play_rectangle),
-                        label: episode.name,
-                        onTap: () => openEpisode(
-                          context: context,
-                          item: item,
-                          source: selectedSource,
-                          episode: episode,
-                        ),
-                      );
-                    },
-                    childCount: selectedSource.episodes.length,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final episodeIndex = episodesDescending
+                        ? selectedSource.episodes.length - index - 1
+                        : index;
+                    final episode = selectedSource.episodes[episodeIndex];
+                    return GlassChip(
+                      icon: const Icon(CupertinoIcons.play_rectangle),
+                      label: episode.name,
+                      onTap: () => openEpisode(
+                        context: context,
+                        item: item,
+                        source: selectedSource,
+                        episode: episode,
+                      ),
+                    );
+                  }, childCount: selectedSource.episodes.length),
                 ),
               ),
             ],
@@ -494,58 +481,34 @@ Widget buildValueChips({required List<String> values, required IconData icon}) {
     runSpacing: 8,
     children: [
       for (final value in values)
-        GlassChip(
-          useOwnLayer: true,
-          quality: .minimal,
-          icon: Icon(icon),
-          label: value,
-          onTap: () {},
-        ),
+        GlassChip(icon: Icon(icon), label: value, onTap: () {}),
     ],
   );
 }
 
 List<Widget> buildMetadataChips({required VodItem item}) {
   return [
-    // if (item.remarks.isNotEmpty)
-    //   GlassChip(
-    //     useOwnLayer: true,
-    //     quality: .minimal,
-    //     icon: const Icon(CupertinoIcons.info_circle),
-    //     label: item.remarks,
-    //     onTap: () {},
-    //   ),
     GlassChip(
-      useOwnLayer: true,
-      quality: .minimal,
       icon: const Icon(CupertinoIcons.calendar),
       label: item.year.isEmpty ? '未知' : item.year,
       onTap: () {},
     ),
     GlassChip(
-      useOwnLayer: true,
-      quality: .minimal,
       icon: const Icon(CupertinoIcons.globe),
       label: item.area.isEmpty ? '未知' : item.area,
       onTap: () {},
     ),
     GlassChip(
-      useOwnLayer: true,
-      quality: .minimal,
       icon: const Icon(CupertinoIcons.captions_bubble),
       label: item.language.isEmpty ? '未知' : item.language,
       onTap: () {},
     ),
     GlassChip(
-      useOwnLayer: true,
-      quality: .minimal,
       icon: const Icon(CupertinoIcons.clock),
       label: item.duration.isEmpty ? '未知' : item.duration,
       onTap: () {},
     ),
     GlassChip(
-      useOwnLayer: true,
-      quality: .minimal,
       icon: const Icon(CupertinoIcons.star_fill),
       label: '豆瓣评分 ${item.displayScore.isEmpty ? '未知' : item.displayScore}',
       onTap: () {},
