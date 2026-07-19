@@ -14,8 +14,8 @@ import '../../library/data/library_database.dart';
 import '../../player/presentation/continue_playing_button.dart';
 import '../../player/presentation/player_page.dart';
 
-final vodViewingProgressProvider =
-    StreamProvider.autoDispose.family<VodViewingProgress?, int>((ref, vodId) {
+final vodViewingProgressProvider = StreamProvider.autoDispose
+    .family<VodViewingProgress?, int>((ref, vodId) {
       return ref
           .watch(libraryDatabaseProvider)
           .watchViewingProgress(vodId: vodId);
@@ -28,11 +28,8 @@ typedef VodResumeData = ({
   PlayEpisode episode,
 });
 
-final vodResumeDataProvider =
-    Provider.autoDispose.family<VodResumeData?, VodDetailArguments>((
-      ref,
-      arguments,
-    ) {
+final vodResumeDataProvider = Provider.autoDispose
+    .family<VodResumeData?, VodDetailArguments>((ref, arguments) {
       final detail = ref.watch(vodDetailProvider(arguments));
       final progress = ref.watch(vodViewingProgressProvider(arguments.id));
       if (!detail.hasValue || !progress.hasValue) return null;
@@ -91,9 +88,7 @@ class VodDetailPage extends HookConsumerWidget {
             subtitle:
                 '${resumeData.progress.sourceName} · '
                 '${resumeData.progress.episodeName} · '
-                '${formatPlaybackPosition(
-                  milliseconds: resumeData.progress.positionMilliseconds,
-                )}',
+                '${formatPlaybackPosition(milliseconds: resumeData.progress.positionMilliseconds)}',
             onTap: () => openEpisode(
               context: context,
               item: resumeData.item,
@@ -117,10 +112,7 @@ class VodDetailPage extends HookConsumerWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          VodFavoriteAction(
-            vodId: vodId,
-            detailArguments: detailArguments,
-          ),
+          VodFavoriteAction(vodId: vodId, detailArguments: detailArguments),
         ],
       ),
       bottomBar: continuePlayingBar,
@@ -169,9 +161,8 @@ class VodFavoriteAction extends ConsumerWidget {
                 : CupertinoIcons.rectangle_stack_badge_plus,
           ),
           useOwnLayer: true,
-          onPressed: () => ref
-              .read(libraryDatabaseProvider)
-              .toggleFavorite(item: item),
+          onPressed: () =>
+              ref.read(libraryDatabaseProvider).toggleFavorite(item: item),
         ),
         loading: buildToolbarLoading,
         error: (error, stackTrace) => GlassIconButton(
@@ -213,11 +204,7 @@ class VodDetailCoverSliver extends ConsumerWidget {
               data: (item) => Hero(
                 tag: 'vod-cover-${item.id}',
                 child: item.picture.isEmpty
-                    ? buildCachedImageError(
-                        context,
-                        '',
-                        StateError('empty'),
-                      )
+                    ? buildCachedImageError(context, '', StateError('empty'))
                     : CachedNetworkImage(
                         imageUrl: item.picture,
                         fit: BoxFit.cover,
@@ -226,14 +213,9 @@ class VodDetailCoverSliver extends ConsumerWidget {
                         errorWidget: buildCachedImageError,
                       ),
               ),
-              loading: () => const Center(
-                child: CupertinoActivityIndicator(),
-              ),
-              error: (error, stackTrace) => buildCachedImageError(
-                context,
-                '',
-                error,
-              ),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
+              error: (error, stackTrace) =>
+                  buildCachedImageError(context, '', error),
             ),
           ),
         ),
@@ -257,10 +239,7 @@ class VodDetailContentSliver extends ConsumerWidget {
     final detail = ref.watch(vodDetailProvider(detailArguments));
     return detail.when(
       data: (item) => SliverToBoxAdapter(
-        child: VodDetailContent(
-          item: item,
-          hasResumeData: hasResumeData,
-        ),
+        child: VodDetailContent(item: item, hasResumeData: hasResumeData),
       ),
       loading: () => const ContentStateSliver.loading(),
       error: (error, stackTrace) => ContentStateSliver.error(
@@ -307,28 +286,38 @@ class VodDetailContent extends StatelessWidget {
               letterSpacing: -.7,
             ),
           ),
-          const SizedBox(height: 14),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: buildMetadataChips(item: item),
           ),
-          buildValueChips(
-            values: actors,
-            icon: CupertinoIcons.person_2,
-          ),
-          buildValueChips(
-            values: directors,
-            icon: CupertinoIcons.video_camera,
-          ),
           buildValueChips(values: categories, icon: CupertinoIcons.tag),
-          if (item.summary.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            GlassCard(
-              child: DetailTextBlock(title: '简介', text: item.summary),
+          buildValueChips(values: actors, icon: CupertinoIcons.person_2),
+          buildValueChips(values: directors, icon: CupertinoIcons.video_camera),
+          GlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '简介',
+                  style: TextStyle(
+                    color: CupertinoColors.label.resolveFrom(context),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  item.summary,
+                  style: TextStyle(
+                    color: CupertinoColors.secondaryLabel.resolveFrom(context),
+                    fontSize: 15,
+                    height: 1.55,
+                  ),
+                ),
+              ],
             ),
-          ],
-          const SizedBox(height: 24),
+          ),
           Text(
             '选集播放',
             style: TextStyle(
@@ -337,7 +326,6 @@ class VodDetailContent extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 12),
           if (sources.isEmpty)
             Text(
               '暂无可播放线路',
@@ -347,17 +335,12 @@ class VodDetailContent extends StatelessWidget {
             )
           else
             for (final source in sources) ...[
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 10),
-                child: Text(
-                  source.name,
-                  style: TextStyle(
-                    color: CupertinoColors.secondaryLabel.resolveFrom(
-                      context,
-                    ),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+              Text(
+                source.name,
+                style: TextStyle(
+                  color: CupertinoColors.secondaryLabel.resolveFrom(context),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               Wrap(
@@ -366,7 +349,7 @@ class VodDetailContent extends StatelessWidget {
                 children: [
                   for (final episode in source.episodes)
                     GlassChip(
-                      icon: const Icon(CupertinoIcons.play_fill),
+                      icon: const Icon(CupertinoIcons.play_rectangle),
                       label: episode.name,
                       onTap: () => openEpisode(
                         context: context,
@@ -392,10 +375,7 @@ Widget buildToolbarLoading() {
   );
 }
 
-Widget buildValueChips({
-  required List<String> values,
-  required IconData icon,
-}) {
+Widget buildValueChips({required List<String> values, required IconData icon}) {
   return Wrap(
     spacing: 8,
     runSpacing: 8,
@@ -489,9 +469,7 @@ String formatPlaybackPosition({required int milliseconds}) {
   final sourceIndex = sources.indexWhere(
     (source) =>
         source.name == progress.sourceName &&
-        source.episodes.any(
-          (episode) => episode.url == progress.episodeUrl,
-        ),
+        source.episodes.any((episode) => episode.url == progress.episodeUrl),
   );
   if (sourceIndex < 0) {
     final storedEpisode = PlayEpisode(
@@ -499,10 +477,7 @@ String formatPlaybackPosition({required int milliseconds}) {
       url: progress.episodeUrl,
     );
     return (
-      source: PlaySource(
-        name: progress.sourceName,
-        episodes: [storedEpisode],
-      ),
+      source: PlaySource(name: progress.sourceName, episodes: [storedEpisode]),
       episode: storedEpisode,
     );
   }
