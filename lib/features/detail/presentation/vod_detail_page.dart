@@ -16,6 +16,8 @@ import '../../player/presentation/continue_playing_button.dart';
 import '../../player/presentation/player_page.dart';
 import '../application/vod_detail_providers.dart';
 
+const vodDetailCoverHeight = 500.0;
+
 class VodDetailPage extends HookConsumerWidget {
   const VodDetailPage({
     required this.vodId,
@@ -101,6 +103,7 @@ class VodDetailPage extends HookConsumerWidget {
             onSortSelected: (descending) =>
                 episodesDescending.value = descending,
           ),
+          const VodDetailBottomFillSliver(),
         ],
       ),
     );
@@ -246,7 +249,7 @@ class VodDetailCoverSliver extends ConsumerWidget {
     return SliverToBoxAdapter(
       child: ClipRect(
         child: SizedBox(
-          height: 500,
+          height: vodDetailCoverHeight,
           child: ValueListenableBuilder<double>(
             valueListenable: scrollOffset,
             builder: (context, offset, child) => Transform.translate(
@@ -407,6 +410,25 @@ class VodDetailContentSliver extends ConsumerWidget {
         error: error,
         onRetry: () => ref.invalidate(vodDetailProvider(detailArguments)),
       ),
+    );
+  }
+}
+
+class VodDetailBottomFillSliver extends StatelessWidget {
+  const VodDetailBottomFillSliver({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverLayoutBuilder(
+      builder: (context, constraints) {
+        final contentExtent =
+            constraints.precedingScrollExtent - vodDetailCoverHeight;
+        final fillExtent = (constraints.viewportMainAxisExtent - contentExtent)
+            .clamp(0.0, double.infinity)
+            .toDouble();
+
+        return SliverToBoxAdapter(child: SizedBox(height: fillExtent));
+      },
     );
   }
 }
