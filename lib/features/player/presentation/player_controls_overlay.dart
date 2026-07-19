@@ -98,17 +98,12 @@ class PlayerControlsOverlay extends HookWidget {
     final previousEnabled = episodeIndex > 0;
     final nextEnabled = episodeIndex + 1 < source.episodes.length;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < 700;
-        final horizontalInset = compact ? 12.0 : 24.0;
-        final topInset = compact ? 10.0 : 18.0;
-        final episodePanelWidth = (constraints.maxWidth * .42)
-            .clamp(220.0, 280.0)
-            .toDouble();
-        return Stack(
-          fit: StackFit.expand,
-          children: [
+    const horizontalInset = 24.0;
+    const topInset = 18.0;
+    const episodePanelWidth = 280.0;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: handleBackgroundTap,
@@ -182,7 +177,7 @@ class PlayerControlsOverlay extends HookWidget {
         Positioned(
           left: horizontalInset,
           right: horizontalInset,
-          bottom: compact ? 10 : 18,
+          bottom: 18,
           child: PlayerOverlayAnimatedSwitcher(
             visible: controlsVisible,
             hiddenOffset: const Offset(0, 1),
@@ -201,7 +196,7 @@ class PlayerControlsOverlay extends HookWidget {
                           ? () => selectEpisode(index: episodeIndex - 1)
                           : null,
                     ),
-                    SizedBox(width: compact ? 2 : 6),
+                    const SizedBox(width: 6),
                   ],
                   GlassIconButton(
                     useOwnLayer: true,
@@ -222,7 +217,7 @@ class PlayerControlsOverlay extends HookWidget {
                           : null,
                   ),
                   if (showEpisodeControls) ...[
-                    SizedBox(width: compact ? 2 : 6),
+                    const SizedBox(width: 6),
                     GlassIconButton(
                       useOwnLayer: true,
                       icon: const Icon(CupertinoIcons.forward_end),
@@ -231,7 +226,7 @@ class PlayerControlsOverlay extends HookWidget {
                           : null,
                     ),
                   ],
-                  SizedBox(width: compact ? 8 : 14),
+                  const SizedBox(width: 14),
                   Text(
                     formatPlayerDuration(
                       duration: Duration(milliseconds: currentPosition.round()),
@@ -242,7 +237,7 @@ class PlayerControlsOverlay extends HookWidget {
                       fontFeatures: [FontFeature.tabularFigures()],
                     ),
                   ),
-                  SizedBox(width: compact ? 6 : 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: GlassSlider(
                       value: currentPosition,
@@ -272,7 +267,7 @@ class PlayerControlsOverlay extends HookWidget {
                           : null,
                     ),
                   ),
-                  SizedBox(width: compact ? 6 : 10),
+                  const SizedBox(width: 10),
                   Text(
                     formatPlayerDuration(duration: videoValue.duration),
                     style: const TextStyle(
@@ -282,7 +277,7 @@ class PlayerControlsOverlay extends HookWidget {
                     ),
                   ),
                   if (showEpisodeControls) ...[
-                    SizedBox(width: compact ? 8 : 14),
+                    const SizedBox(width: 14),
                     GlassIconButton(
                       useOwnLayer: true,
                       icon: const Icon(CupertinoIcons.list_bullet),
@@ -318,9 +313,7 @@ class PlayerControlsOverlay extends HookWidget {
             ),
           ),
         ),
-          ],
-        );
-      },
+      ],
     );
   }
 }

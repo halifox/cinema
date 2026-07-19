@@ -106,12 +106,14 @@ class PlayerPage extends HookConsumerWidget {
           children: [
             if (initialized.connectionState == ConnectionState.done &&
                 !initialized.hasError)
-              Center(
-                child: AspectRatio(
-                  aspectRatio: controller.value.aspectRatio == 0
-                      ? 16 / 9
-                      : controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
+              SafeArea(
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: controller.value.aspectRatio == 0
+                        ? 16 / 9
+                        : controller.value.aspectRatio,
+                    child: VideoPlayer(controller),
+                  ),
                 ),
               ),
             SafeArea(
