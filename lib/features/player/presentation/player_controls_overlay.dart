@@ -230,7 +230,7 @@ class PlayerControlsOverlay extends HookWidget {
             visible: controlsVisible,
             child: GlassIconButton(
               useOwnLayer: true,
-              quality: .premium,
+              
               icon: const Icon(CupertinoIcons.chevron_back),
               onPressed: onExit,
             ),
@@ -246,7 +246,7 @@ class PlayerControlsOverlay extends HookWidget {
               alignment: Alignment.centerLeft,
               child: GlassContainer(
                 useOwnLayer: true,
-                quality: .premium,
+                
                 height: 46,
                 padding: const EdgeInsets.symmetric(horizontal: 17),
                 alignment: Alignment.centerLeft,
@@ -273,21 +273,21 @@ class PlayerControlsOverlay extends HookWidget {
             visible: controlsVisible,
             child: GlassContainer(
               useOwnLayer: true,
-              quality: GlassQuality.minimal,
+              
               padding: const EdgeInsets.all(8),
               shape: const LiquidRoundedSuperellipse(borderRadius: 44),
               child: Row(
                 children: [
                   GlassIconButton(
-                    useOwnLayer: true,
-                    quality: .premium,
+                    useOwnLayer: false,
+                    
                     icon: const Icon(CupertinoIcons.backward_end),
                     onPressed: selectPreviousEpisode,
                   ),
                   const SizedBox(width: 6),
                   GlassIconButton(
-                    useOwnLayer: true,
-                    quality: .premium,
+                    useOwnLayer: false,
+                    
                     icon: Icon(
                       playing ? CupertinoIcons.pause : CupertinoIcons.play,
                     ),
@@ -295,8 +295,8 @@ class PlayerControlsOverlay extends HookWidget {
                   ),
                   const SizedBox(width: 6),
                   GlassIconButton(
-                    useOwnLayer: true,
-                    quality: .premium,
+                    useOwnLayer: false,
+                    
                     icon: const Icon(CupertinoIcons.forward_end),
                     onPressed: selectNextEpisode,
                   ),
@@ -314,7 +314,8 @@ class PlayerControlsOverlay extends HookWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: GlassSlider(
-                      quality: .premium,
+                      useOwnLayer: false,
+                      
                       value: currentPosition,
                       min: 0,
                       max: maximumPosition,
@@ -362,8 +363,8 @@ class PlayerControlsOverlay extends HookWidget {
                   ),
                   const SizedBox(width: 14),
                   GlassIconButton(
-                    useOwnLayer: true,
-                    quality: .premium,
+                    useOwnLayer: false,
+                    
                     icon: const Icon(CupertinoIcons.list_bullet),
                     onPressed: () {
                       controlsTimer.value?.cancel();
@@ -415,7 +416,7 @@ class PlayerPlaybackRateAction extends StatelessWidget {
       label: '选择播放倍速，当前 ${formatPlaybackRate(rate: selectedRate)} 倍',
       child: GlassPullDownButton(
         icon: const Icon(CupertinoIcons.speedometer),
-        quality: GlassQuality.premium,
+        
         items: [
           for (final rate in playerPlaybackRates)
             GlassMenuItem(

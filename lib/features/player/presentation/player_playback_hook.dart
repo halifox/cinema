@@ -64,9 +64,15 @@ PlayerPlaybackController usePlayerPlayback({
   final initialization = useMemoized(() async {
     await player.open(Media(activeEpisode.url), play: false);
     if (!session.allowsPlayback) return;
-    if (playbackPosition > Duration.zero &&
-        playbackPosition < player.state.duration) {
-      await player.seek(playbackPosition);
+    if (playbackPosition > Duration.zero) {
+      final duration = await waitForPlaybackDuration(
+        player: player,
+        session: session,
+      );
+      if (!session.allowsPlayback) return;
+      if (duration <= Duration.zero || playbackPosition < duration) {
+        await player.seek(playbackPosition);
+      }
     }
     if (!session.allowsPlayback) return;
     await player.play();
@@ -145,6 +151,26 @@ PlayerPlaybackController usePlayerPlayback({
     episodeIndexListenable: episodeIndex,
     pausePlayback: session.pause,
   );
+}
+
+Future<Duration> waitForPlaybackDuration({
+  required Player player,
+  required PlayerPlaybackSession session,
+}) async {
+  final currentDuration = player.state.duration;
+  if (currentDuration > Duration.zero) return currentDuration;
+
+  try {
+    return await player.stream.duration
+        .firstWhere(
+          (duration) =>
+              duration > Duration.zero || !session.allowsPlayback,
+        )
+        .timeout(const Duration(seconds: 5));
+  } on TimeoutException {
+    // Some streams do not report a duration. Seeking is still worth attempting.
+    return Duration.zero;
+  }
 }
 
 class PlayerPlaybackSession {
