@@ -415,6 +415,7 @@ class PlayerPlaybackRateAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formattedRate = formatPlaybackRate(rate: selectedRate);
+    final controlIconColor = CupertinoColors.label.resolveFrom(context);
     return Semantics(
       button: true,
       label: '选择播放倍速，当前 $formattedRate 倍',
@@ -432,7 +433,11 @@ class PlayerPlaybackRateAction extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(CupertinoIcons.speedometer, size: 18),
+              Icon(
+                CupertinoIcons.speedometer,
+                size: 18,
+                color: controlIconColor,
+              ),
               const SizedBox(width: 7),
               Text(
                 '$formattedRate 倍',
