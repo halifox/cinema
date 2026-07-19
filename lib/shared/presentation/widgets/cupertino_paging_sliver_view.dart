@@ -30,9 +30,11 @@ class CupertinoPagingSliverView<Item> extends StatelessWidget {
     return state.when(
       data: (data) =>
           contentBuilder(data, data.items.length + 1, buildEndItem(data: data)),
-      loading: () => const ContentLoadingSliver(),
-      error: (error, stackTrace) =>
-          ContentErrorSliver(error: error, onRetry: onRetry),
+      loading: () => const ContentStateSliver.loading(),
+      error: (error, stackTrace) => ContentStateSliver.error(
+        error: error,
+        onRetry: onRetry,
+      ),
     );
   }
 

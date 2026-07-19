@@ -46,9 +46,10 @@ class FavoritePage extends HookConsumerWidget {
             ),
           ),
           if (favorites.isEmpty)
-            const EmptyStateSliver(
+            const ContentStateSliver.empty(
+              icon: CupertinoIcons.heart,
               title: '还没有收藏',
-              subtitle: '在影片详情页点按收藏，稍后就能从这里快速找到。',
+              message: '在影片详情页点按收藏，稍后就能从这里快速找到。',
             )
           else
             VodGridSliver(items: favorites),

@@ -61,9 +61,10 @@ class HomePage extends HookConsumerWidget {
                   .where((item) => item.parentId == 0)
                   .toList(growable: false);
               if (primary.isEmpty) {
-                return const EmptyStateSliver(
+                return const ContentStateSliver.empty(
+                  icon: CupertinoIcons.square_grid_2x2,
                   title: '暂无分类',
-                  subtitle: '分类接口没有返回可用内容。',
+                  message: '分类接口没有返回可用内容。',
                 );
               }
               final primaryId = selectedPrimaryId.value ?? primary.first.id;
@@ -105,8 +106,8 @@ class HomePage extends HookConsumerWidget {
                 ],
               );
             },
-            loading: () => const ContentLoadingSliver(),
-            error: (error, stackTrace) => ContentErrorSliver(
+            loading: () => const ContentStateSliver.loading(),
+            error: (error, stackTrace) => ContentStateSliver.error(
               error: error,
               onRetry: () => ref.invalidate(categoriesProvider),
             ),
@@ -210,9 +211,10 @@ class CatalogFeed extends ConsumerWidget {
       onRetry: () => ref.read(provider.notifier).forceRefresh(),
       contentBuilder: (data, widgetCount, endItemView) {
         if (data.items.isEmpty) {
-          return const EmptyStateSliver(
+          return const ContentStateSliver.empty(
+            icon: CupertinoIcons.film,
             title: '这个分类还是空的',
-            subtitle: '可以切换其他分类看看。',
+            message: '可以切换其他分类看看。',
           );
         }
         return VodGridSliver(items: data.items, endItem: endItemView);

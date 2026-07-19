@@ -104,9 +104,9 @@ class VodDetailPage extends HookConsumerWidget {
               ),
             ),
           if (detail.isLoading && item.playUrl.isEmpty)
-            const ContentLoadingSliver()
+            const ContentStateSliver.loading()
           else if (detail.hasError && item.playUrl.isEmpty)
-            ContentErrorSliver(
+            ContentStateSliver.error(
               error: detail.error!,
               onRetry: () => ref.invalidate(vodDetailProvider(vodId)),
             )

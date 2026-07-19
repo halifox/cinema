@@ -41,9 +41,10 @@ class SearchResultsPage extends HookConsumerWidget {
             onRetry: () => ref.read(provider.notifier).forceRefresh(),
             contentBuilder: (data, widgetCount, endItemView) {
               if (data.items.isEmpty) {
-                return const EmptyStateSliver(
+                return const ContentStateSliver.empty(
+                  icon: CupertinoIcons.search,
                   title: '没有找到相关影片',
-                  subtitle: '试试更短的片名或其他关键词。',
+                  message: '试试更短的片名或其他关键词。',
                 );
               }
               return VodGridSliver(items: data.items, endItem: endItemView);
