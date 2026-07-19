@@ -4,7 +4,7 @@ import 'dart:ui' show FontFeature;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
-import 'package:video_player/video_player.dart';
+import 'package:media_kit/media_kit.dart';
 
 import '../../../cms/cms_models.dart';
 import 'episode_list_panel.dart';
@@ -17,7 +17,7 @@ class PlayerControlsOverlay extends HookWidget {
     required this.source,
     required this.episodeIndex,
     required this.showEpisodeControls,
-    required this.controller,
+    required this.player,
     required this.loading,
     required this.error,
     required this.onExit,
@@ -29,7 +29,7 @@ class PlayerControlsOverlay extends HookWidget {
   final PlaySource source;
   final int episodeIndex;
   final bool showEpisodeControls;
-  final VideoPlayerController controller;
+  final Player player;
   final bool loading;
   final Object? error;
   final VoidCallback onExit;
@@ -37,19 +37,41 @@ class PlayerControlsOverlay extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    useListenable(controller);
     final overlayState = useState(PlayerOverlayState.controls);
     final controlsTimer = useRef<Timer?>(null);
     final draggedPosition = useState<double?>(null);
-    final videoValue = controller.value;
-    final durationMilliseconds = videoValue.isInitialized
-        ? videoValue.duration.inMilliseconds.toDouble()
-        : 0.0;
+    final position = useStream(
+      player.stream.position,
+      initialData: player.state.position,
+      preserveState: false,
+    ).data!;
+    final duration = useStream(
+      player.stream.duration,
+      initialData: player.state.duration,
+      preserveState: false,
+    ).data!;
+    final playing = useStream(
+      player.stream.playing,
+      initialData: player.state.playing,
+      preserveState: false,
+    ).data!;
+    final buffering = useStream(
+      player.stream.buffering,
+      initialData: player.state.buffering,
+      preserveState: false,
+    ).data!;
+    final playbackError = useStream(
+      player.stream.error,
+      preserveState: false,
+    ).data;
+    final effectiveError = error ?? playbackError;
+    final playbackReady = !loading && effectiveError == null;
+    final durationMilliseconds = duration.inMilliseconds.toDouble();
     final maximumPosition = durationMilliseconds <= 0
         ? 1.0
         : durationMilliseconds;
     final currentPosition = (draggedPosition.value ??
-            videoValue.position.inMilliseconds.toDouble())
+            position.inMilliseconds.toDouble())
         .clamp(0.0, maximumPosition)
         .toDouble();
 
@@ -108,7 +130,7 @@ class PlayerControlsOverlay extends HookWidget {
           behavior: HitTestBehavior.opaque,
           onTap: handleBackgroundTap,
         ),
-        if (loading)
+        if (loading || buffering)
           const Center(
             child: GlassProgressIndicator.circular(
               useOwnLayer: true,
@@ -116,12 +138,12 @@ class PlayerControlsOverlay extends HookWidget {
               strokeWidth: 3,
             ),
           ),
-        if (error != null)
+        if (effectiveError != null)
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 80),
               child: Text(
-                '播放失败\n$error',
+                '播放失败\n$effectiveError',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: CupertinoColors.white,
@@ -204,17 +226,15 @@ class PlayerControlsOverlay extends HookWidget {
                     useOwnLayer: true,
                     quality: .premium,
                     icon: Icon(
-                      videoValue.isPlaying
+                      playing
                           ? CupertinoIcons.pause
                           : CupertinoIcons.play,
                     ),
-                    onPressed: videoValue.isInitialized
+                    onPressed: playbackReady
                           ? () {
                               showControls();
                               unawaited(
-                                videoValue.isPlaying
-                                    ? controller.pause()
-                                    : controller.play(),
+                                playing ? player.pause() : player.play(),
                               );
                             }
                           : null,
@@ -250,20 +270,20 @@ class PlayerControlsOverlay extends HookWidget {
                       max: maximumPosition,
                       thumbRadius: 10,
                       trackHeight: 4,
-                      onChangeStart: videoValue.isInitialized
+                      onChangeStart: duration > Duration.zero
                           ? (value) {
                               draggedPosition.value = value;
                               showControls(keepVisible: true);
                             }
                           : null,
-                      onChanged: videoValue.isInitialized
+                      onChanged: duration > Duration.zero
                           ? (value) => draggedPosition.value = value
                           : null,
-                      onChangeEnd: videoValue.isInitialized
+                      onChangeEnd: duration > Duration.zero
                           ? (value) {
                               draggedPosition.value = null;
                               unawaited(
-                                controller.seekTo(
+                                player.seek(
                                   Duration(milliseconds: value.round()),
                                 ),
                               );
@@ -274,7 +294,7 @@ class PlayerControlsOverlay extends HookWidget {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    formatPlayerDuration(duration: videoValue.duration),
+                    formatPlayerDuration(duration: duration),
                     style: const TextStyle(
                       color: CupertinoColors.white,
                       fontSize: 12,

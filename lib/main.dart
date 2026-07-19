@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:media_kit/media_kit.dart';
 
 import 'features/navigation/presentation/main_navigation_page.dart';
 import 'shared/presentation/theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
   await LiquidGlassWidgets.initialize();
   runApp(
     LiquidGlassWidgets.wrap(

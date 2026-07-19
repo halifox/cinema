@@ -4,7 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:video_player/video_player.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 import '../../../cms/cms_models.dart';
 import '../../library/data/library_database.dart';
@@ -33,21 +34,22 @@ class PlayerPage extends HookConsumerWidget {
       initialEpisodeIndex < 0 ? 0 : initialEpisodeIndex,
     );
     final activeEpisode = source.episodes[episodeIndex.value];
+    final player = useMemoized(() => Player(), [activeEpisode.url]);
     final controller = useMemoized(
-      () => VideoPlayerController.networkUrl(Uri.parse(activeEpisode.url)),
-      [activeEpisode.url],
+      () => VideoController(player),
+      [player],
     );
     final playbackPosition = activeEpisode.url == episode.url
         ? initialPosition
         : Duration.zero;
     final initialization = useMemoized(() async {
-      await controller.initialize();
+      await player.open(Media(activeEpisode.url), play: false);
       if (playbackPosition > Duration.zero &&
-          playbackPosition < controller.value.duration) {
-        await controller.seekTo(playbackPosition);
+          playbackPosition < player.state.duration) {
+        await player.seek(playbackPosition);
       }
-      await controller.play();
-    }, [controller, playbackPosition]);
+      await player.play();
+    }, [player, activeEpisode.url, playbackPosition]);
     final initialized = useFuture(initialization);
     final saveTimer = useRef<Timer?>(null);
 
@@ -60,9 +62,20 @@ class PlayerPage extends HookConsumerWidget {
 
     useEffect(
       () {
+        var isInitialized = false;
+
+        Future<void> trackInitialization() async {
+          try {
+            await initialization;
+            isInitialized = true;
+          } on Object {
+            // The initialization error is displayed by the controls overlay.
+          }
+        }
+
         Future<void> saveProgress() {
-          final position = controller.value.isInitialized
-              ? controller.value.position
+          final position = isInitialized
+              ? player.state.position
               : playbackPosition;
           return ref
               .read(libraryDatabaseProvider)
@@ -75,26 +88,29 @@ class PlayerPage extends HookConsumerWidget {
         }
 
         void scheduleProgressSave() {
-          if (!controller.value.isInitialized || saveTimer.value != null)
-            return;
+          if (saveTimer.value != null) return;
           saveTimer.value = Timer(const Duration(seconds: 2), () {
             saveTimer.value = null;
             unawaited(saveProgress());
           });
         }
 
-        controller.addListener(scheduleProgressSave);
+        final positionSubscription = player.stream.position.listen(
+          (position) => scheduleProgressSave(),
+        );
+        unawaited(trackInitialization());
         unawaited(saveProgress());
         return () {
-          controller.removeListener(scheduleProgressSave);
+          unawaited(positionSubscription.cancel());
           saveTimer.value?.cancel();
           saveTimer.value = null;
           unawaited(saveProgress());
-          unawaited(controller.dispose());
+          unawaited(player.dispose());
         };
       },
       [
-        controller,
+        player,
+        initialization,
         item.id,
         source.name,
         activeEpisode.name,
@@ -110,15 +126,11 @@ class PlayerPage extends HookConsumerWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (initialized.connectionState == ConnectionState.done &&
-                !initialized.hasError)
-              Center(
-                child: AspectRatio(
-                  aspectRatio: controller.value.aspectRatio == 0
-                      ? 16 / 9
-                      : controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
-                ),
+            if (!initialized.hasError)
+              Video(
+                controller: controller,
+                controls: NoVideoControls,
+                fit: BoxFit.contain,
               ),
             PlayerControlsOverlay(
               title: item.name,
@@ -126,7 +138,7 @@ class PlayerPage extends HookConsumerWidget {
               episodeIndex: episodeIndex.value,
               showEpisodeControls:
                   item.parentTypeId != 1 && source.episodes.length > 1,
-              controller: controller,
+              player: player,
               loading: initialized.connectionState != ConnectionState.done,
               error: initialized.error,
               onExit: () => Navigator.of(context).pop(),
