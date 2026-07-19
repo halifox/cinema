@@ -175,7 +175,7 @@ class LibraryDatabase extends _$LibraryDatabase {
       if (favorite == null) {
         await into(vodFavorites).insert(
           VodFavoritesCompanion.insert(
-            vodId: item.id,
+            vodId: Value(item.id),
             createdAt: DateTime.now(),
           ),
         );
@@ -209,7 +209,7 @@ class LibraryDatabase extends _$LibraryDatabase {
       await upsertVod(item: item);
       await into(vodViewingHistories).insertOnConflictUpdate(
         VodViewingHistoriesCompanion.insert(
-          vodId: item.id,
+          vodId: Value(item.id),
           sourceName: source.name,
           episodeName: episode.name,
           episodeUrl: episode.url,
@@ -224,7 +224,7 @@ class LibraryDatabase extends _$LibraryDatabase {
   Future<void> upsertVod({required VodItem item}) {
     return into(storedVods).insertOnConflictUpdate(
       StoredVodsCompanion.insert(
-        id: item.id,
+        id: Value(item.id),
         typeId: item.typeId,
         parentTypeId: item.parentTypeId,
         name: item.name,
