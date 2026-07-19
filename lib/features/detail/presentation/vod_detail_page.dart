@@ -33,6 +33,7 @@ class VodDetailPage extends HookConsumerWidget {
     final scrollController = useScrollController();
     final scrollOffset = useValueNotifier(0.0);
     final selectedSourceIndex = useState(0);
+    final episodesDescending = useState(false);
 
     useEffect(() {
       void onScroll() {
@@ -76,11 +77,6 @@ class VodDetailPage extends HookConsumerWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          VodSourceAction(
-            detailArguments: detailArguments,
-            selectedSourceIndex: selectedSourceIndex.value,
-            onSourceSelected: (index) => selectedSourceIndex.value = index,
-          ),
           VodFavoriteAction(vodId: vodId, detailArguments: detailArguments),
         ],
       ),
@@ -100,6 +96,10 @@ class VodDetailPage extends HookConsumerWidget {
             detailArguments: detailArguments,
             hasResumeData: resumeData != null,
             selectedSourceIndex: selectedSourceIndex.value,
+            episodesDescending: episodesDescending.value,
+            onSourceSelected: (index) => selectedSourceIndex.value = index,
+            onSortSelected: (descending) =>
+                episodesDescending.value = descending,
           ),
         ],
       ),
@@ -107,53 +107,84 @@ class VodDetailPage extends HookConsumerWidget {
   }
 }
 
-class VodSourceAction extends ConsumerWidget {
+class VodEpisodeSortAction extends StatelessWidget {
+  const VodEpisodeSortAction({
+    required this.descending,
+    required this.onSelected,
+    super.key,
+  });
+
+  final bool descending;
+  final ValueChanged<bool> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: '选择集数排序方式',
+      child: GlassPullDownButton(
+        icon: const Icon(CupertinoIcons.arrow_up_arrow_down),
+        menuWidth: 160,
+        items: [
+          GlassMenuItem(
+            title: '正序',
+            icon: const Icon(CupertinoIcons.arrow_up),
+            trailing: descending
+                ? null
+                : const Icon(CupertinoIcons.check_mark),
+            onTap: () => onSelected(false),
+          ),
+          GlassMenuItem(
+            title: '倒序',
+            icon: const Icon(CupertinoIcons.arrow_down),
+            trailing: descending
+                ? const Icon(CupertinoIcons.check_mark)
+                : null,
+            onTap: () => onSelected(true),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class VodSourceAction extends StatelessWidget {
   const VodSourceAction({
-    required this.detailArguments,
+    required this.sources,
     required this.selectedSourceIndex,
     required this.onSourceSelected,
     super.key,
   });
 
-  final VodDetailArguments detailArguments;
+  final List<PlaySource> sources;
   final int selectedSourceIndex;
   final ValueChanged<int> onSourceSelected;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final detail = ref.watch(vodDetailProvider(detailArguments));
+  Widget build(BuildContext context) {
+    final effectiveSourceIndex =
+        selectedSourceIndex >= 0 && selectedSourceIndex < sources.length
+        ? selectedSourceIndex
+        : 0;
 
-    return detail.when(
-      data: (item) {
-        final sources = parsePlaySources(
-          playFrom: item.playFrom,
-          playUrl: item.playUrl,
-        );
-        if (sources.isEmpty) return const SizedBox.shrink();
-
-        final effectiveSourceIndex =
-            selectedSourceIndex >= 0 && selectedSourceIndex < sources.length
-            ? selectedSourceIndex
-            : 0;
-
-        return GlassPullDownButton(
-          icon: const Icon(CupertinoIcons.arrow_2_squarepath),
-          menuWidth: 220,
-          items: [
-            for (final (index, source) in sources.indexed)
-              GlassMenuItem(
-                title: source.name,
-                subtitle: '${source.episodes.length} 集',
-                trailing: index == effectiveSourceIndex
-                    ? const Icon(CupertinoIcons.check_mark)
-                    : null,
-                onTap: () => onSourceSelected(index),
-              ),
-          ],
-        );
-      },
-      loading: buildToolbarLoading,
-      error: (error, stackTrace) => const SizedBox.shrink(),
+    return Semantics(
+      button: true,
+      label: '切换播放路线',
+      child: GlassPullDownButton(
+        icon: const Icon(CupertinoIcons.arrow_branch),
+        menuWidth: 220,
+        items: [
+          for (final (index, source) in sources.indexed)
+            GlassMenuItem(
+              title: source.name,
+              subtitle: '${source.episodes.length} 集',
+              trailing: index == effectiveSourceIndex
+                  ? const Icon(CupertinoIcons.check_mark)
+                  : null,
+              onTap: () => onSourceSelected(index),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -251,12 +282,18 @@ class VodDetailContentSliver extends ConsumerWidget {
     required this.detailArguments,
     required this.hasResumeData,
     required this.selectedSourceIndex,
+    required this.episodesDescending,
+    required this.onSourceSelected,
+    required this.onSortSelected,
     super.key,
   });
 
   final VodDetailArguments detailArguments;
   final bool hasResumeData;
   final int selectedSourceIndex;
+  final bool episodesDescending;
+  final ValueChanged<int> onSourceSelected;
+  final ValueChanged<bool> onSortSelected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -314,14 +351,15 @@ class VodDetailContentSliver extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      Text(
-                        selectedSource.name,
-                        style: TextStyle(
-                          color: CupertinoColors.secondaryLabel.resolveFrom(
-                            context,
-                          ),
-                          fontSize: 14,
-                        ),
+                      VodSourceAction(
+                        sources: sources,
+                        selectedSourceIndex: effectiveSourceIndex,
+                        onSourceSelected: onSourceSelected,
+                      ),
+                      const SizedBox(width: 8),
+                      VodEpisodeSortAction(
+                        descending: episodesDescending,
+                        onSelected: onSortSelected,
                       ),
                     ],
                   ),
@@ -339,7 +377,10 @@ class VodDetailContentSliver extends ConsumerWidget {
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final episode = selectedSource.episodes[index];
+                      final episodeIndex = episodesDescending
+                          ? selectedSource.episodes.length - index - 1
+                          : index;
+                      final episode = selectedSource.episodes[episodeIndex];
                       return GlassChip(
                         useOwnLayer: true,
                         quality: .minimal,
