@@ -47,9 +47,6 @@ class VodDetailPage extends HookConsumerWidget {
             sources: sources,
             progress: viewingProgress,
           );
-    final actors = splitCmsValues(value: item.actor);
-    final directors = splitCmsValues(value: item.director);
-    final categories = splitCmsValues(value: item.category);
     final scrollController = useScrollController();
     final scrollOffset = useState(0.0);
 
@@ -145,15 +142,16 @@ class VodDetailPage extends HookConsumerWidget {
                 ),
               ),
             ),
-          if (detail.isLoading && item.playUrl.isEmpty)
-            const ContentStateSliver.loading()
-          else if (detail.hasError && item.playUrl.isEmpty)
-            ContentStateSliver.error(
-              error: detail.error!,
-              onRetry: () => ref.invalidate(vodDetailProvider(vodId)),
-            )
-          else
-            SliverToBoxAdapter(
+          detail.when(
+            data: (detailItem) {
+              final detailSources = parsePlaySources(
+                playFrom: detailItem.playFrom,
+                playUrl: detailItem.playUrl,
+              );
+              final actors = splitCmsValues(value: detailItem.actor);
+              final directors = splitCmsValues(value: detailItem.director);
+              final categories = splitCmsValues(value: detailItem.category);
+              return SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   22,
@@ -163,9 +161,10 @@ class VodDetailPage extends HookConsumerWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 8,
                   children: [
                     Text(
-                      item.name,
+                      detailItem.name,
                       style: TextStyle(
                         color: CupertinoColors.label.resolveFrom(context),
                         fontSize: 32,
@@ -178,7 +177,7 @@ class VodDetailPage extends HookConsumerWidget {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: buildMetadataChips(item: item),
+                      children: buildMetadataChips(item: detailItem),
                     ),
                     Wrap(
                       spacing: 8,
@@ -216,10 +215,13 @@ class VodDetailPage extends HookConsumerWidget {
                           ),
                       ],
                     ),
-                    if (item.summary.isNotEmpty) ...[
+                    if (detailItem.summary.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       GlassCard(
-                        child: DetailTextBlock(title: '简介', text: item.summary),
+                        child: DetailTextBlock(
+                          title: '简介',
+                          text: detailItem.summary,
+                        ),
                       ),
                     ],
                     const SizedBox(height: 24),
@@ -232,7 +234,7 @@ class VodDetailPage extends HookConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    if (sources.isEmpty)
+                    if (detailSources.isEmpty)
                       Text(
                         '暂无可播放线路',
                         style: TextStyle(
@@ -242,7 +244,7 @@ class VodDetailPage extends HookConsumerWidget {
                         ),
                       )
                     else
-                      for (final source in sources) ...[
+                      for (final source in detailSources) ...[
                         Padding(
                           padding: const EdgeInsets.only(top: 8, bottom: 10),
                           child: Text(
@@ -266,7 +268,7 @@ class VodDetailPage extends HookConsumerWidget {
                                 label: episode.name,
                                 onTap: () => openEpisode(
                                   context: context,
-                                  item: item,
+                                  item: detailItem,
                                   source: source,
                                   episode: episode,
                                 ),
@@ -277,7 +279,14 @@ class VodDetailPage extends HookConsumerWidget {
                   ],
                 ),
               ),
+              );
+            },
+            loading: () => const ContentStateSliver.loading(),
+            error: (error, stackTrace) => ContentStateSliver.error(
+              error: error,
+              onRetry: () => ref.invalidate(vodDetailProvider(vodId)),
             ),
+          ),
         ],
       ),
     );
