@@ -4,6 +4,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../shared/presentation/hooks/glass_large_title_hook.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
+import '../../library/data/library_database.dart';
 import '../application/search_history_provider.dart';
 import 'search_results_page.dart';
 
@@ -44,7 +45,7 @@ class SearchHistory extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final history = ref.watch(searchHistoryProvider);
+    final history = ref.watch(searchHistoryProvider).value ?? const [];
     final keyboardHeight = MediaQuery.viewInsetsOf(context).bottom;
     return CustomScrollView(
       controller: titleController.scrollController,
@@ -108,8 +109,8 @@ class SearchHistory extends ConsumerWidget {
                         ),
                         onTap: () {
                           ref
-                              .read(searchHistoryProvider.notifier)
-                              .record(query: query);
+                              .read(libraryDatabaseProvider)
+                              .recordSearch(query: query);
                           Navigator.of(context).push(
                             CupertinoPageRoute<void>(
                               builder: (routeContext) =>
@@ -126,8 +127,8 @@ class SearchHistory extends ConsumerWidget {
                               color: CupertinoColors.systemRed,
                             ),
                             onPressed: () => ref
-                                .read(searchHistoryProvider.notifier)
-                                .remove(query: query),
+                                .read(libraryDatabaseProvider)
+                                .removeSearch(query: query),
                           ),
                         ),
                       ),

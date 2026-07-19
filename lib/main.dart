@@ -1,21 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/navigation/presentation/main_navigation_page.dart';
-import 'shared/application/shared_preferences_provider.dart';
 import 'shared/presentation/theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LiquidGlassWidgets.initialize();
-  final preferences = await SharedPreferences.getInstance();
   runApp(
     LiquidGlassWidgets.wrap(
       adaptiveQuality: true,
       child: ProviderScope(
-        overrides: [sharedPreferencesProvider.overrideWithValue(preferences)],
         retry: (retryCount, error) => null,
         child: const CinemaApp(),
       ),

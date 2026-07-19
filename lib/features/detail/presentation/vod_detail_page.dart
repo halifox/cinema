@@ -10,6 +10,7 @@ import '../../../shared/presentation/widgets/ambient_glow_background.dart';
 import '../../../shared/presentation/widgets/cached_image_feedback.dart';
 import '../../../shared/presentation/widgets/content_state.dart';
 import '../../favorites/application/favorites_provider.dart';
+import '../../library/data/library_database.dart';
 import '../../player/presentation/player_page.dart';
 
 class VodDetailPage extends HookConsumerWidget {
@@ -26,8 +27,7 @@ class VodDetailPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final detail = ref.watch(vodDetailProvider(vodId));
     final item = detail.value ?? initialItem;
-    final favorites = ref.watch(favoritesProvider);
-    final isFavorite = favorites.any((favorite) => favorite.id == vodId);
+    final isFavorite = ref.watch(vodFavoriteProvider(vodId)).value ?? false;
     final sources = parsePlaySources(
       playFrom: item.playFrom,
       playUrl: item.playUrl,
@@ -66,8 +66,9 @@ class VodDetailPage extends HookConsumerWidget {
               isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
             ),
             useOwnLayer: true,
-            onPressed: () =>
-                ref.read(favoritesProvider.notifier).toggle(item: item),
+            onPressed: () => ref
+                .read(libraryDatabaseProvider)
+                .toggleFavorite(item: item),
           ),
         ],
       ),
@@ -277,8 +278,8 @@ void openEpisode({
   Navigator.of(context).push(
     CupertinoPageRoute<void>(
       builder: (routeContext) => PlayerPage(
-        title: item.name,
-        sourceName: source.name,
+        item: item,
+        source: source,
         episode: episode,
       ),
     ),

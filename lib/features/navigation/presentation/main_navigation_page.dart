@@ -5,7 +5,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../favorites/presentation/favorite_page.dart';
 import '../../home/presentation/home_page.dart';
-import '../../search/application/search_history_provider.dart';
+import '../../library/data/library_database.dart';
 import '../../search/presentation/search_page.dart';
 import '../../search/presentation/search_results_page.dart';
 
@@ -85,7 +85,9 @@ class MainNavigationPage extends HookConsumerWidget {
                 onSubmitted: (value) {
                   final query = value.trim();
                   if (query.isEmpty) return;
-                  ref.read(searchHistoryProvider.notifier).record(query: query);
+                  ref
+                      .read(libraryDatabaseProvider)
+                      .recordSearch(query: query);
                   searchController.clear();
                   FocusManager.instance.primaryFocus?.unfocus();
                   Navigator.of(context).push(

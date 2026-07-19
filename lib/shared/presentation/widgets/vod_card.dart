@@ -138,15 +138,21 @@ class VodCard extends StatelessWidget {
 }
 
 class VodGridSliver extends StatelessWidget {
-  const VodGridSliver({required this.items, this.endItem, super.key});
+  const VodGridSliver({
+    required this.items,
+    this.endItem,
+    this.padding = const EdgeInsets.fromLTRB(18, 12, 18, 8),
+    super.key,
+  });
 
   final List<VodItem> items;
   final Widget? endItem;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(18, 12, 18, 8),
+      padding: padding,
       sliver: SliverGrid(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
