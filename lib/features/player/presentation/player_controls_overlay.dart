@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' show FontFeature;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -7,12 +6,11 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:media_kit/media_kit.dart';
 
 import '../../../cms/cms_models.dart';
-import '../../../shared/presentation/theme/app_theme.dart';
 import 'episode_list_panel.dart';
 
 enum PlayerOverlayState { hidden, controls, episodes }
 
-const playerPlaybackRates = <double>[0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
+const playerPlaybackRates = <double>[4, 3, 2, 1.5, 1, 0.5];
 
 class PlayerControlsOverlay extends HookWidget {
   const PlayerControlsOverlay({
@@ -74,10 +72,10 @@ class PlayerControlsOverlay extends HookWidget {
     final maximumPosition = durationMilliseconds <= 0
         ? 1.0
         : durationMilliseconds;
-    final currentPosition = (draggedPosition.value ??
-            position.inMilliseconds.toDouble())
-        .clamp(0.0, maximumPosition)
-        .toDouble();
+    final currentPosition =
+        (draggedPosition.value ?? position.inMilliseconds.toDouble())
+            .clamp(0.0, maximumPosition)
+            .toDouble();
 
     void hideControls() {
       controlsTimer.value?.cancel();
@@ -144,17 +142,11 @@ class PlayerControlsOverlay extends HookWidget {
 
     void togglePlayback() {
       if (loading) {
-        showPlaybackToast(
-          message: '视频正在加载，请稍候',
-          type: GlassToastType.info,
-        );
+        showPlaybackToast(message: '视频正在加载，请稍候', type: GlassToastType.info);
         return;
       }
       if (effectiveError != null) {
-        showPlaybackToast(
-          message: '播放暂不可用，请稍后重试',
-          type: GlassToastType.error,
-        );
+        showPlaybackToast(message: '播放暂不可用，请稍后重试', type: GlassToastType.error);
         return;
       }
       showControls();
@@ -170,10 +162,7 @@ class PlayerControlsOverlay extends HookWidget {
       } on Object {
         if (!context.mounted) return;
         selectedPlaybackRate.value = previousRate;
-        showPlaybackToast(
-          message: '倍速切换失败，请稍后重试',
-          type: GlassToastType.error,
-        );
+        showPlaybackToast(message: '倍速切换失败，请稍后重试', type: GlassToastType.error);
       }
     }
 
@@ -233,7 +222,8 @@ class PlayerControlsOverlay extends HookWidget {
             child: GlassProgressIndicator.circular(
               useOwnLayer: true,
               size: 34,
-              strokeWidth: 3 ),
+              strokeWidth: 3,
+            ),
           ),
         Positioned(
           left: horizontalInset,
@@ -306,9 +296,7 @@ class PlayerControlsOverlay extends HookWidget {
                     useOwnLayer: true,
                     quality: .premium,
                     icon: Icon(
-                      playing
-                          ? CupertinoIcons.pause
-                          : CupertinoIcons.play,
+                      playing ? CupertinoIcons.pause : CupertinoIcons.play,
                     ),
                     onPressed: togglePlayback,
                   ),
@@ -377,9 +365,8 @@ class PlayerControlsOverlay extends HookWidget {
                     onPointerDown: (event) => showControls(keepVisible: true),
                     child: PlayerPlaybackRateAction(
                       selectedRate: selectedPlaybackRate.value,
-                      onSelected: (rate) => unawaited(
-                        selectPlaybackRate(rate: rate),
-                      ),
+                      onSelected: (rate) =>
+                          unawaited(selectPlaybackRate(rate: rate)),
                     ),
                   ),
                   if (showEpisodeControls) ...[
