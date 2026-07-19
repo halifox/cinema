@@ -69,7 +69,10 @@ class HomePage extends HookConsumerWidget {
               final secondary = data.categories
                   .where((item) => item.parentId == primaryId)
                   .toList(growable: false);
-              final activeTypeId = selectedSecondaryId.value ?? primaryId;
+              final effectiveSecondaryId =
+                  selectedSecondaryId.value ??
+                  (secondary.isEmpty ? null : secondary.first.id);
+              final activeTypeId = effectiveSecondaryId ?? primaryId;
               return SliverMainAxisGroup(
                 slivers: [
                   SliverToBoxAdapter(
@@ -77,7 +80,7 @@ class HomePage extends HookConsumerWidget {
                       primary: primary,
                       secondary: secondary,
                       selectedPrimaryId: primaryId,
-                      selectedSecondaryId: selectedSecondaryId.value,
+                      selectedSecondaryId: effectiveSecondaryId,
                       onPrimarySelected: (id) {
                         selectedPrimaryId.value = id;
                         selectedSecondaryId.value = null;
@@ -157,16 +160,6 @@ class CategoryRows extends StatelessWidget {
           const SizedBox(height: 10),
           CategoryScroller(
             children: [
-              GlassChip(
-                icon: Icon(
-                  selectedSecondaryId == null
-                      ? CupertinoIcons.checkmark_circle_fill
-                      : CupertinoIcons.circle,
-                ),
-                label: '全部',
-                selected: selectedSecondaryId == null,
-                onTap: () => onSecondarySelected(null),
-              ),
               for (final item in secondary)
                 GlassChip(
                   icon: Icon(
