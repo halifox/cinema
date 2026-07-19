@@ -38,7 +38,6 @@ class SearchResultsPage extends HookConsumerWidget {
           label: '返回',
           child: GlassIconButton(
             icon: const Icon(CupertinoIcons.chevron_back),
-            useOwnLayer: true,
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),

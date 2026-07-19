@@ -74,8 +74,8 @@ class ContentStateSliver extends StatelessWidget {
                   ? const Center(
                       child: GlassProgressIndicator.circular(
                         size: 40,
-                        useOwnLayer: true,
-                          color: AppTheme.seedColor ),
+                        color: AppTheme.seedColor,
+                      ),
                     )
                   : Icon(icon, size: 48, color: iconColor),
               const SizedBox(height: 8),
@@ -101,8 +101,6 @@ class ContentStateSliver extends StatelessWidget {
                   width: 132,
                   height: 44,
                   shape: const LiquidRoundedSuperellipse(borderRadius: 44),
-                  quality: GlassQuality.standard,
-                  useOwnLayer: true,
                   onTap: onRetry!,
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

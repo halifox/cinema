@@ -13,7 +13,7 @@ Widget buildCachedImageLoading(
     child: GlassProgressIndicator.circular(
       value: progress.progress,
       size: 28,
-      useOwnLayer: true),
+    ),
   );
 }
 

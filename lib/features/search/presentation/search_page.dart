@@ -94,8 +94,6 @@ class SearchHistory extends ConsumerWidget {
                       shape: const LiquidRoundedSuperellipse(
                         borderRadius: 28,
                       ),
-                      useOwnLayer: true,
-                      quality: GlassQuality.premium,
                       children: [
                         for (final query in items.reversed)
                           GlassListTile(

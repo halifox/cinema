@@ -35,9 +35,7 @@ class EpisodeListPanel extends HookWidget {
         CupertinoColors.label;
 
     return GlassContainer(
-      useOwnLayer: true,
       width: width,
-      quality: GlassQuality.premium,
       shape: const LiquidRoundedSuperellipse(borderRadius: 26),
       child: ShaderMask(
         shaderCallback: (bounds) {
@@ -65,8 +63,6 @@ class EpisodeListPanel extends HookWidget {
                 duration: const Duration(milliseconds: 360),
                 curve: Curves.easeOutBack,
                 child: GlassContainer(
-                  useOwnLayer: true,
-                  quality: GlassQuality.premium,
                   height: tileHeight - indicatorInset * 2,
                   allowElevation: true,
                   glowIntensity: .7,

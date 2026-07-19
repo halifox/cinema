@@ -22,8 +22,6 @@ class ContinuePlayingButton extends StatelessWidget {
         width: double.infinity,
         height: 64,
         shape: const LiquidRoundedSuperellipse(borderRadius: 64),
-        quality: GlassQuality.premium,
-        useOwnLayer: true,
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

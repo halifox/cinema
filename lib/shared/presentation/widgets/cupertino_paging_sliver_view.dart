@@ -54,8 +54,6 @@ class CupertinoPagingSliverView<Item> extends StatelessWidget {
           width: 132,
           height: 44,
           shape: const LiquidRoundedSuperellipse(borderRadius: 44),
-          quality: GlassQuality.standard,
-          useOwnLayer: true,
           onTap: onLoadNext,
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -81,7 +79,6 @@ class PagingLoadingIndicator extends StatelessWidget {
         padding: EdgeInsets.all(16),
         child: GlassProgressIndicator.circular(
           size: 32,
-          useOwnLayer: true,
           color: AppTheme.seedColor,
         ),
       ),

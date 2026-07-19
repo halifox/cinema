@@ -33,7 +33,6 @@ class FavoritePage extends HookConsumerWidget {
             label: '观看历史',
             child: GlassIconButton(
               icon: const Icon(CupertinoIcons.clock),
-              useOwnLayer: true,
               onPressed: () {
                 Navigator.of(context).push(
                   CupertinoPageRoute<void>(

@@ -77,8 +77,6 @@ class VodCard extends StatelessWidget {
                         shape: const LiquidRoundedSuperellipse(
                           borderRadius: 26,
                         ),
-                        quality: GlassQuality.minimal,
-                        useOwnLayer: true,
                         child: Text(
                           item.remarks,
                           maxLines: 1,
@@ -99,8 +97,6 @@ class VodCard extends StatelessWidget {
                   child: GlassContainer(
                     padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
                     shape: const LiquidRoundedSuperellipse(borderRadius: 26),
-                    quality: GlassQuality.minimal,
-                    useOwnLayer: true,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
