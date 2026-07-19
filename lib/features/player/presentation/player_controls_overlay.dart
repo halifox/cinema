@@ -201,7 +201,7 @@ class PlayerControlsOverlay extends HookWidget {
                   if (showEpisodeControls) ...[
                     GlassIconButton(
                       useOwnLayer: true,
-                      icon: const Icon(CupertinoIcons.backward_end_fill),
+                      icon: const Icon(CupertinoIcons.backward_end),
                       onPressed: previousEnabled
                           ? () => selectEpisode(index: episodeIndex - 1)
                           : null,
@@ -212,8 +212,8 @@ class PlayerControlsOverlay extends HookWidget {
                     useOwnLayer: true,
                     icon: Icon(
                       videoValue.isPlaying
-                          ? CupertinoIcons.pause_fill
-                          : CupertinoIcons.play_fill,
+                          ? CupertinoIcons.pause
+                          : CupertinoIcons.play,
                     ),
                     onPressed: videoValue.isInitialized
                           ? () {
@@ -230,7 +230,7 @@ class PlayerControlsOverlay extends HookWidget {
                     SizedBox(width: compact ? 2 : 6),
                     GlassIconButton(
                       useOwnLayer: true,
-                      icon: const Icon(CupertinoIcons.forward_end_fill),
+                      icon: const Icon(CupertinoIcons.forward_end),
                       onPressed: nextEnabled
                           ? () => selectEpisode(index: episodeIndex + 1)
                           : null,

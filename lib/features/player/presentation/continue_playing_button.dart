@@ -30,7 +30,7 @@ class ContinuePlayingButton extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                CupertinoIcons.play_fill,
+                CupertinoIcons.play_arrow,
                 size: 20,
                 color: CupertinoColors.label.resolveFrom(context),
               ),
