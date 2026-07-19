@@ -13,11 +13,6 @@ class VodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final metadata = [
-      if (item.year.isNotEmpty) item.year,
-      if (item.displayScore.isNotEmpty) '豆瓣 ${item.displayScore}',
-    ].join(' · ');
-
     return Semantics(
       button: true,
       label: item.name,
@@ -44,11 +39,7 @@ class VodCard extends StatelessWidget {
                     context,
                   ),
                   child: item.picture.isEmpty
-                      ? buildCachedImageError(
-                          context,
-                          '',
-                          StateError('empty'),
-                        )
+                      ? buildCachedImageError(context, '', StateError('empty'))
                       : CachedNetworkImage(
                           imageUrl: item.picture,
                           fit: BoxFit.cover,
@@ -124,16 +115,15 @@ class VodCard extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (metadata.isNotEmpty)
-                          Text(
-                            metadata,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Color(0xB8EBEBF5),
-                              fontSize: 11,
-                            ),
+                        Text(
+                          item.actor,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Color(0xB8EBEBF5),
+                            fontSize: 11,
                           ),
+                        ),
                       ],
                     ),
                   ),
@@ -164,13 +154,10 @@ class VodGridSliver extends StatelessWidget {
           mainAxisSpacing: 12,
           childAspectRatio: 328 / 422,
         ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            if (endItem != null && index == items.length) return endItem;
-            return VodCard(item: items[index]);
-          },
-          childCount: items.length + (endItem == null ? 0 : 1),
-        ),
+        delegate: SliverChildBuilderDelegate((context, index) {
+          if (endItem != null && index == items.length) return endItem;
+          return VodCard(item: items[index]);
+        }, childCount: items.length + (endItem == null ? 0 : 1)),
       ),
     );
   }
