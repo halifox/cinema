@@ -2,18 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../shared/presentation/hooks/glass_large_title_hook.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
 import '../application/search_history_provider.dart';
 import 'search_results_page.dart';
 
 class SearchPage extends HookConsumerWidget {
-  const SearchPage({required this.fieldFocused, super.key});
-
-  final bool fieldFocused;
+  const SearchPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final history = ref.watch(searchHistoryProvider);
+    final titleController = useGlassLargeTitleController();
+
     return GlassScaffold(
       edgeToEdge: true,
       contentAwareBrightness: true,
@@ -21,113 +21,86 @@ class SearchPage extends HookConsumerWidget {
       background: const AmbientGlowBackground(),
       topEdgeFade: true,
       bottomEdgeFade: true,
+      topEdgeFadeExtent: 64,
+      bottomEdgeFadeExtent: 64,
+      headerScrollController: titleController.scrollController,
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics(),
+        child: SearchHistory(titleController: titleController),
+      ),
+    );
+  }
+}
+
+class SearchHistory extends ConsumerWidget {
+  const SearchHistory({required this.titleController, super.key});
+
+  final GlassLargeTitleController titleController;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final history = ref.watch(searchHistoryProvider);
+    final keyboardHeight = MediaQuery.viewInsetsOf(context).bottom;
+    return CustomScrollView(
+      controller: titleController.scrollController,
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
+      slivers: [
+        GlassLargeTitle(
+          text: '搜索',
+          controller: titleController,
+          padding: EdgeInsets.fromLTRB(
+            24,
+            MediaQuery.paddingOf(context).top + 16,
+            24,
+            8,
           ),
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  20,
-                  MediaQuery.paddingOf(context).top + 18,
-                  20,
-                  12,
-                ),
-                child: Text(
-                  '搜索',
-                  style: TextStyle(
-                    color: CupertinoColors.label.resolveFrom(context),
-                    fontSize: 36,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -1.2,
-                  ),
-                ),
-              ),
+        ),
+        if (history.isEmpty)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: keyboardHeight + 50),
+              child: const SearchHistoryEmptyState(),
             ),
-            if (history.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 120),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          fieldFocused
-                              ? CupertinoIcons.text_cursor
-                              : CupertinoIcons.search,
-                          size: 58,
-                          color: CupertinoColors.tertiaryLabel.resolveFrom(
-                            context,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          fieldFocused ? '输入片名开始搜索' : '寻找下一部好片',
-                          style: TextStyle(
-                            color: CupertinoColors.label.resolveFrom(context),
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          '搜索记录会安全地保存在此设备。',
-                          style: TextStyle(
-                            color: CupertinoColors.secondaryLabel.resolveFrom(
-                              context,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            else ...[
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '最近搜索',
-                          style: TextStyle(
-                            color: CupertinoColors.label.resolveFrom(context),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () =>
-                            ref.read(searchHistoryProvider.notifier).clear(),
-                        child: const Text('清除'),
-                      ),
-                    ],
-                  ),
-                ),
+          )
+        else
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                18,
+                16,
+                18,
+                MediaQuery.paddingOf(context).bottom + keyboardHeight + 72,
               ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(18, 0, 18, 120),
-                sliver: SliverList.separated(
-                  itemCount: history.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final query = history[index];
-                    return GlassCard(
-                      padding: EdgeInsets.zero,
-                      child: GlassListTile(
-                        leading: const Icon(CupertinoIcons.clock),
-                        title: Text(query),
-                        trailing: GlassListTile.chevron,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: GlassGroupedSection(
+                  margin: EdgeInsets.zero,
+                  shape: const LiquidRoundedSuperellipse(borderRadius: 28),
+                  useOwnLayer: true,
+                  quality: GlassQuality.premium,
+                  children: [
+                    for (final query in history.reversed)
+                      GlassListTile(
+                        title: Text(
+                          query,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        contentPadding: const EdgeInsets.only(
+                          top: 6,
+                          bottom: 6,
+                          left: 26,
+                          right: 6,
+                        ),
+                        titleStyle: TextStyle(
+                          color: CupertinoColors.label.resolveFrom(context),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                        ),
                         onTap: () {
                           ref
                               .read(searchHistoryProvider.notifier)
@@ -139,14 +112,63 @@ class SearchPage extends HookConsumerWidget {
                             ),
                           );
                         },
+                        trailing: Semantics(
+                          button: true,
+                          label: '删除搜索记录：$query',
+                          child: GlassIconButton(
+                            icon: const Icon(
+                              CupertinoIcons.trash,
+                              color: CupertinoColors.systemRed,
+                            ),
+                            onPressed: () => ref
+                                .read(searchHistoryProvider.notifier)
+                                .remove(query: query),
+                          ),
+                        ),
                       ),
-                    );
-                  },
+                  ],
                 ),
               ),
-            ],
-          ],
-        ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class SearchHistoryEmptyState extends StatelessWidget {
+  const SearchHistoryEmptyState({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            CupertinoIcons.search,
+            size: 64,
+            color: CupertinoColors.tertiaryLabel.resolveFrom(context),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '暂无最近搜索',
+            style: TextStyle(
+              color: CupertinoColors.label.resolveFrom(context),
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '你的最近搜索记录会显示在这里。',
+            style: TextStyle(
+              color: CupertinoColors.secondaryLabel.resolveFrom(context),
+              fontSize: 15,
+            ),
+          ),
+        ],
       ),
     );
   }

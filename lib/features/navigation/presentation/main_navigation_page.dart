@@ -48,13 +48,12 @@ class MainNavigationPage extends HookConsumerWidget {
     final selectedTab = useState(MainContentTab.home);
     final lastContentTab = useState(MainContentTab.home);
     final isSearching = useState(false);
-    final searchFieldFocused = useState(false);
     final searchController = useTextEditingController();
 
     return Stack(
       children: [
         isSearching.value
-            ? SearchPage(fieldFocused: searchFieldFocused.value)
+            ? const SearchPage()
             : selectedTab.value.buildPage(),
         Positioned(
           left: 0,
@@ -70,7 +69,6 @@ class MainNavigationPage extends HookConsumerWidget {
                 selectedTab.value = tab;
                 lastContentTab.value = tab;
                 isSearching.value = false;
-                searchFieldFocused.value = false;
               },
               searchConfig: GlassSearchBarConfig(
                 controller: searchController,
@@ -98,11 +96,7 @@ class MainNavigationPage extends HookConsumerWidget {
                   } else {
                     selectedTab.value = lastContentTab.value;
                     isSearching.value = false;
-                    searchFieldFocused.value = false;
                   }
-                },
-                onSearchFocusChanged: (focused) {
-                  searchFieldFocused.value = focused;
                 },
               ),
               barHeight: 62,
