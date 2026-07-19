@@ -238,8 +238,18 @@ class VodDetailContentSliver extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final detail = ref.watch(vodDetailProvider(detailArguments));
     return detail.when(
-      data: (item) => SliverToBoxAdapter(
-        child: VodDetailContent(item: item, hasResumeData: hasResumeData),
+      data: (item) => SliverLayoutBuilder(
+        builder: (context, constraints) => SliverToBoxAdapter(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.viewportMainAxisExtent,
+            ),
+            child: VodDetailContent(
+              item: item,
+              hasResumeData: hasResumeData,
+            ),
+          ),
+        ),
       ),
       loading: () => const ContentStateSliver.loading(),
       error: (error, stackTrace) => ContentStateSliver.error(
