@@ -308,7 +308,7 @@ class VodDetailContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  item.summary,
+                  htmlToPlainText(html: item.summary),
                   style: TextStyle(
                     color: CupertinoColors.secondaryLabel.resolveFrom(context),
                     fontSize: 15,
@@ -512,4 +512,21 @@ class DetailTextBlock extends StatelessWidget {
       ],
     );
   }
+}
+
+String htmlToPlainText({required String html}) {
+  return html
+      .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'</p\s*>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'<li[^>]*>', caseSensitive: false), '• ')
+      .replaceAll(RegExp(r'</li\s*>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'<[^>]+>'), '')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&amp;', '&')
+      .replaceAll(RegExp(r'\n{3,}'), '\n\n')
+      .trim();
 }
