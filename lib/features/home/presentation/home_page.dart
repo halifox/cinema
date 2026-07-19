@@ -45,7 +45,7 @@ class HomePage extends HookConsumerWidget {
                 12,
               ),
               child: Text(
-                'comics',
+                'cinema',
                 style: TextStyle(
                   color: CupertinoColors.label.resolveFrom(context),
                   fontSize: 36,
