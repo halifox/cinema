@@ -66,7 +66,6 @@ class PlayerControlsOverlay extends HookWidget {
       preserveState: false,
     ).data;
     final effectiveError = error ?? playbackError;
-    final playbackReady = !loading && effectiveError == null;
     final durationMilliseconds = duration.inMilliseconds.toDouble();
     final maximumPosition = durationMilliseconds <= 0
         ? 1.0
@@ -110,6 +109,54 @@ class PlayerControlsOverlay extends HookWidget {
       showControls();
     }
 
+    void showPlaybackToast({
+      required String message,
+      GlassToastType type = GlassToastType.warning,
+    }) {
+      showControls();
+      GlassToast.show(
+        context,
+        message: message,
+        type: type,
+        position: GlassToastPosition.center,
+      );
+    }
+
+    void selectPreviousEpisode() {
+      if (episodeIndex <= 0) {
+        showPlaybackToast(message: '已经是第一集了');
+        return;
+      }
+      selectEpisode(index: episodeIndex - 1);
+    }
+
+    void selectNextEpisode() {
+      if (episodeIndex + 1 >= source.episodes.length) {
+        showPlaybackToast(message: '已经是最后一集了');
+        return;
+      }
+      selectEpisode(index: episodeIndex + 1);
+    }
+
+    void togglePlayback() {
+      if (loading) {
+        showPlaybackToast(
+          message: '视频正在加载，请稍候',
+          type: GlassToastType.info,
+        );
+        return;
+      }
+      if (effectiveError != null) {
+        showPlaybackToast(
+          message: '播放暂不可用，请稍后重试',
+          type: GlassToastType.error,
+        );
+        return;
+      }
+      showControls();
+      unawaited(playing ? player.pause() : player.play());
+    }
+
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) showControls();
@@ -118,9 +165,6 @@ class PlayerControlsOverlay extends HookWidget {
     }, const []);
 
     final controlsVisible = overlayState.value == PlayerOverlayState.controls;
-    final previousEnabled = episodeIndex > 0;
-    final nextEnabled = episodeIndex + 1 < source.episodes.length;
-
     const horizontalInset = 24.0;
     const topInset = 18.0;
     const episodePanelWidth = 280.0;
@@ -217,9 +261,7 @@ class PlayerControlsOverlay extends HookWidget {
                       useOwnLayer: true,
                       quality: .premium,
                       icon: const Icon(CupertinoIcons.backward_end),
-                      onPressed: previousEnabled
-                          ? () => selectEpisode(index: episodeIndex - 1)
-                          : null,
+                      onPressed: selectPreviousEpisode,
                     ),
                     const SizedBox(width: 6),
                   ],
@@ -231,14 +273,7 @@ class PlayerControlsOverlay extends HookWidget {
                           ? CupertinoIcons.pause
                           : CupertinoIcons.play,
                     ),
-                    onPressed: playbackReady
-                          ? () {
-                              showControls();
-                              unawaited(
-                                playing ? player.pause() : player.play(),
-                              );
-                            }
-                          : null,
+                    onPressed: togglePlayback,
                   ),
                   if (showEpisodeControls) ...[
                     const SizedBox(width: 6),
@@ -246,9 +281,7 @@ class PlayerControlsOverlay extends HookWidget {
                       useOwnLayer: true,
                       quality: .premium,
                       icon: const Icon(CupertinoIcons.forward_end),
-                      onPressed: nextEnabled
-                          ? () => selectEpisode(index: episodeIndex + 1)
-                          : null,
+                      onPressed: selectNextEpisode,
                     ),
                   ],
                   const SizedBox(width: 14),
