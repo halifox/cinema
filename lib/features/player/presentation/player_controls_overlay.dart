@@ -6,9 +6,8 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:media_kit/media_kit.dart';
 
 import '../../../cms/cms_models.dart';
-import 'episode_list_panel.dart';
 
-enum PlayerOverlayState { hidden, controls, episodes }
+enum PlayerOverlayState { hidden, controls }
 
 const playerPlaybackRates = <double>[4, 3, 2, 1.5, 1, 0.5];
 
@@ -97,9 +96,6 @@ class PlayerControlsOverlay extends HookWidget {
           return;
         case PlayerOverlayState.controls:
           hideControls();
-          return;
-        case PlayerOverlayState.episodes:
-          showControls();
           return;
       }
     }
@@ -207,7 +203,6 @@ class PlayerControlsOverlay extends HookWidget {
     final controlsVisible = overlayState.value == PlayerOverlayState.controls;
     const horizontalInset = 24.0;
     const topInset = 18.0;
-    const episodePanelWidth = 280.0;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -347,36 +342,61 @@ class PlayerControlsOverlay extends HookWidget {
                     ),
                   ),
                   const SizedBox(width: 14),
-                  GlassIconButton(
-                    icon: const Icon(CupertinoIcons.list_bullet),
-                    onPressed: () {
-                      controlsTimer.value?.cancel();
-                      overlayState.value = PlayerOverlayState.episodes;
-                    },
+                  Listener(
+                    onPointerDown: (event) => showControls(keepVisible: true),
+                    child: PlayerEpisodeAction(
+                      source: source,
+                      episodeIndex: episodeIndex,
+                      onSelected: (index) {
+                        onEpisodeSelected(index);
+                        showControls();
+                      },
+                      onMenuClosed: showControls,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
         ),
-        Positioned(
-          top: 16,
-          right: 16,
-          bottom: 16,
-          child: PlayerOverlayAnimatedSwitcher(
-            visible: overlayState.value == PlayerOverlayState.episodes,
-            child: EpisodeListPanel(
-              source: source,
-              episodeIndex: episodeIndex,
-              width: episodePanelWidth,
-              onSelected: (index) {
-                controlsTimer.value?.cancel();
-                onEpisodeSelected(index);
-                overlayState.value = PlayerOverlayState.episodes;
-              },
-            ),
+      ],
+    );
+  }
+}
+
+class PlayerEpisodeAction extends StatelessWidget {
+  const PlayerEpisodeAction({
+    required this.source,
+    required this.episodeIndex,
+    required this.onSelected,
+    required this.onMenuClosed,
+    super.key,
+  });
+
+  final PlaySource source;
+  final int episodeIndex;
+  final ValueChanged<int> onSelected;
+  final VoidCallback onMenuClosed;
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassMenu(
+      menuAlignment: GlassMenuAlignment.bottomRight,
+      autoAdjustToScreen: true,
+      onClose: onMenuClosed,
+      triggerBuilder: (context, toggleMenu) => GlassIconButton(
+        icon: const Icon(CupertinoIcons.list_bullet),
+        onPressed: toggleMenu,
+      ),
+      items: [
+        for (final (index, episode) in source.episodes.indexed)
+          GlassMenuItem(
+            title: episode.name,
+            trailing: index == episodeIndex
+                ? const Icon(CupertinoIcons.check_mark)
+                : null,
+            onTap: () => onSelected(index),
           ),
-        ),
       ],
     );
   }
