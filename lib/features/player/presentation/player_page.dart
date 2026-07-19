@@ -63,8 +63,6 @@ class PlayerPage extends HookConsumerWidget {
                 title: item.name,
                 source: source,
                 episodeIndex: playback.episodeIndex,
-                showEpisodeControls:
-                    item.parentTypeId != 1 && source.episodes.length > 1,
                 player: playback.player,
                 loading:
                     playback.initialization.connectionState !=

@@ -17,7 +17,6 @@ class PlayerControlsOverlay extends HookWidget {
     required this.title,
     required this.source,
     required this.episodeIndex,
-    required this.showEpisodeControls,
     required this.player,
     required this.loading,
     required this.error,
@@ -29,7 +28,6 @@ class PlayerControlsOverlay extends HookWidget {
   final String title;
   final PlaySource source;
   final int episodeIndex;
-  final bool showEpisodeControls;
   final Player player;
   final bool loading;
   final Object? error;
@@ -280,15 +278,13 @@ class PlayerControlsOverlay extends HookWidget {
               shape: const LiquidRoundedSuperellipse(borderRadius: 44),
               child: Row(
                 children: [
-                  if (showEpisodeControls) ...[
-                    GlassIconButton(
-                      useOwnLayer: true,
-                      quality: .premium,
-                      icon: const Icon(CupertinoIcons.backward_end),
-                      onPressed: selectPreviousEpisode,
-                    ),
-                    const SizedBox(width: 6),
-                  ],
+                  GlassIconButton(
+                    useOwnLayer: true,
+                    quality: .premium,
+                    icon: const Icon(CupertinoIcons.backward_end),
+                    onPressed: selectPreviousEpisode,
+                  ),
+                  const SizedBox(width: 6),
                   GlassIconButton(
                     useOwnLayer: true,
                     quality: .premium,
@@ -297,15 +293,13 @@ class PlayerControlsOverlay extends HookWidget {
                     ),
                     onPressed: togglePlayback,
                   ),
-                  if (showEpisodeControls) ...[
-                    const SizedBox(width: 6),
-                    GlassIconButton(
-                      useOwnLayer: true,
-                      quality: .premium,
-                      icon: const Icon(CupertinoIcons.forward_end),
-                      onPressed: selectNextEpisode,
-                    ),
-                  ],
+                  const SizedBox(width: 6),
+                  GlassIconButton(
+                    useOwnLayer: true,
+                    quality: .premium,
+                    icon: const Icon(CupertinoIcons.forward_end),
+                    onPressed: selectNextEpisode,
+                  ),
                   const SizedBox(width: 14),
                   Text(
                     formatPlayerDuration(
@@ -366,18 +360,16 @@ class PlayerControlsOverlay extends HookWidget {
                           unawaited(selectPlaybackRate(rate: rate)),
                     ),
                   ),
-                  if (showEpisodeControls) ...[
-                    const SizedBox(width: 14),
-                    GlassIconButton(
-                      useOwnLayer: true,
-                      quality: .premium,
-                      icon: const Icon(CupertinoIcons.list_bullet),
-                      onPressed: () {
-                        controlsTimer.value?.cancel();
-                        overlayState.value = PlayerOverlayState.episodes;
-                      },
-                    ),
-                  ],
+                  const SizedBox(width: 14),
+                  GlassIconButton(
+                    useOwnLayer: true,
+                    quality: .premium,
+                    icon: const Icon(CupertinoIcons.list_bullet),
+                    onPressed: () {
+                      controlsTimer.value?.cancel();
+                      overlayState.value = PlayerOverlayState.episodes;
+                    },
+                  ),
                 ],
               ),
             ),
@@ -388,9 +380,7 @@ class PlayerControlsOverlay extends HookWidget {
           right: 16,
           bottom: 16,
           child: PlayerOverlayAnimatedSwitcher(
-            visible:
-                showEpisodeControls &&
-                overlayState.value == PlayerOverlayState.episodes,
+            visible: overlayState.value == PlayerOverlayState.episodes,
             child: EpisodeListPanel(
               source: source,
               episodeIndex: episodeIndex,
