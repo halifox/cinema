@@ -41,6 +41,12 @@ class VodDetailPage extends HookConsumerWidget {
       playFrom: item.playFrom,
       playUrl: item.playUrl,
     );
+    final resumeTarget = viewingProgress == null
+        ? null
+        : resolveResumeTarget(
+            sources: sources,
+            progress: viewingProgress,
+          );
     final actors = splitCmsValues(value: item.actor);
     final directors = splitCmsValues(value: item.director);
     final categories = splitCmsValues(value: item.category);
@@ -91,26 +97,18 @@ class VodDetailPage extends HookConsumerWidget {
                   '${formatPlaybackPosition(
                     milliseconds: viewingProgress.positionMilliseconds,
                   )}',
-              onTap: () => openEpisode(
-                context: context,
-                item: item,
-                source: PlaySource(
-                  name: viewingProgress.sourceName,
-                  episodes: [
-                    PlayEpisode(
-                      name: viewingProgress.episodeName,
-                      url: viewingProgress.episodeUrl,
-                    ),
-                  ],
-                ),
-                episode: PlayEpisode(
-                  name: viewingProgress.episodeName,
-                  url: viewingProgress.episodeUrl,
-                ),
-                initialPosition: Duration(
-                  milliseconds: viewingProgress.positionMilliseconds,
-                ),
-              ),
+              onTap: () {
+                final target = resumeTarget!;
+                openEpisode(
+                  context: context,
+                  item: item,
+                  source: target.source,
+                  episode: target.episode,
+                  initialPosition: Duration(
+                    milliseconds: viewingProgress.positionMilliseconds,
+                  ),
+                );
+              },
             ),
       bottomBarHeight: viewingProgress == null ? null : 84,
       body: CustomScrollView(
@@ -340,6 +338,38 @@ String formatPlaybackPosition({required int milliseconds}) {
   final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
   final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
   return hours > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
+}
+
+({PlaySource source, PlayEpisode episode}) resolveResumeTarget({
+  required List<PlaySource> sources,
+  required VodViewingProgress progress,
+}) {
+  final sourceIndex = sources.indexWhere(
+    (source) =>
+        source.name == progress.sourceName &&
+        source.episodes.any(
+          (episode) => episode.url == progress.episodeUrl,
+        ),
+  );
+  if (sourceIndex < 0) {
+    final storedEpisode = PlayEpisode(
+      name: progress.episodeName,
+      url: progress.episodeUrl,
+    );
+    return (
+      source: PlaySource(
+        name: progress.sourceName,
+        episodes: [storedEpisode],
+      ),
+      episode: storedEpisode,
+    );
+  }
+
+  final source = sources[sourceIndex];
+  final episode = source.episodes.firstWhere(
+    (candidate) => candidate.url == progress.episodeUrl,
+  );
+  return (source: source, episode: episode);
 }
 
 class DetailTextBlock extends StatelessWidget {

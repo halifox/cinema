@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../cms/cms_models.dart';
 import '../../library/data/library_database.dart';
+import 'player_controls_overlay.dart';
 
 class PlayerPage extends HookConsumerWidget {
   const PlayerPage({
@@ -25,29 +26,47 @@ class PlayerPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = useMemoized(
-      () => VideoPlayerController.networkUrl(Uri.parse(episode.url)),
-      [episode.url],
+    final initialEpisodeIndex = source.episodes.indexWhere(
+      (candidate) => candidate.url == episode.url,
     );
+    final episodeIndex = useState(
+      initialEpisodeIndex < 0 ? 0 : initialEpisodeIndex,
+    );
+    final activeEpisode = source.episodes[episodeIndex.value];
+    final controller = useMemoized(
+      () => VideoPlayerController.networkUrl(Uri.parse(activeEpisode.url)),
+      [activeEpisode.url],
+    );
+    final playbackPosition = activeEpisode.url == episode.url
+        ? initialPosition
+        : Duration.zero;
     final initialization = useMemoized(() async {
       await controller.initialize();
-      if (initialPosition > Duration.zero &&
-          initialPosition < controller.value.duration) {
-        await controller.seekTo(initialPosition);
+      if (playbackPosition > Duration.zero &&
+          playbackPosition < controller.value.duration) {
+        await controller.seekTo(playbackPosition);
       }
-    }, [controller, initialPosition]);
+      await controller.play();
+    }, [controller, playbackPosition]);
     final initialized = useFuture(initialization);
     final saveTimer = useRef<Timer?>(null);
-    useListenable(controller);
+
+    useEffect(() {
+      unawaited(configurePlaybackChrome());
+      return () {
+        unawaited(restoreAppChrome());
+      };
+    }, const []);
+
     useEffect(() {
       Future<void> saveProgress() {
         final position = controller.value.isInitialized
             ? controller.value.position
-            : initialPosition;
+            : playbackPosition;
         return ref.read(libraryDatabaseProvider).recordViewing(
           item: item,
           source: source,
-          episode: episode,
+          episode: activeEpisode,
           positionMilliseconds: position.inMilliseconds,
         );
       }
@@ -65,113 +84,64 @@ class PlayerPage extends HookConsumerWidget {
       return () {
         controller.removeListener(scheduleProgressSave);
         saveTimer.value?.cancel();
+        saveTimer.value = null;
         unawaited(saveProgress());
-        controller.dispose();
+        unawaited(controller.dispose());
       };
     }, [
       controller,
       item.id,
       source.name,
-      episode.name,
-      episode.url,
-      initialPosition,
+      activeEpisode.name,
+      activeEpisode.url,
+      playbackPosition,
     ]);
 
-    return GlassScaffold(
-      edgeToEdge: true,
-      statusBarStyle: GlassStatusBarStyle.light,
-      background: const ColoredBox(color: CupertinoColors.black),
-      appBar: GlassAppBar(
-        leading: GlassIconButton(
-          icon: const Icon(CupertinoIcons.chevron_back),
-          useOwnLayer: true,
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: initialized.connectionState != ConnectionState.done
-                    ? const GlassProgressIndicator.circular(size: 38)
-                    : initialized.hasError
-                    ? Padding(
-                        padding: const EdgeInsets.all(28),
-                        child: Text(
-                          '播放失败\n${initialized.error}',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(color: CupertinoColors.white),
-                        ),
-                      )
-                    : AspectRatio(
-                        aspectRatio: controller.value.aspectRatio == 0
-                            ? 16 / 9
-                            : controller.value.aspectRatio,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            VideoPlayer(controller),
-                            Center(
-                              child: GlassIconButton(
-                                icon: Icon(
-                                  controller.value.isPlaying
-                                      ? CupertinoIcons.pause_fill
-                                      : CupertinoIcons.play_fill,
-                                  size: 34,
-                                ),
-                                useOwnLayer: true,
-                                onPressed: () {
-                                  controller.value.isPlaying
-                                      ? controller.pause()
-                                      : controller.play();
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+    return CupertinoPageScaffold(
+      backgroundColor: CupertinoColors.black,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (initialized.connectionState == ConnectionState.done &&
+              !initialized.hasError)
+            Center(
+              child: AspectRatio(
+                aspectRatio: controller.value.aspectRatio == 0
+                    ? 16 / 9
+                    : controller.value.aspectRatio,
+                child: VideoPlayer(controller),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 16, 22, 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.name,
-                    style: const TextStyle(
-                      color: CupertinoColors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    '${source.name} · ${episode.name}',
-                    style: const TextStyle(
-                      color: CupertinoColors.systemGrey,
-                      fontSize: 15,
-                    ),
-                  ),
-                  if (controller.value.isInitialized) ...[
-                    const SizedBox(height: 14),
-                    VideoProgressIndicator(
-                      controller,
-                      allowScrubbing: true,
-                      colors: const VideoProgressColors(
-                        playedColor: Color(0xFFFF375F),
-                        bufferedColor: CupertinoColors.systemGrey,
-                        backgroundColor: CupertinoColors.darkBackgroundGray,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+          SafeArea(
+            child: PlayerControlsOverlay(
+              title: item.name,
+              source: source,
+              episodeIndex: episodeIndex.value,
+              controller: controller,
+              loading: initialized.connectionState != ConnectionState.done,
+              error: initialized.error,
+              onExit: () => Navigator.of(context).pop(),
+              onEpisodeSelected: (index) {
+                if (index == episodeIndex.value) return;
+                episodeIndex.value = index;
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+}
+
+Future<void> configurePlaybackChrome() async {
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+}
+
+Future<void> restoreAppChrome() async {
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 }
