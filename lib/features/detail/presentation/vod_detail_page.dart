@@ -240,6 +240,7 @@ class VodDetailContent extends StatelessWidget {
     final actors = splitCmsValues(value: item.actor);
     final directors = splitCmsValues(value: item.director);
     final categories = splitCmsValues(value: item.category);
+    final summary = htmlToPlainText(html: item.summary);
 
     return Padding(
       padding: EdgeInsets.fromLTRB(22, 24, 22, hasResumeData ? 120 : 44),
@@ -257,6 +258,14 @@ class VodDetailContent extends StatelessWidget {
               letterSpacing: -.7,
             ),
           ),
+          Text(
+            summary,
+            style: TextStyle(
+              color: CupertinoColors.secondaryLabel.resolveFrom(context),
+              fontSize: 15,
+              height: 1.55,
+            ),
+          ),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -265,16 +274,6 @@ class VodDetailContent extends StatelessWidget {
           buildValueChips(values: categories, icon: CupertinoIcons.tag),
           buildValueChips(values: actors, icon: CupertinoIcons.person_2),
           buildValueChips(values: directors, icon: CupertinoIcons.video_camera),
-          GlassCard(
-            padding: EdgeInsets.zero,
-            child: GlassListTile(
-              title: const Text(
-                '简介',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(htmlToPlainText(html: item.summary)),
-            ),
-          ),
           if (sources.isEmpty)
             Text(
               '暂无可播放线路',
@@ -345,14 +344,14 @@ Widget buildValueChips({required List<String> values, required IconData icon}) {
 
 List<Widget> buildMetadataChips({required VodItem item}) {
   return [
-    if (item.remarks.isNotEmpty)
-      GlassChip(
-        useOwnLayer: true,
-        quality: .minimal,
-        icon: const Icon(CupertinoIcons.info_circle),
-        label: item.remarks,
-        onTap: () {},
-      ),
+    // if (item.remarks.isNotEmpty)
+    //   GlassChip(
+    //     useOwnLayer: true,
+    //     quality: .minimal,
+    //     icon: const Icon(CupertinoIcons.info_circle),
+    //     label: item.remarks,
+    //     onTap: () {},
+    //   ),
     if (item.year.isNotEmpty)
       GlassChip(
         useOwnLayer: true,
