@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
@@ -31,6 +32,22 @@ class VodDetailPage extends HookConsumerWidget {
       playFrom: item.playFrom,
       playUrl: item.playUrl,
     );
+    final actors = splitCmsValues(value: item.actor);
+    final directors = splitCmsValues(value: item.director);
+    final categories = splitCmsValues(value: item.category);
+    final scrollController = useScrollController();
+    final scrollOffset = useState(0.0);
+
+    useEffect(() {
+      void onScroll() {
+        scrollOffset.value = scrollController.offset;
+      }
+
+      scrollController.addListener(onScroll);
+      return () {
+        scrollController.removeListener(onScroll);
+      };
+    }, [scrollController]);
 
     return GlassScaffold(
       edgeToEdge: true,
@@ -55,27 +72,37 @@ class VodDetailPage extends HookConsumerWidget {
         ],
       ),
       body: CustomScrollView(
+        controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),
         slivers: [
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: 500,
-              child: Hero(
-                tag: 'vod-cover-${item.id}',
-                child: item.picture.isEmpty
-                    ? buildCachedImageError(context, '', StateError('empty'))
-                    : CachedNetworkImage(
-                        imageUrl: item.picture,
-                        fit: BoxFit.cover,
-                        alignment: Alignment.topCenter,
-                        progressIndicatorBuilder: buildCachedImageLoading,
-                        errorWidget: buildCachedImageError,
-                      ),
+            child: ClipRect(
+              child: SizedBox(
+                height: 500,
+                child: Transform.translate(
+                  offset: Offset(0, scrollOffset.value * .5),
+                  child: Hero(
+                    tag: 'vod-cover-${item.id}',
+                    child: item.picture.isEmpty
+                        ? buildCachedImageError(
+                            context,
+                            '',
+                            StateError('empty'),
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: item.picture,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.topCenter,
+                            progressIndicatorBuilder: buildCachedImageLoading,
+                            errorWidget: buildCachedImageError,
+                          ),
+                  ),
+                  ),
+                ),
               ),
             ),
-          ),
           if (detail.isLoading && item.playUrl.isEmpty)
             const ContentLoadingSliver()
           else if (detail.hasError && item.playUrl.isEmpty)
@@ -100,31 +127,30 @@ class VodDetailPage extends HookConsumerWidget {
                         letterSpacing: -.7,
                       ),
                     ),
-                    if (item.remarks.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        item.remarks,
-                        style: TextStyle(
-                          color: CupertinoTheme.of(context).primaryColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 14),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: buildMetadataChips(item: item),
                     ),
-                    if (item.actor.isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      DetailTextBlock(title: '主演', text: item.actor),
-                    ],
-                    if (item.director.isNotEmpty) ...[
-                      const SizedBox(height: 16),
-                      DetailTextBlock(title: '导演', text: item.director),
-                    ],
+                    if (actors.isNotEmpty)
+                      DetailChipSection(
+                        title: '主演',
+                        icon: CupertinoIcons.person_2,
+                        values: actors,
+                      ),
+                    if (directors.isNotEmpty)
+                      DetailChipSection(
+                        title: '导演',
+                        icon: CupertinoIcons.video_camera,
+                        values: directors,
+                      ),
+                    if (categories.isNotEmpty)
+                      DetailChipSection(
+                        title: '类型',
+                        icon: CupertinoIcons.tag,
+                        values: categories,
+                      ),
                     if (item.summary.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       GlassCard(
@@ -195,6 +221,12 @@ class VodDetailPage extends HookConsumerWidget {
 
 List<Widget> buildMetadataChips({required VodItem item}) {
   return [
+    if (item.remarks.isNotEmpty)
+      GlassChip(
+        icon: const Icon(CupertinoIcons.info_circle),
+        label: item.remarks,
+        onTap: () {},
+      ),
     if (item.year.isNotEmpty)
       GlassChip(
         icon: const Icon(CupertinoIcons.calendar),
@@ -207,10 +239,16 @@ List<Widget> buildMetadataChips({required VodItem item}) {
         label: item.area,
         onTap: () {},
       ),
-    if (item.category.isNotEmpty)
+    if (item.language.isNotEmpty)
       GlassChip(
-        icon: const Icon(CupertinoIcons.tag),
-        label: item.category,
+        icon: const Icon(CupertinoIcons.captions_bubble),
+        label: item.language,
+        onTap: () {},
+      ),
+    if (item.duration.isNotEmpty)
+      GlassChip(
+        icon: const Icon(CupertinoIcons.clock),
+        label: item.duration,
         onTap: () {},
       ),
     if (item.displayScore.isNotEmpty)
@@ -220,6 +258,14 @@ List<Widget> buildMetadataChips({required VodItem item}) {
         onTap: () {},
       ),
   ];
+}
+
+List<String> splitCmsValues({required String value}) {
+  return value
+      .split(RegExp('[,，]'))
+      .map((item) => item.trim())
+      .where((item) => item.isNotEmpty)
+      .toList(growable: false);
 }
 
 void openEpisode({
@@ -268,6 +314,52 @@ class DetailTextBlock extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class DetailChipSection extends StatelessWidget {
+  const DetailChipSection({
+    required this.title,
+    required this.icon,
+    required this.values,
+    super.key,
+  });
+
+  final String title;
+  final IconData icon;
+  final List<String> values;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: CupertinoColors.label.resolveFrom(context),
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final value in values)
+                GlassChip(
+                  icon: Icon(icon),
+                  label: value,
+                  onTap: () {},
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

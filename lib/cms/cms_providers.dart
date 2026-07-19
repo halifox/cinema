@@ -64,11 +64,9 @@ final categoriesProvider = FutureProvider<CmsPage<VodItem>>((ref) async {
 });
 
 final catalogProvider =
-    AsyncNotifierProvider.family<
-      CatalogNotifier,
-      PagePagingData<VodItem>,
-      int
-    >(CatalogNotifier.new);
+    AsyncNotifierProvider.family<CatalogNotifier, PagePagingData<VodItem>, int>(
+      CatalogNotifier.new,
+    );
 
 class CatalogNotifier extends AsyncNotifier<PagePagingData<VodItem>>
     with PagePagingNotifierMixin<VodItem> {

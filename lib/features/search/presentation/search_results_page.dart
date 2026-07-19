@@ -46,10 +46,7 @@ class SearchResultsPage extends HookConsumerWidget {
                   subtitle: '试试更短的片名或其他关键词。',
                 );
               }
-              return VodGridSliver(
-                items: data.items,
-                endItem: endItemView,
-              );
+              return VodGridSliver(items: data.items, endItem: endItemView);
             },
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
