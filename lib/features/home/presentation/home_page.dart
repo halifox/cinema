@@ -207,10 +207,7 @@ class PrimaryCategoryButton extends StatelessWidget {
     final labelColor = CupertinoColors.label.resolveFrom(context);
     final inactiveColor = CupertinoColors.tertiaryLabel.resolveFrom(context);
 
-    return Semantics(
-      button: true,
-      selected: selected,
-      child: CupertinoButton(
+    return CupertinoButton(
         padding: EdgeInsets.zero,
         minimumSize: const Size(0, 42),
         onPressed: onPressed,
@@ -244,7 +241,6 @@ class PrimaryCategoryButton extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }
@@ -306,10 +302,7 @@ class SecondaryCategoryButton extends StatelessWidget {
         ? selectedForegroundColor
         : CupertinoColors.secondaryLabel.resolveFrom(context);
 
-    return Semantics(
-      button: true,
-      selected: selected,
-      child: CupertinoButton(
+    return CupertinoButton(
         padding: EdgeInsets.zero,
         minimumSize: Size.zero,
         borderRadius: BorderRadius.circular(15),
@@ -335,7 +328,6 @@ class SecondaryCategoryButton extends StatelessWidget {
             child: Text(label),
           ),
         ),
-      ),
     );
   }
 }

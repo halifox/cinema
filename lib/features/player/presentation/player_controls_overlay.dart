@@ -416,10 +416,7 @@ class PlayerPlaybackRateAction extends StatelessWidget {
   Widget build(BuildContext context) {
     final formattedRate = formatPlaybackRate(rate: selectedRate);
     final controlIconColor = CupertinoColors.label.resolveFrom(context);
-    return Semantics(
-      button: true,
-      label: '选择播放倍速，当前 $formattedRate 倍',
-      child: GlassMenu(
+    return GlassMenu(
         menuAlignment: GlassMenuAlignment.bottomRight,
         menuWidth: 180,
         menuPadding: const EdgeInsets.all(12),
@@ -461,7 +458,6 @@ class PlayerPlaybackRateAction extends StatelessWidget {
               onTap: () => onSelected(rate),
             ),
         ],
-      ),
     );
   }
 }

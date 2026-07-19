@@ -29,19 +29,12 @@ class VodHistoryPage extends HookConsumerWidget {
         title: const Text('历史'),
         centerTitle: false,
         largeTitleController: titleController,
-        leading: Semantics(
-          button: true,
-          label: '返回',
-          child: GlassIconButton(
-            icon: const Icon(CupertinoIcons.chevron_back),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+        leading: GlassIconButton(
+          icon: const Icon(CupertinoIcons.chevron_back),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          Semantics(
-            button: true,
-            label: '清空观看历史',
-            child: GlassIconButton(
+          GlassIconButton(
               icon: const Icon(
                 CupertinoIcons.trash,
                 color: CupertinoColors.systemRed,
@@ -68,7 +61,6 @@ class VodHistoryPage extends HookConsumerWidget {
                     .read(libraryCommandsProvider)
                     .clearViewingHistory();
               },
-            ),
           ),
         ],
       ),

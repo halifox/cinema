@@ -13,11 +13,7 @@ class VodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: item.name,
-      excludeSemantics: true,
-      child: GestureDetector(
+    return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
           Navigator.of(context).push(
@@ -128,7 +124,6 @@ class VodCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }

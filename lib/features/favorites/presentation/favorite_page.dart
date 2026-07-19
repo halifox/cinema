@@ -28,10 +28,7 @@ class FavoritePage extends HookConsumerWidget {
       headerScrollController: titleController.scrollController,
       header: GlassAppBar(
         actions: [
-          Semantics(
-            button: true,
-            label: '观看历史',
-            child: GlassIconButton(
+          GlassIconButton(
               icon: const Icon(CupertinoIcons.clock),
               onPressed: () {
                 Navigator.of(context).push(
@@ -40,7 +37,6 @@ class FavoritePage extends HookConsumerWidget {
                   ),
                 );
               },
-            ),
           ),
         ],
       ),

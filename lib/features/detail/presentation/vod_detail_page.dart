@@ -121,10 +121,7 @@ class VodEpisodeSortAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: '选择集数排序方式',
-      child: GlassPullDownButton(
+    return GlassPullDownButton(
         icon: const Icon(CupertinoIcons.arrow_up_arrow_down),
         menuWidth: 160,
         items: [
@@ -141,7 +138,6 @@ class VodEpisodeSortAction extends StatelessWidget {
             onTap: () => onSelected(true),
           ),
         ],
-      ),
     );
   }
 }
@@ -165,10 +161,7 @@ class VodSourceAction extends StatelessWidget {
         ? selectedSourceIndex
         : 0;
 
-    return Semantics(
-      button: true,
-      label: '切换播放路线',
-      child: GlassPullDownButton(
+    return GlassPullDownButton(
         icon: const Icon(CupertinoIcons.arrow_branch),
         menuWidth: 220,
         items: [
@@ -182,7 +175,6 @@ class VodSourceAction extends StatelessWidget {
               onTap: () => onSourceSelected(index),
             ),
         ],
-      ),
     );
   }
 }
