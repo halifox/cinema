@@ -18,9 +18,9 @@ enum MainContentTab {
     activeIcon: CupertinoIcons.house_fill,
   ),
   favorite(
-    label: '收藏',
-    icon: CupertinoIcons.heart,
-    activeIcon: CupertinoIcons.heart_fill,
+    label: '片单',
+    icon: CupertinoIcons.rectangle_stack,
+    activeIcon: CupertinoIcons.rectangle_stack_fill,
     glowColor: Color(0xFFFF375F),
   );
 

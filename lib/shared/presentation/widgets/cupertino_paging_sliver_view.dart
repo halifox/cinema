@@ -1,3 +1,4 @@
+import 'package:cinema/shared/presentation/theme/app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
@@ -31,10 +32,8 @@ class CupertinoPagingSliverView<Item> extends StatelessWidget {
       data: (data) =>
           contentBuilder(data, data.items.length + 1, buildEndItem(data: data)),
       loading: () => const ContentStateSliver.loading(),
-      error: (error, stackTrace) => ContentStateSliver.error(
-        error: error,
-        onRetry: onRetry,
-      ),
+      error: (error, stackTrace) =>
+          ContentStateSliver.error(error: error, onRetry: onRetry),
     );
   }
 
@@ -80,7 +79,11 @@ class PagingLoadingIndicator extends StatelessWidget {
     return const Center(
       child: Padding(
         padding: EdgeInsets.all(16),
-        child: GlassProgressIndicator.circular(size: 32, useOwnLayer: true),
+        child: GlassProgressIndicator.circular(
+          size: 32,
+          useOwnLayer: true,
+          color: AppTheme.seedColor,
+        ),
       ),
     );
   }

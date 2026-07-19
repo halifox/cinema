@@ -53,7 +53,7 @@ class FavoritePage extends HookConsumerWidget {
         ),
         slivers: [
           GlassLargeTitle(
-            text: '收藏',
+            text: '片单',
             controller: titleController,
             padding: EdgeInsets.fromLTRB(
               16,
@@ -64,9 +64,9 @@ class FavoritePage extends HookConsumerWidget {
           ),
           VodLibraryGrid(
             items: favorites,
-            emptyIcon: CupertinoIcons.heart,
-            emptyTitle: '还没有收藏',
-            emptyMessage: '在影片详情页点按收藏，稍后就能从这里快速找到。',
+            emptyIcon: CupertinoIcons.rectangle_stack,
+            emptyTitle: '片单还是空的',
+            emptyMessage: '在影片详情页将影片加入片单，稍后就能从这里快速找到。',
             onRetry: () => ref.invalidate(favoritesProvider),
           ),
         ],

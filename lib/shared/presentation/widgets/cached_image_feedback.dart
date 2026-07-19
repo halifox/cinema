@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../theme/app_theme.dart';
+
 Widget buildCachedImageLoading(
   BuildContext context,
   String url,
@@ -12,7 +14,7 @@ Widget buildCachedImageLoading(
       value: progress.progress,
       size: 28,
       useOwnLayer: true,
-    ),
+        color: AppTheme.seedColor ),
   );
 }
 

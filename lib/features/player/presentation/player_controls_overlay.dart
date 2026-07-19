@@ -7,6 +7,7 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:media_kit/media_kit.dart';
 
 import '../../../cms/cms_models.dart';
+import '../../../shared/presentation/theme/app_theme.dart';
 import 'episode_list_panel.dart';
 
 enum PlayerOverlayState { hidden, controls, episodes }
@@ -136,7 +137,7 @@ class PlayerControlsOverlay extends HookWidget {
               useOwnLayer: true,
               size: 34,
               strokeWidth: 3,
-            ),
+                color: AppTheme.seedColor  ),
           ),
         if (effectiveError != null)
           Center(

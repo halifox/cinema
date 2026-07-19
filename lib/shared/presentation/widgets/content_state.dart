@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../theme/app_theme.dart';
+
 typedef ErrorPresentation = (IconData icon, String title, String message);
 
 class ContentStateSliver extends StatelessWidget {
@@ -73,7 +75,7 @@ class ContentStateSliver extends StatelessWidget {
                       child: GlassProgressIndicator.circular(
                         size: 40,
                         useOwnLayer: true,
-                      ),
+                          color: AppTheme.seedColor ),
                     )
                   : Icon(icon, size: 48, color: iconColor),
               const SizedBox(height: 8),
