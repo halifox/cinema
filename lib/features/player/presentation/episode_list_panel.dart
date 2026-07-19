@@ -8,6 +8,7 @@ class EpisodeListPanel extends HookWidget {
   const EpisodeListPanel({
     required this.source,
     required this.episodeIndex,
+    required this.width,
     required this.onSelected,
     required this.onClose,
     super.key,
@@ -15,6 +16,7 @@ class EpisodeListPanel extends HookWidget {
 
   final PlaySource source;
   final int episodeIndex;
+  final double width;
   final ValueChanged<int> onSelected;
   final VoidCallback onClose;
 
@@ -30,7 +32,7 @@ class EpisodeListPanel extends HookWidget {
 
     return GlassContainer(
       useOwnLayer: true,
-      width: 280,
+      width: width,
       quality: GlassQuality.premium,
       padding: const EdgeInsets.fromLTRB(8, 10, 8, 8),
       shape: const LiquidRoundedSuperellipse(borderRadius: 28),
