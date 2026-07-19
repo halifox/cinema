@@ -125,9 +125,7 @@ class VodFavoriteAction extends ConsumerWidget {
           ),
           useOwnLayer: true,
           onPressed: () => unawaited(
-            ref
-                .read(libraryCommandsProvider)
-                .toggleFavorite(item: item),
+            ref.read(libraryCommandsProvider).toggleFavorite(item: item),
           ),
         ),
         loading: buildToolbarLoading,
@@ -210,10 +208,7 @@ class VodDetailContentSliver extends ConsumerWidget {
             constraints: BoxConstraints(
               minHeight: constraints.viewportMainAxisExtent,
             ),
-            child: VodDetailContent(
-              item: item,
-              hasResumeData: hasResumeData,
-            ),
+            child: VodDetailContent(item: item, hasResumeData: hasResumeData),
           ),
         ),
       ),
@@ -271,27 +266,13 @@ class VodDetailContent extends StatelessWidget {
           buildValueChips(values: actors, icon: CupertinoIcons.person_2),
           buildValueChips(values: directors, icon: CupertinoIcons.video_camera),
           GlassCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '简介',
-                  style: TextStyle(
-                    color: CupertinoColors.label.resolveFrom(context),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  htmlToPlainText(html: item.summary),
-                  style: TextStyle(
-                    color: CupertinoColors.secondaryLabel.resolveFrom(context),
-                    fontSize: 15,
-                    height: 1.55,
-                  ),
-                ),
-              ],
+            padding: EdgeInsets.zero,
+            child: GlassListTile(
+              title: const Text(
+                '简介',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(htmlToPlainText(html: item.summary)),
             ),
           ),
           if (sources.isEmpty)
@@ -317,6 +298,8 @@ class VodDetailContent extends StatelessWidget {
                 children: [
                   for (final episode in source.episodes)
                     GlassChip(
+                      useOwnLayer: true,
+                      quality: .minimal,
                       icon: const Icon(CupertinoIcons.play_rectangle),
                       label: episode.name,
                       onTap: () => openEpisode(
@@ -349,7 +332,13 @@ Widget buildValueChips({required List<String> values, required IconData icon}) {
     runSpacing: 8,
     children: [
       for (final value in values)
-        GlassChip(icon: Icon(icon), label: value, onTap: () {}),
+        GlassChip(
+          useOwnLayer: true,
+          quality: .minimal,
+          icon: Icon(icon),
+          label: value,
+          onTap: () {},
+        ),
     ],
   );
 }
@@ -358,36 +347,48 @@ List<Widget> buildMetadataChips({required VodItem item}) {
   return [
     if (item.remarks.isNotEmpty)
       GlassChip(
+        useOwnLayer: true,
+        quality: .minimal,
         icon: const Icon(CupertinoIcons.info_circle),
         label: item.remarks,
         onTap: () {},
       ),
     if (item.year.isNotEmpty)
       GlassChip(
+        useOwnLayer: true,
+        quality: .minimal,
         icon: const Icon(CupertinoIcons.calendar),
         label: item.year,
         onTap: () {},
       ),
     if (item.area.isNotEmpty)
       GlassChip(
+        useOwnLayer: true,
+        quality: .minimal,
         icon: const Icon(CupertinoIcons.globe),
         label: item.area,
         onTap: () {},
       ),
     if (item.language.isNotEmpty)
       GlassChip(
+        useOwnLayer: true,
+        quality: .minimal,
         icon: const Icon(CupertinoIcons.captions_bubble),
         label: item.language,
         onTap: () {},
       ),
     if (item.duration.isNotEmpty)
       GlassChip(
+        useOwnLayer: true,
+        quality: .minimal,
         icon: const Icon(CupertinoIcons.clock),
         label: item.duration,
         onTap: () {},
       ),
     if (item.displayScore.isNotEmpty)
       GlassChip(
+        useOwnLayer: true,
+        quality: .minimal,
         icon: const Icon(CupertinoIcons.star_fill),
         label: '豆瓣 ${item.displayScore}',
         onTap: () {},
