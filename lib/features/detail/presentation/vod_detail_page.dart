@@ -91,6 +91,7 @@ class VodDetailPage extends HookConsumerWidget {
         slivers: [
           VodDetailCoverSliver(
             detailArguments: detailArguments,
+            initialItem: initialItem,
             scrollOffset: scrollOffset,
           ),
           VodDetailContentSliver(
@@ -221,11 +222,13 @@ class VodFavoriteAction extends ConsumerWidget {
 class VodDetailCoverSliver extends ConsumerWidget {
   const VodDetailCoverSliver({
     required this.detailArguments,
+    required this.initialItem,
     required this.scrollOffset,
     super.key,
   });
 
   final VodDetailArguments detailArguments;
+  final VodItem initialItem;
   final ValueNotifier<double> scrollOffset;
 
   @override
@@ -241,27 +244,39 @@ class VodDetailCoverSliver extends ConsumerWidget {
               offset: Offset(0, offset * .5),
               child: child,
             ),
-            child: detail.when(
-              data: (item) => Hero(
-                tag: 'vod-cover-${item.id}',
-                child: item.picture.isEmpty
-                    ? buildCachedImageError(context, '', StateError('empty'))
-                    : CachedNetworkImage(
-                        imageUrl: item.picture,
-                        fit: BoxFit.cover,
-                        alignment: Alignment.topCenter,
-                        progressIndicatorBuilder: buildCachedImageLoading,
-                        errorWidget: buildCachedImageError,
-                      ),
+            child: Hero(
+              tag: 'vod-cover-${initialItem.id}',
+              child: detail.when(
+                data: (item) => VodDetailCoverImage(item: item),
+                loading: () => VodDetailCoverImage(item: initialItem),
+                error: (error, stackTrace) => VodDetailCoverImage(
+                  item: initialItem,
+                ),
               ),
-              loading: () => const Center(child: CupertinoActivityIndicator()),
-              error: (error, stackTrace) =>
-                  buildCachedImageError(context, '', error),
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+class VodDetailCoverImage extends StatelessWidget {
+  const VodDetailCoverImage({required this.item, super.key});
+
+  final VodItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return item.picture.isEmpty
+        ? buildCachedImageError(context, '', StateError('empty'))
+        : CachedNetworkImage(
+            imageUrl: item.picture,
+            fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
+            progressIndicatorBuilder: buildCachedImageLoading,
+            errorWidget: buildCachedImageError,
+          );
   }
 }
 
