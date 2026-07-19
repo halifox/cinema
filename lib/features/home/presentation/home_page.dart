@@ -48,9 +48,7 @@ class HomePage extends HookConsumerWidget {
         ),
         slivers: [
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: MediaQuery.paddingOf(context).top + 14,
-            ),
+            child: SizedBox(height: MediaQuery.paddingOf(context).top + 14),
           ),
           catalog.when(
             data: (data) {
@@ -135,15 +133,20 @@ class CategoryRows extends StatelessWidget {
             switchOutCurve: Curves.easeInCubic,
             transitionBuilder: (child, animation) => FadeTransition(
               opacity: animation,
-              child: SizeTransition(sizeFactor: animation, child: child),
+              // 一级分类切换时，二级分类栏始终占用相同高度。只淡入淡出，
+              // 避免 SizeTransition 在切换的中间帧压缩高度，带动下方列表抖动。
+              child: child,
             ),
             child: secondary.isEmpty
                 ? const SizedBox.shrink()
-                : SecondaryCategoryBar(
-                    key: ValueKey<int>(selectedPrimaryId),
-                    categories: secondary,
-                    selectedId: selectedSecondaryId,
-                    onSelected: onSecondarySelected,
+                : SizedBox(
+                    width: double.infinity,
+                    child: SecondaryCategoryBar(
+                      key: ValueKey<int>(selectedPrimaryId),
+                      categories: secondary,
+                      selectedId: selectedSecondaryId,
+                      onSelected: onSecondarySelected,
+                    ),
                   ),
           ),
         ],
@@ -208,39 +211,39 @@ class PrimaryCategoryButton extends StatelessWidget {
     final inactiveColor = CupertinoColors.tertiaryLabel.resolveFrom(context);
 
     return CupertinoButton(
-        padding: EdgeInsets.zero,
-        minimumSize: const Size(0, 42),
-        onPressed: onPressed,
-        child: SizedBox(
-          height: 42,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOutCubic,
-                style: TextStyle(
-                  color: selected ? labelColor : inactiveColor,
-                  fontSize: selected ? 19 : 16,
-                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                  letterSpacing: selected ? -.45 : -.2,
-                ),
-                child: Text(label),
+      padding: EdgeInsets.zero,
+      minimumSize: const Size(0, 42),
+      onPressed: onPressed,
+      child: SizedBox(
+        height: 42,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              style: TextStyle(
+                color: selected ? labelColor : inactiveColor,
+                fontSize: selected ? 19 : 16,
+                fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                letterSpacing: selected ? -.45 : -.2,
               ),
-              const SizedBox(height: 7),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeOutCubic,
-                width: selected ? 18 : 0,
-                height: 3,
-                decoration: BoxDecoration(
-                  color: accentColor,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+              child: Text(label),
+            ),
+            const SizedBox(height: 7),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              width: selected ? 18 : 0,
+              height: 3,
+              decoration: BoxDecoration(
+                color: accentColor,
+                borderRadius: BorderRadius.circular(2),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }
@@ -263,7 +266,9 @@ class SecondaryCategoryBar extends StatelessWidget {
       padding: const EdgeInsets.only(top: 12),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           spacing: 4,
@@ -303,31 +308,31 @@ class SecondaryCategoryButton extends StatelessWidget {
         : CupertinoColors.secondaryLabel.resolveFrom(context);
 
     return CupertinoButton(
-        padding: EdgeInsets.zero,
-        minimumSize: Size.zero,
-        borderRadius: BorderRadius.circular(15),
-        onPressed: onPressed,
-        child: AnimatedContainer(
+      padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
+      borderRadius: BorderRadius.circular(15),
+      onPressed: onPressed,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        constraints: const BoxConstraints(minHeight: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? labelColor : const Color(0x00000000),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: AnimatedDefaultTextStyle(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
-          constraints: const BoxConstraints(minHeight: 30),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: selected ? labelColor : const Color(0x00000000),
-            borderRadius: BorderRadius.circular(15),
+          style: TextStyle(
+            color: foregroundColor,
+            fontSize: 13,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            letterSpacing: -.1,
           ),
-          child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOutCubic,
-            style: TextStyle(
-              color: foregroundColor,
-              fontSize: 13,
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-              letterSpacing: -.1,
-            ),
-            child: Text(label),
-          ),
+          child: Text(label),
         ),
+      ),
     );
   }
 }
