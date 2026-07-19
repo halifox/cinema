@@ -139,6 +139,7 @@ class PlayerControlsOverlay extends HookWidget {
             hiddenOffset: const Offset(0, -1),
             child: GlassIconButton(
               useOwnLayer: true,
+              quality: .premium,
               icon: const Icon(CupertinoIcons.chevron_back),
               onPressed: onExit,
             ),
@@ -155,7 +156,7 @@ class PlayerControlsOverlay extends HookWidget {
               alignment: Alignment.centerLeft,
               child: GlassContainer(
                 useOwnLayer: true,
-                quality: GlassQuality.premium,
+                quality: .premium,
                 height: 46,
                 padding: const EdgeInsets.symmetric(horizontal: 17),
                 alignment: Alignment.centerLeft,
@@ -191,6 +192,7 @@ class PlayerControlsOverlay extends HookWidget {
                   if (showEpisodeControls) ...[
                     GlassIconButton(
                       useOwnLayer: true,
+                      quality: .premium,
                       icon: const Icon(CupertinoIcons.backward_end),
                       onPressed: previousEnabled
                           ? () => selectEpisode(index: episodeIndex - 1)
@@ -200,6 +202,7 @@ class PlayerControlsOverlay extends HookWidget {
                   ],
                   GlassIconButton(
                     useOwnLayer: true,
+                    quality: .premium,
                     icon: Icon(
                       videoValue.isPlaying
                           ? CupertinoIcons.pause
@@ -220,6 +223,7 @@ class PlayerControlsOverlay extends HookWidget {
                     const SizedBox(width: 6),
                     GlassIconButton(
                       useOwnLayer: true,
+                      quality: .premium,
                       icon: const Icon(CupertinoIcons.forward_end),
                       onPressed: nextEnabled
                           ? () => selectEpisode(index: episodeIndex + 1)
@@ -240,6 +244,7 @@ class PlayerControlsOverlay extends HookWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: GlassSlider(
+                      quality: .premium,
                       value: currentPosition,
                       min: 0,
                       max: maximumPosition,
@@ -280,6 +285,7 @@ class PlayerControlsOverlay extends HookWidget {
                     const SizedBox(width: 14),
                     GlassIconButton(
                       useOwnLayer: true,
+                      quality: .premium,
                       icon: const Icon(CupertinoIcons.list_bullet),
                       onPressed: () {
                         controlsTimer.value?.cancel();
