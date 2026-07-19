@@ -5,7 +5,6 @@ import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 import '../../../cms/cms_models.dart';
 import '../../../cms/cms_providers.dart';
-import '../../../shared/presentation/hooks/glass_large_title_hook.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
 import '../../../shared/presentation/widgets/content_state.dart';
 import '../../../shared/presentation/widgets/cupertino_paging_sliver_view.dart';
@@ -19,7 +18,7 @@ class HomePage extends HookConsumerWidget {
     final categoryPage = ref.watch(categoriesProvider);
     final selectedPrimaryId = useState<int?>(null);
     final selectedSecondaryId = useState<int?>(null);
-    final titleController = useGlassLargeTitleController();
+    final scrollController = useScrollController();
 
     return GlassScaffold(
       edgeToEdge: true,
@@ -30,23 +29,16 @@ class HomePage extends HookConsumerWidget {
       bottomEdgeFade: true,
       topEdgeFadeExtent: 64,
       bottomEdgeFadeExtent: 64,
-      headerScrollController: titleController.scrollController,
-      header: GlassAppBar(),
       body: CustomScrollView(
         key: const PageStorageKey<String>('home-scroll'),
-        controller: titleController.scrollController,
+        controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),
         slivers: [
-          GlassLargeTitle(
-            text: '首页',
-            controller: titleController,
-            padding: EdgeInsets.fromLTRB(
-              16,
-              MediaQuery.paddingOf(context).top + 16,
-              16,
-              8,
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: MediaQuery.paddingOf(context).top + 14,
             ),
           ),
           categoryPage.when(
@@ -80,8 +72,8 @@ class HomePage extends HookConsumerWidget {
                       onPrimarySelected: (id) {
                         selectedPrimaryId.value = id;
                         selectedSecondaryId.value = null;
-                        if (titleController.scrollController.hasClients) {
-                          titleController.scrollController.animateTo(
+                        if (scrollController.hasClients) {
+                          scrollController.animateTo(
                             0,
                             duration: const Duration(milliseconds: 380),
                             curve: Curves.easeOutCubic,
