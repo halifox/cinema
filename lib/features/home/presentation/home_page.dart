@@ -7,6 +7,7 @@ import '../../../cms/cms_models.dart';
 import '../../../cms/cms_providers.dart';
 import '../../../shared/presentation/widgets/ambient_glow_background.dart';
 import '../../../shared/presentation/widgets/content_state.dart';
+import '../../../shared/presentation/widgets/cupertino_paging_sliver_view.dart';
 import '../../../shared/presentation/widgets/vod_card.dart';
 
 class HomePage extends HookConsumerWidget {
@@ -195,98 +196,27 @@ class CategoryScroller extends StatelessWidget {
   }
 }
 
-class CatalogFeed extends HookConsumerWidget {
+class CatalogFeed extends ConsumerWidget {
   const CatalogFeed({required this.typeId, super.key});
 
   final int typeId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loadedPageCount = useState(1);
-    final pages = [
-      for (var page = 1; page <= loadedPageCount.value; page++)
-        ref.watch(catalogPageProvider((typeId: typeId, page: page))),
-    ];
-    final first = pages.first;
-    if (first.isLoading) return const ContentLoadingSliver();
-    if (first.hasError) {
-      return ContentErrorSliver(
-        error: first.error!,
-        onRetry: () =>
-            ref.invalidate(catalogPageProvider((typeId: typeId, page: 1))),
-      );
-    }
-    if (first.value?.items.isEmpty ?? true) {
-      return const EmptyStateSliver(title: '这个分类还是空的', subtitle: '可以切换其他分类看看。');
-    }
-
-    final last = pages.last;
-    final hasMore = last.value?.hasMore ?? true;
-    return SliverMainAxisGroup(
-      slivers: [
-        for (var index = 0; index < pages.length; index++)
-          ...buildCatalogPageSlivers(
-            context: context,
-            ref: ref,
-            page: pages[index],
-            typeId: typeId,
-            pageNumber: index + 1,
-          ),
-        if (hasMore)
-          SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                child: GlassButton.custom(
-                  width: 140,
-                  height: 46,
-                  enabled: !last.isLoading,
-                  onTap: () => loadedPageCount.value++,
-                  child: last.isLoading
-                      ? const GlassProgressIndicator.circular(size: 24)
-                      : const Text('加载更多'),
-                ),
-              ),
-            ),
-          ),
-      ],
+    final provider = catalogProvider(typeId);
+    return CupertinoPagingSliverView<VodItem>(
+      state: ref.watch(provider),
+      onLoadNext: () => ref.read(provider.notifier).loadNext(),
+      onRetry: () => ref.read(provider.notifier).forceRefresh(),
+      contentBuilder: (data, widgetCount, endItemView) {
+        if (data.items.isEmpty) {
+          return const EmptyStateSliver(
+            title: '这个分类还是空的',
+            subtitle: '可以切换其他分类看看。',
+          );
+        }
+        return VodGridSliver(items: data.items, endItem: endItemView);
+      },
     );
   }
-}
-
-List<Widget> buildCatalogPageSlivers({
-  required BuildContext context,
-  required WidgetRef ref,
-  required AsyncValue<CmsPage<VodItem>> page,
-  required int typeId,
-  required int pageNumber,
-}) {
-  if (page.hasValue) return [VodGridSliver(items: page.value!.items)];
-  if (page.hasError) {
-    return [
-      SliverToBoxAdapter(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: GlassButton.custom(
-              width: 150,
-              height: 44,
-              onTap: () => ref.invalidate(
-                catalogPageProvider((typeId: typeId, page: pageNumber)),
-              ),
-              child: const Text('加载失败，重试'),
-            ),
-          ),
-        ),
-      ),
-    ];
-  }
-  return const [
-    SliverToBoxAdapter(
-      child: Padding(
-        padding: EdgeInsets.all(22),
-        child: Center(child: GlassProgressIndicator.circular(size: 28)),
-      ),
-    ),
-  ];
 }

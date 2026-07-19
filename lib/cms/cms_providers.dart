@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod_paging_utils/riverpod_paging_utils.dart';
 
 import 'cms_api.dart';
 import 'cms_models.dart';
@@ -62,31 +63,65 @@ final categoriesProvider = FutureProvider<CmsPage<VodItem>>((ref) async {
   return response.toPage(includeCategories: true);
 });
 
-typedef CatalogRequest = ({int typeId, int page});
+final catalogProvider =
+    AsyncNotifierProvider.family<
+      CatalogNotifier,
+      PagePagingData<VodItem>,
+      int
+    >(CatalogNotifier.new);
 
-final catalogPageProvider =
-    FutureProvider.family<CmsPage<VodItem>, CatalogRequest>((
-      ref,
-      request,
-    ) async {
-      final response = await ref
-          .watch(cmsApiProvider)
-          .catalog(typeId: request.typeId, page: request.page);
-      return response.toPage();
-    });
+class CatalogNotifier extends AsyncNotifier<PagePagingData<VodItem>>
+    with PagePagingNotifierMixin<VodItem> {
+  CatalogNotifier(this.typeId);
 
-typedef SearchRequest = ({String query, int page});
+  final int typeId;
 
-final searchPageProvider =
-    FutureProvider.family<CmsPage<VodItem>, SearchRequest>((
-      ref,
-      request,
-    ) async {
-      final response = await ref
-          .watch(cmsApiProvider)
-          .search(query: request.query, page: request.page);
-      return response.toPage();
-    });
+  @override
+  Future<PagePagingData<VodItem>> build() => fetch(page: 1);
+
+  @override
+  Future<PagePagingData<VodItem>> fetch({required int page}) async {
+    final response = await ref
+        .read(cmsApiProvider)
+        .catalog(typeId: typeId, page: page);
+    final result = response.toPage();
+    return PagePagingData(
+      items: result.items,
+      hasMore: result.hasMore,
+      page: page,
+    );
+  }
+}
+
+final searchResultsProvider =
+    AsyncNotifierProvider.family<
+      SearchResultsNotifier,
+      PagePagingData<VodItem>,
+      String
+    >(SearchResultsNotifier.new);
+
+class SearchResultsNotifier extends AsyncNotifier<PagePagingData<VodItem>>
+    with PagePagingNotifierMixin<VodItem> {
+  SearchResultsNotifier(this.query);
+
+  final String query;
+
+  @override
+  Future<PagePagingData<VodItem>> build() => fetch(page: 1);
+
+  @override
+  Future<PagePagingData<VodItem>> fetch({required int page}) async {
+    final response = await ref
+        .read(cmsApiProvider)
+        .search(query: query, page: page);
+    final result = response.toPage();
+    return PagePagingData(
+      items: result.items,
+      hasMore: result.hasMore,
+      page: page,
+    );
+  }
+}
 
 final vodDetailProvider = FutureProvider.family<VodItem, int>((ref, id) async {
   final response = await ref.watch(cmsApiProvider).detail(id: id);

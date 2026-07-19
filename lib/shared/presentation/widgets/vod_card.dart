@@ -148,9 +148,10 @@ class VodCard extends StatelessWidget {
 }
 
 class VodGridSliver extends StatelessWidget {
-  const VodGridSliver({required this.items, super.key});
+  const VodGridSliver({required this.items, this.endItem, super.key});
 
   final List<VodItem> items;
+  final Widget? endItem;
 
   @override
   Widget build(BuildContext context) {
@@ -164,8 +165,11 @@ class VodGridSliver extends StatelessWidget {
           childAspectRatio: 328 / 422,
         ),
         delegate: SliverChildBuilderDelegate(
-          (context, index) => VodCard(item: items[index]),
-          childCount: items.length,
+          (context, index) {
+            if (endItem != null && index == items.length) return endItem;
+            return VodCard(item: items[index]);
+          },
+          childCount: items.length + (endItem == null ? 0 : 1),
         ),
       ),
     );

@@ -704,6 +704,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.2"
+  riverpod_paging_utils:
+    dependency: "direct main"
+    description:
+      name: riverpod_paging_utils
+      sha256: ab09530f2d66eec0d50c626a628b13dd7a0f9ae2b3be0cea528d1e8ec6964368
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   rxdart:
     dependency: transitive
     description:
@@ -1029,6 +1037,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.0"
+  visibility_detector:
+    dependency: "direct main"
+    description:
+      name: visibility_detector
+      sha256: dd5cc11e13494f432d15939c3aa8ae76844c42b723398643ce9addb88a5ed420
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.0+2"
   vm_service:
     dependency: transitive
     description:
