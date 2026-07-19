@@ -414,12 +414,38 @@ class PlayerPlaybackRateAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formattedRate = formatPlaybackRate(rate: selectedRate);
     return Semantics(
       button: true,
-      label: '选择播放倍速，当前 ${formatPlaybackRate(rate: selectedRate)} 倍',
-      child: GlassPullDownButton(
-        icon: const Icon(CupertinoIcons.speedometer),
-
+      label: '选择播放倍速，当前 $formattedRate 倍',
+      child: GlassMenu(
+        menuAlignment: GlassMenuAlignment.bottomRight,
+        menuWidth: 180,
+        menuPadding: const EdgeInsets.all(12),
+        autoAdjustToScreen: true,
+        triggerBuilder: (context, toggleMenu) => GlassButton.custom(
+          width: 92,
+          height: 44,
+          shape: const LiquidRoundedSuperellipse(borderRadius: 44),
+          onTap: toggleMenu,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(CupertinoIcons.speedometer, size: 18),
+              const SizedBox(width: 7),
+              Text(
+                '$formattedRate 倍',
+                style: const TextStyle(
+                  color: CupertinoColors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ),
+        ),
         items: [
           for (final rate in playerPlaybackRates)
             GlassMenuItem(
