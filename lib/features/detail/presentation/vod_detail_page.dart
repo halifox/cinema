@@ -547,7 +547,7 @@ List<Widget> buildMetadataChips({required VodItem item}) {
       useOwnLayer: true,
       quality: .minimal,
       icon: const Icon(CupertinoIcons.star_fill),
-      label: '豆瓣 ${item.displayScore.isEmpty ? '未知' : item.displayScore}',
+      label: '豆瓣评分 ${item.displayScore.isEmpty ? '未知' : item.displayScore}',
       onTap: () {},
     ),
   ];
