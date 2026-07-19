@@ -53,7 +53,13 @@ class MainNavigationPage extends HookConsumerWidget {
     return Stack(
       children: [
         isSearching.value
-            ? const SearchPage()
+            ? SearchPage(
+                onDismiss: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  selectedTab.value = lastContentTab.value;
+                  isSearching.value = false;
+                },
+              )
             : selectedTab.value.buildPage(),
         Positioned(
           left: 0,
@@ -73,7 +79,7 @@ class MainNavigationPage extends HookConsumerWidget {
               searchConfig: GlassSearchBarConfig(
                 controller: searchController,
                 hintText: '搜索电影、剧集、综艺',
-                autoFocusOnExpand: false,
+                autoFocusOnExpand: true,
                 showsCancelButton: false,
                 textInputAction: TextInputAction.search,
                 onSubmitted: (value) {

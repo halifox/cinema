@@ -8,7 +8,9 @@ import '../application/search_history_provider.dart';
 import 'search_results_page.dart';
 
 class SearchPage extends HookConsumerWidget {
-  const SearchPage({super.key});
+  const SearchPage({required this.onDismiss, super.key});
+
+  final VoidCallback onDismiss;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,7 +27,11 @@ class SearchPage extends HookConsumerWidget {
       bottomEdgeFadeExtent: 64,
       headerScrollController: titleController.scrollController,
       body: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          onDismiss();
+        },
         child: SearchHistory(titleController: titleController),
       ),
     );
