@@ -1,4 +1,4 @@
-# cinema
+# Cinema
 
 A new Flutter project.
 
