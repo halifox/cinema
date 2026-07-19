@@ -12,6 +12,8 @@ import 'episode_list_panel.dart';
 
 enum PlayerOverlayState { hidden, controls, episodes }
 
+const playerPlaybackRates = <double>[0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
+
 class PlayerControlsOverlay extends HookWidget {
   const PlayerControlsOverlay({
     required this.title,
@@ -41,6 +43,7 @@ class PlayerControlsOverlay extends HookWidget {
     final overlayState = useState(PlayerOverlayState.controls);
     final controlsTimer = useRef<Timer?>(null);
     final draggedPosition = useState<double?>(null);
+    final selectedPlaybackRate = useState(1.0);
     final position = useStream(
       player.stream.position,
       initialData: player.state.position,
@@ -158,6 +161,22 @@ class PlayerControlsOverlay extends HookWidget {
       unawaited(playing ? player.pause() : player.play());
     }
 
+    Future<void> selectPlaybackRate({required double rate}) async {
+      final previousRate = selectedPlaybackRate.value;
+      selectedPlaybackRate.value = rate;
+      showControls();
+      try {
+        await player.setRate(rate);
+      } on Object {
+        if (!context.mounted) return;
+        selectedPlaybackRate.value = previousRate;
+        showPlaybackToast(
+          message: '倍速切换失败，请稍后重试',
+          type: GlassToastType.error,
+        );
+      }
+    }
+
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) showControls();
@@ -176,6 +195,27 @@ class PlayerControlsOverlay extends HookWidget {
       });
       return null;
     }, [effectiveError]);
+
+    useEffect(() {
+      if (selectedPlaybackRate.value == 1.0) return null;
+      var effectActive = true;
+
+      Future<void> restorePlaybackRate() async {
+        try {
+          await player.setRate(selectedPlaybackRate.value);
+        } on Object {
+          if (!effectActive || !context.mounted) return;
+          selectedPlaybackRate.value = 1.0;
+          showPlaybackToast(
+            message: '倍速恢复失败，已切换为正常速度',
+            type: GlassToastType.error,
+          );
+        }
+      }
+
+      unawaited(restorePlaybackRate());
+      return () => effectActive = false;
+    }, [player]);
 
     final controlsVisible = overlayState.value == PlayerOverlayState.controls;
     const horizontalInset = 24.0;
@@ -332,6 +372,16 @@ class PlayerControlsOverlay extends HookWidget {
                       fontFeatures: [FontFeature.tabularFigures()],
                     ),
                   ),
+                  const SizedBox(width: 10),
+                  Listener(
+                    onPointerDown: (event) => showControls(keepVisible: true),
+                    child: PlayerPlaybackRateAction(
+                      selectedRate: selectedPlaybackRate.value,
+                      onSelected: (rate) => unawaited(
+                        selectPlaybackRate(rate: rate),
+                      ),
+                    ),
+                  ),
                   if (showEpisodeControls) ...[
                     const SizedBox(width: 14),
                     GlassIconButton(
@@ -371,6 +421,39 @@ class PlayerControlsOverlay extends HookWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class PlayerPlaybackRateAction extends StatelessWidget {
+  const PlayerPlaybackRateAction({
+    required this.selectedRate,
+    required this.onSelected,
+    super.key,
+  });
+
+  final double selectedRate;
+  final ValueChanged<double> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: '选择播放倍速，当前 ${formatPlaybackRate(rate: selectedRate)} 倍',
+      child: GlassPullDownButton(
+        icon: const Icon(CupertinoIcons.speedometer),
+        quality: GlassQuality.premium,
+        items: [
+          for (final rate in playerPlaybackRates)
+            GlassMenuItem(
+              title: '${formatPlaybackRate(rate: rate)} 倍',
+              trailing: rate == selectedRate
+                  ? const Icon(CupertinoIcons.check_mark)
+                  : null,
+              onTap: () => onSelected(rate),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -421,4 +504,10 @@ String formatPlayerDuration({required Duration duration}) {
   final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
   final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
   return hours > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
+}
+
+String formatPlaybackRate({required double rate}) {
+  return rate == rate.roundToDouble()
+      ? rate.toStringAsFixed(1)
+      : rate.toStringAsFixed(2).replaceFirst(RegExp(r'0$'), '');
 }
