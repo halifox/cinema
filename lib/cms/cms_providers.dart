@@ -26,31 +26,43 @@ final cmsDioProvider = Provider<Dio>((ref) {
 });
 
 final cmsApiProvider = Provider<CmsApi>((ref) {
-  return CmsApi(dio: ref.watch(cmsDioProvider));
+  return CmsApi(ref.watch(cmsDioProvider));
 });
 
-final categoriesProvider = FutureProvider<CmsPage<VodItem>>((ref) {
-  return ref.watch(cmsApiProvider).categories();
+final categoriesProvider = FutureProvider<CmsPage<VodItem>>((ref) async {
+  final response = await ref.watch(cmsApiProvider).categories();
+  return response.toPage(includeCategories: true);
 });
 
 typedef CatalogRequest = ({int typeId, int page});
 
 final catalogPageProvider =
-    FutureProvider.family<CmsPage<VodItem>, CatalogRequest>((ref, request) {
-      return ref
+    FutureProvider.family<CmsPage<VodItem>, CatalogRequest>((
+      ref,
+      request,
+    ) async {
+      final response = await ref
           .watch(cmsApiProvider)
           .catalog(typeId: request.typeId, page: request.page);
+      return response.toPage();
     });
 
 typedef SearchRequest = ({String query, int page});
 
 final searchPageProvider =
-    FutureProvider.family<CmsPage<VodItem>, SearchRequest>((ref, request) {
-      return ref
+    FutureProvider.family<CmsPage<VodItem>, SearchRequest>((
+      ref,
+      request,
+    ) async {
+      final response = await ref
           .watch(cmsApiProvider)
           .search(query: request.query, page: request.page);
+      return response.toPage();
     });
 
-final vodDetailProvider = FutureProvider.family<VodItem, int>((ref, id) {
-  return ref.watch(cmsApiProvider).detail(id: id);
+final vodDetailProvider = FutureProvider.family<VodItem, int>((ref, id) async {
+  final response = await ref.watch(cmsApiProvider).detail(id: id);
+  final page = response.toPage();
+  if (page.items.isEmpty) throw StateError('没有找到该影片');
+  return page.items.first;
 });

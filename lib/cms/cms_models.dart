@@ -1,118 +1,134 @@
-class CmsCategory {
-  const CmsCategory({
-    required this.id,
-    required this.parentId,
-    required this.name,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  factory CmsCategory.fromJson(Map<String, dynamic> json) {
-    return CmsCategory(
-      id: jsonInt(json['type_id']),
-      parentId: jsonInt(json['type_pid']),
-      name: jsonText(json['type_name']),
-    );
-  }
+import 'cms_json_converters.dart';
 
-  final int id;
-  final int parentId;
-  final String name;
+part 'cms_models.freezed.dart';
+part 'cms_models.g.dart';
+
+@freezed
+abstract class CmsResponseDto with _$CmsResponseDto {
+  const factory CmsResponseDto({
+    @FlexibleIntConverter() @Default(0) int code,
+    @JsonKey(name: 'msg')
+    @FlexibleStringConverter()
+    @Default('')
+    String message,
+    @FlexibleIntConverter() @Default(1) int page,
+    @JsonKey(name: 'pagecount')
+    @FlexibleIntConverter()
+    @Default(1)
+    int pageCount,
+    @FlexibleIntConverter() @Default(0) int limit,
+    @FlexibleIntConverter() @Default(0) int total,
+    @JsonKey(name: 'list')
+    @VodItemListConverter()
+    @Default(<VodItem>[])
+    List<VodItem> items,
+    @JsonKey(name: 'class')
+    @CmsCategoryListConverter()
+    @Default(<CmsCategory>[])
+    List<CmsCategory> categories,
+  }) = _CmsResponseDto;
+
+  factory CmsResponseDto.fromJson(Map<String, dynamic> json) =>
+      _$CmsResponseDtoFromJson(json);
 }
 
-class VodItem {
-  const VodItem({
-    required this.id,
-    required this.typeId,
-    required this.parentTypeId,
-    required this.name,
-    required this.typeName,
-    required this.picture,
-    required this.remarks,
-    required this.year,
-    required this.area,
-    required this.language,
-    required this.score,
-    required this.doubanScore,
-    required this.actor,
-    required this.director,
-    required this.category,
-    required this.summary,
-    required this.duration,
-    required this.playFrom,
-    required this.playUrl,
-  });
+@freezed
+abstract class CmsCategory with _$CmsCategory {
+  const factory CmsCategory({
+    @JsonKey(name: 'type_id') @FlexibleIntConverter() @Default(0) int id,
+    @JsonKey(name: 'type_pid') @FlexibleIntConverter() @Default(0) int parentId,
+    @JsonKey(name: 'type_name')
+    @FlexibleStringConverter()
+    @Default('')
+    String name,
+  }) = _CmsCategory;
 
-  factory VodItem.fromJson(Map<String, dynamic> json) {
-    return VodItem(
-      id: jsonInt(json['vod_id']),
-      typeId: jsonInt(json['type_id']),
-      parentTypeId: jsonInt(json['type_id_1']),
-      name: jsonText(json['vod_name']),
-      typeName: jsonText(json['type_name']),
-      picture: jsonText(json['vod_pic']),
-      remarks: jsonText(json['vod_remarks']),
-      year: jsonText(json['vod_year']),
-      area: jsonText(json['vod_area']),
-      language: jsonText(json['vod_lang']),
-      score: jsonText(json['vod_score']),
-      doubanScore: jsonText(json['vod_douban_score']),
-      actor: jsonText(json['vod_actor']),
-      director: jsonText(json['vod_director']),
-      category: jsonText(json['vod_class']),
-      summary: cleanCmsText(
-        jsonText(json['vod_blurb']).isNotEmpty
-            ? jsonText(json['vod_blurb'])
-            : jsonText(json['vod_content']),
-      ),
-      duration: jsonText(json['vod_duration']),
-      playFrom: jsonText(json['vod_play_from']),
-      playUrl: jsonText(json['vod_play_url']),
-    );
-  }
+  factory CmsCategory.fromJson(Map<String, dynamic> json) =>
+      _$CmsCategoryFromJson(json);
+}
 
-  final int id;
-  final int typeId;
-  final int parentTypeId;
-  final String name;
-  final String typeName;
-  final String picture;
-  final String remarks;
-  final String year;
-  final String area;
-  final String language;
-  final String score;
-  final String doubanScore;
-  final String actor;
-  final String director;
-  final String category;
-  final String summary;
-  final String duration;
-  final String playFrom;
-  final String playUrl;
+@freezed
+abstract class VodItem with _$VodItem {
+  const factory VodItem({
+    @JsonKey(name: 'vod_id') @FlexibleIntConverter() @Default(0) int id,
+    @JsonKey(name: 'type_id') @FlexibleIntConverter() @Default(0) int typeId,
+    @JsonKey(name: 'type_id_1')
+    @FlexibleIntConverter()
+    @Default(0)
+    int parentTypeId,
+    @JsonKey(name: 'vod_name')
+    @FlexibleStringConverter()
+    @Default('')
+    String name,
+    @JsonKey(name: 'type_name')
+    @FlexibleStringConverter()
+    @Default('')
+    String typeName,
+    @JsonKey(name: 'vod_pic')
+    @FlexibleStringConverter()
+    @Default('')
+    String picture,
+    @JsonKey(name: 'vod_remarks')
+    @FlexibleStringConverter()
+    @Default('')
+    String remarks,
+    @JsonKey(name: 'vod_year')
+    @FlexibleStringConverter()
+    @Default('')
+    String year,
+    @JsonKey(name: 'vod_area')
+    @FlexibleStringConverter()
+    @Default('')
+    String area,
+    @JsonKey(name: 'vod_lang')
+    @FlexibleStringConverter()
+    @Default('')
+    String language,
+    @JsonKey(name: 'vod_score')
+    @FlexibleStringConverter()
+    @Default('')
+    String score,
+    @JsonKey(name: 'vod_douban_score')
+    @FlexibleStringConverter()
+    @Default('')
+    String doubanScore,
+    @JsonKey(name: 'vod_actor')
+    @FlexibleStringConverter()
+    @Default('')
+    String actor,
+    @JsonKey(name: 'vod_director')
+    @FlexibleStringConverter()
+    @Default('')
+    String director,
+    @JsonKey(name: 'vod_class')
+    @FlexibleStringConverter()
+    @Default('')
+    String category,
+    @JsonKey(name: 'vod_blurb', readValue: readVodSummary)
+    @CmsTextConverter()
+    @Default('')
+    String summary,
+    @JsonKey(name: 'vod_duration')
+    @FlexibleStringConverter()
+    @Default('')
+    String duration,
+    @JsonKey(name: 'vod_play_from')
+    @FlexibleStringConverter()
+    @Default('')
+    String playFrom,
+    @JsonKey(name: 'vod_play_url')
+    @FlexibleStringConverter()
+    @Default('')
+    String playUrl,
+  }) = _VodItem;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'vod_id': id,
-      'type_id': typeId,
-      'type_id_1': parentTypeId,
-      'vod_name': name,
-      'type_name': typeName,
-      'vod_pic': picture,
-      'vod_remarks': remarks,
-      'vod_year': year,
-      'vod_area': area,
-      'vod_lang': language,
-      'vod_score': score,
-      'vod_douban_score': doubanScore,
-      'vod_actor': actor,
-      'vod_director': director,
-      'vod_class': category,
-      'vod_blurb': summary,
-      'vod_duration': duration,
-      'vod_play_from': playFrom,
-      'vod_play_url': playUrl,
-    };
-  }
+  factory VodItem.fromJson(Map<String, dynamic> json) =>
+      _$VodItemFromJson(json);
+}
 
+extension VodItemPresentation on VodItem {
   String get displayScore {
     if (doubanScore.isNotEmpty && doubanScore != '0.0') return doubanScore;
     if (score.isNotEmpty && score != '0.0') return score;
@@ -136,6 +152,21 @@ class CmsPage<T> {
   final List<CmsCategory> categories;
 
   bool get hasMore => page < pageCount;
+}
+
+extension CmsResponseMapping on CmsResponseDto {
+  CmsPage<VodItem> toPage({bool includeCategories = false}) {
+    if (code != 1) {
+      throw StateError(message.isEmpty ? '请求失败' : message);
+    }
+    return CmsPage<VodItem>(
+      page: page,
+      pageCount: pageCount,
+      total: total,
+      items: items,
+      categories: includeCategories ? categories : const [],
+    );
+  }
 }
 
 class PlayEpisode {
@@ -180,24 +211,44 @@ List<PlaySource> parsePlaySources({
   }).where((source) => source.episodes.isNotEmpty).toList(growable: false);
 }
 
-int jsonInt(Object? value) {
-  if (value is int) return value;
-  if (value is num) return value.toInt();
-  return int.tryParse('$value') ?? 0;
+Object? readVodSummary(Map<dynamic, dynamic> json, String key) {
+  final blurb = FlexibleStringConverter().fromJson(json['vod_blurb']);
+  return blurb.isNotEmpty ? blurb : json['vod_content'];
 }
 
-String jsonText(Object? value) {
-  if (value == null) return '';
-  return '$value'.trim();
+class VodItemListConverter implements JsonConverter<List<VodItem>, Object?> {
+  const VodItemListConverter();
+
+  @override
+  List<VodItem> fromJson(Object? json) {
+    if (json is! List) return const [];
+    return json
+        .whereType<Map>()
+        .map((item) => VodItem.fromJson(Map<String, dynamic>.from(item)))
+        .toList(growable: false);
+  }
+
+  @override
+  Object toJson(List<VodItem> object) {
+    return object.map((item) => item.toJson()).toList(growable: false);
+  }
 }
 
-String cleanCmsText(String value) {
-  return value
-      .replaceAll(RegExp('<[^>]*>'), '')
-      .replaceAll('&nbsp;', ' ')
-      .replaceAll('&amp;', '&')
-      .replaceAll('&lt;', '<')
-      .replaceAll('&gt;', '>')
-      .replaceAll(RegExp(r'\s+'), ' ')
-      .trim();
+class CmsCategoryListConverter
+    implements JsonConverter<List<CmsCategory>, Object?> {
+  const CmsCategoryListConverter();
+
+  @override
+  List<CmsCategory> fromJson(Object? json) {
+    if (json is! List) return const [];
+    return json
+        .whereType<Map>()
+        .map((item) => CmsCategory.fromJson(Map<String, dynamic>.from(item)))
+        .toList(growable: false);
+  }
+
+  @override
+  Object toJson(List<CmsCategory> object) {
+    return object.map((item) => item.toJson()).toList(growable: false);
+  }
 }
