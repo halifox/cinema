@@ -230,7 +230,6 @@ class PlayerControlsOverlay extends HookWidget {
           top: topInset,
           child: PlayerOverlayAnimatedSwitcher(
             visible: controlsVisible,
-            hiddenOffset: const Offset(0, -1),
             child: GlassIconButton(
               useOwnLayer: true,
               quality: .premium,
@@ -245,7 +244,6 @@ class PlayerControlsOverlay extends HookWidget {
           top: topInset,
           child: PlayerOverlayAnimatedSwitcher(
             visible: controlsVisible,
-            hiddenOffset: const Offset(0, -1),
             child: Align(
               alignment: Alignment.centerLeft,
               child: GlassContainer(
@@ -275,7 +273,6 @@ class PlayerControlsOverlay extends HookWidget {
           bottom: 18,
           child: PlayerOverlayAnimatedSwitcher(
             visible: controlsVisible,
-            hiddenOffset: const Offset(0, 1),
             child: GlassContainer(
               useOwnLayer: true,
               quality: GlassQuality.minimal,
@@ -394,7 +391,6 @@ class PlayerControlsOverlay extends HookWidget {
             visible:
                 showEpisodeControls &&
                 overlayState.value == PlayerOverlayState.episodes,
-            hiddenOffset: const Offset(1, 0),
             child: EpisodeListPanel(
               source: source,
               episodeIndex: episodeIndex,
@@ -448,13 +444,11 @@ class PlayerPlaybackRateAction extends StatelessWidget {
 class PlayerOverlayAnimatedSwitcher extends StatelessWidget {
   const PlayerOverlayAnimatedSwitcher({
     required this.visible,
-    required this.hiddenOffset,
     required this.child,
     super.key,
   });
 
   final bool visible;
-  final Offset hiddenOffset;
   final Widget child;
 
   @override
@@ -466,18 +460,8 @@ class PlayerOverlayAnimatedSwitcher extends StatelessWidget {
         reverseDuration: const Duration(milliseconds: 220),
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (child, animation) {
-          return FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: hiddenOffset,
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
-            ),
-          );
-        },
+        transitionBuilder: (child, animation) =>
+            FadeTransition(opacity: animation, child: child),
         child: visible
             ? KeyedSubtree(key: const ValueKey('visible'), child: child)
             : const SizedBox.shrink(key: ValueKey('hidden')),
