@@ -224,6 +224,7 @@ class PlayerControlsOverlay extends HookWidget {
           top: topInset,
           child: PlayerOverlayAnimatedSwitcher(
             visible: controlsVisible,
+            hiddenOffset: const Offset(0, -1.25),
             child: GlassIconButton(
               icon: const Icon(CupertinoIcons.chevron_back),
               onPressed: onExit,
@@ -236,6 +237,7 @@ class PlayerControlsOverlay extends HookWidget {
           top: topInset,
           child: PlayerOverlayAnimatedSwitcher(
             visible: controlsVisible,
+            hiddenOffset: const Offset(0, -1.25),
             child: Align(
               alignment: Alignment.centerLeft,
               child: GlassContainer(
@@ -263,6 +265,7 @@ class PlayerControlsOverlay extends HookWidget {
           bottom: 18,
           child: PlayerOverlayAnimatedSwitcher(
             visible: controlsVisible,
+            hiddenOffset: const Offset(0, 1.25),
             child: GlassContainer(
               padding: const EdgeInsets.all(8),
               shape: const LiquidRoundedSuperellipse(borderRadius: 44),
@@ -416,11 +419,13 @@ class PlayerOverlayAnimatedSwitcher extends StatelessWidget {
   const PlayerOverlayAnimatedSwitcher({
     required this.visible,
     required this.child,
+    this.hiddenOffset = Offset.zero,
     super.key,
   });
 
   final bool visible;
   final Widget child;
+  final Offset hiddenOffset;
 
   @override
   Widget build(BuildContext context) {
@@ -431,8 +436,16 @@ class PlayerOverlayAnimatedSwitcher extends StatelessWidget {
         reverseDuration: const Duration(milliseconds: 220),
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (child, animation) =>
-            FadeTransition(opacity: animation, child: child),
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: hiddenOffset,
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        ),
         child: visible
             ? KeyedSubtree(key: const ValueKey('visible'), child: child)
             : const SizedBox.shrink(key: ValueKey('hidden')),
