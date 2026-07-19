@@ -268,15 +268,13 @@ class VodDetailCoverImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return item.picture.isEmpty
-        ? buildCachedImageError(context, '', StateError('empty'))
-        : CachedNetworkImage(
-            imageUrl: item.picture,
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-            progressIndicatorBuilder: buildCachedImageLoading,
-            errorWidget: buildCachedImageError,
-          );
+    return CachedNetworkImage(
+      imageUrl: item.picture,
+      fit: BoxFit.cover,
+      alignment: Alignment.topCenter,
+      progressIndicatorBuilder: buildCachedImageLoading,
+      errorWidget: buildCachedImageError,
+    );
   }
 }
 

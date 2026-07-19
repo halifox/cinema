@@ -34,15 +34,13 @@ class VodCard extends StatelessWidget {
                   color: CupertinoColors.secondarySystemBackground.resolveFrom(
                     context,
                   ),
-                  child: item.picture.isEmpty
-                      ? buildCachedImageError(context, '', StateError('empty'))
-                      : CachedNetworkImage(
-                          imageUrl: item.picture,
-                          fit: BoxFit.cover,
-                          alignment: Alignment.center,
-                          progressIndicatorBuilder: buildCachedImageLoading,
-                          errorWidget: buildCachedImageError,
-                        ),
+                  child: CachedNetworkImage(
+                    imageUrl: item.picture,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                    progressIndicatorBuilder: buildCachedImageLoading,
+                    errorWidget: buildCachedImageError,
+                  ),
                 ),
                 const DecoratedBox(
                   decoration: BoxDecoration(
