@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CmsResponseDto {
 
-@FlexibleIntConverter() int get code;@JsonKey(name: 'msg')@FlexibleStringConverter() String get message;@FlexibleIntConverter() int get page;@JsonKey(name: 'pagecount')@FlexibleIntConverter() int get pageCount;@FlexibleIntConverter() int get limit;@FlexibleIntConverter() int get total;@JsonKey(name: 'list')@VodItemListConverter() List<VodItem> get items;@JsonKey(name: 'class')@CmsCategoryListConverter() List<CmsCategory> get categories;
+ int get code;@JsonKey(name: 'msg') String get message; int get page;@JsonKey(name: 'pagecount') int get pageCount; int get limit; int get total;@JsonKey(name: 'list') List<VodItem> get items;@JsonKey(name: 'class') List<CmsCategory> get categories;
 /// Create a copy of CmsResponseDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $CmsResponseDtoCopyWith<$Res>  {
   factory $CmsResponseDtoCopyWith(CmsResponseDto value, $Res Function(CmsResponseDto) _then) = _$CmsResponseDtoCopyWithImpl;
 @useResult
 $Res call({
-@FlexibleIntConverter() int code,@JsonKey(name: 'msg')@FlexibleStringConverter() String message,@FlexibleIntConverter() int page,@JsonKey(name: 'pagecount')@FlexibleIntConverter() int pageCount,@FlexibleIntConverter() int limit,@FlexibleIntConverter() int total,@JsonKey(name: 'list')@VodItemListConverter() List<VodItem> items,@JsonKey(name: 'class')@CmsCategoryListConverter() List<CmsCategory> categories
+ int code,@JsonKey(name: 'msg') String message, int page,@JsonKey(name: 'pagecount') int pageCount, int limit, int total,@JsonKey(name: 'list') List<VodItem> items,@JsonKey(name: 'class') List<CmsCategory> categories
 });
 
 
@@ -160,7 +160,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@FlexibleIntConverter()  int code, @JsonKey(name: 'msg')@FlexibleStringConverter()  String message, @FlexibleIntConverter()  int page, @JsonKey(name: 'pagecount')@FlexibleIntConverter()  int pageCount, @FlexibleIntConverter()  int limit, @FlexibleIntConverter()  int total, @JsonKey(name: 'list')@VodItemListConverter()  List<VodItem> items, @JsonKey(name: 'class')@CmsCategoryListConverter()  List<CmsCategory> categories)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int code, @JsonKey(name: 'msg')  String message,  int page, @JsonKey(name: 'pagecount')  int pageCount,  int limit,  int total, @JsonKey(name: 'list')  List<VodItem> items, @JsonKey(name: 'class')  List<CmsCategory> categories)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CmsResponseDto() when $default != null:
 return $default(_that.code,_that.message,_that.page,_that.pageCount,_that.limit,_that.total,_that.items,_that.categories);case _:
@@ -181,7 +181,7 @@ return $default(_that.code,_that.message,_that.page,_that.pageCount,_that.limit,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@FlexibleIntConverter()  int code, @JsonKey(name: 'msg')@FlexibleStringConverter()  String message, @FlexibleIntConverter()  int page, @JsonKey(name: 'pagecount')@FlexibleIntConverter()  int pageCount, @FlexibleIntConverter()  int limit, @FlexibleIntConverter()  int total, @JsonKey(name: 'list')@VodItemListConverter()  List<VodItem> items, @JsonKey(name: 'class')@CmsCategoryListConverter()  List<CmsCategory> categories)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int code, @JsonKey(name: 'msg')  String message,  int page, @JsonKey(name: 'pagecount')  int pageCount,  int limit,  int total, @JsonKey(name: 'list')  List<VodItem> items, @JsonKey(name: 'class')  List<CmsCategory> categories)  $default,) {final _that = this;
 switch (_that) {
 case _CmsResponseDto():
 return $default(_that.code,_that.message,_that.page,_that.pageCount,_that.limit,_that.total,_that.items,_that.categories);case _:
@@ -201,7 +201,7 @@ return $default(_that.code,_that.message,_that.page,_that.pageCount,_that.limit,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@FlexibleIntConverter()  int code, @JsonKey(name: 'msg')@FlexibleStringConverter()  String message, @FlexibleIntConverter()  int page, @JsonKey(name: 'pagecount')@FlexibleIntConverter()  int pageCount, @FlexibleIntConverter()  int limit, @FlexibleIntConverter()  int total, @JsonKey(name: 'list')@VodItemListConverter()  List<VodItem> items, @JsonKey(name: 'class')@CmsCategoryListConverter()  List<CmsCategory> categories)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int code, @JsonKey(name: 'msg')  String message,  int page, @JsonKey(name: 'pagecount')  int pageCount,  int limit,  int total, @JsonKey(name: 'list')  List<VodItem> items, @JsonKey(name: 'class')  List<CmsCategory> categories)?  $default,) {final _that = this;
 switch (_that) {
 case _CmsResponseDto() when $default != null:
 return $default(_that.code,_that.message,_that.page,_that.pageCount,_that.limit,_that.total,_that.items,_that.categories);case _:
@@ -216,24 +216,24 @@ return $default(_that.code,_that.message,_that.page,_that.pageCount,_that.limit,
 @JsonSerializable()
 
 class _CmsResponseDto implements CmsResponseDto {
-  const _CmsResponseDto({@FlexibleIntConverter() this.code = 0, @JsonKey(name: 'msg')@FlexibleStringConverter() this.message = '', @FlexibleIntConverter() this.page = 1, @JsonKey(name: 'pagecount')@FlexibleIntConverter() this.pageCount = 1, @FlexibleIntConverter() this.limit = 0, @FlexibleIntConverter() this.total = 0, @JsonKey(name: 'list')@VodItemListConverter() final  List<VodItem> items = const <VodItem>[], @JsonKey(name: 'class')@CmsCategoryListConverter() final  List<CmsCategory> categories = const <CmsCategory>[]}): _items = items,_categories = categories;
+  const _CmsResponseDto({this.code = 0, @JsonKey(name: 'msg') this.message = '', this.page = 1, @JsonKey(name: 'pagecount') this.pageCount = 1, this.limit = 0, this.total = 0, @JsonKey(name: 'list') final  List<VodItem> items = const <VodItem>[], @JsonKey(name: 'class') final  List<CmsCategory> categories = const <CmsCategory>[]}): _items = items,_categories = categories;
   factory _CmsResponseDto.fromJson(Map<String, dynamic> json) => _$CmsResponseDtoFromJson(json);
 
-@override@JsonKey()@FlexibleIntConverter() final  int code;
-@override@JsonKey(name: 'msg')@FlexibleStringConverter() final  String message;
-@override@JsonKey()@FlexibleIntConverter() final  int page;
-@override@JsonKey(name: 'pagecount')@FlexibleIntConverter() final  int pageCount;
-@override@JsonKey()@FlexibleIntConverter() final  int limit;
-@override@JsonKey()@FlexibleIntConverter() final  int total;
+@override@JsonKey() final  int code;
+@override@JsonKey(name: 'msg') final  String message;
+@override@JsonKey() final  int page;
+@override@JsonKey(name: 'pagecount') final  int pageCount;
+@override@JsonKey() final  int limit;
+@override@JsonKey() final  int total;
  final  List<VodItem> _items;
-@override@JsonKey(name: 'list')@VodItemListConverter() List<VodItem> get items {
+@override@JsonKey(name: 'list') List<VodItem> get items {
   if (_items is EqualUnmodifiableListView) return _items;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_items);
 }
 
  final  List<CmsCategory> _categories;
-@override@JsonKey(name: 'class')@CmsCategoryListConverter() List<CmsCategory> get categories {
+@override@JsonKey(name: 'class') List<CmsCategory> get categories {
   if (_categories is EqualUnmodifiableListView) return _categories;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_categories);
@@ -273,7 +273,7 @@ abstract mixin class _$CmsResponseDtoCopyWith<$Res> implements $CmsResponseDtoCo
   factory _$CmsResponseDtoCopyWith(_CmsResponseDto value, $Res Function(_CmsResponseDto) _then) = __$CmsResponseDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@FlexibleIntConverter() int code,@JsonKey(name: 'msg')@FlexibleStringConverter() String message,@FlexibleIntConverter() int page,@JsonKey(name: 'pagecount')@FlexibleIntConverter() int pageCount,@FlexibleIntConverter() int limit,@FlexibleIntConverter() int total,@JsonKey(name: 'list')@VodItemListConverter() List<VodItem> items,@JsonKey(name: 'class')@CmsCategoryListConverter() List<CmsCategory> categories
+ int code,@JsonKey(name: 'msg') String message, int page,@JsonKey(name: 'pagecount') int pageCount, int limit, int total,@JsonKey(name: 'list') List<VodItem> items,@JsonKey(name: 'class') List<CmsCategory> categories
 });
 
 
@@ -311,7 +311,7 @@ as List<CmsCategory>,
 /// @nodoc
 mixin _$CmsCategory {
 
-@JsonKey(name: 'type_id')@FlexibleIntConverter() int get id;@JsonKey(name: 'type_pid')@FlexibleIntConverter() int get parentId;@JsonKey(name: 'type_name')@FlexibleStringConverter() String get name;
+@JsonKey(name: 'type_id') int get id;@JsonKey(name: 'type_pid') int get parentId;@JsonKey(name: 'type_name') String get name;
 /// Create a copy of CmsCategory
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -344,7 +344,7 @@ abstract mixin class $CmsCategoryCopyWith<$Res>  {
   factory $CmsCategoryCopyWith(CmsCategory value, $Res Function(CmsCategory) _then) = _$CmsCategoryCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'type_id')@FlexibleIntConverter() int id,@JsonKey(name: 'type_pid')@FlexibleIntConverter() int parentId,@JsonKey(name: 'type_name')@FlexibleStringConverter() String name
+@JsonKey(name: 'type_id') int id,@JsonKey(name: 'type_pid') int parentId,@JsonKey(name: 'type_name') String name
 });
 
 
@@ -451,7 +451,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'type_id')@FlexibleIntConverter()  int id, @JsonKey(name: 'type_pid')@FlexibleIntConverter()  int parentId, @JsonKey(name: 'type_name')@FlexibleStringConverter()  String name)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'type_id')  int id, @JsonKey(name: 'type_pid')  int parentId, @JsonKey(name: 'type_name')  String name)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CmsCategory() when $default != null:
 return $default(_that.id,_that.parentId,_that.name);case _:
@@ -472,7 +472,7 @@ return $default(_that.id,_that.parentId,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'type_id')@FlexibleIntConverter()  int id, @JsonKey(name: 'type_pid')@FlexibleIntConverter()  int parentId, @JsonKey(name: 'type_name')@FlexibleStringConverter()  String name)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'type_id')  int id, @JsonKey(name: 'type_pid')  int parentId, @JsonKey(name: 'type_name')  String name)  $default,) {final _that = this;
 switch (_that) {
 case _CmsCategory():
 return $default(_that.id,_that.parentId,_that.name);case _:
@@ -492,7 +492,7 @@ return $default(_that.id,_that.parentId,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'type_id')@FlexibleIntConverter()  int id, @JsonKey(name: 'type_pid')@FlexibleIntConverter()  int parentId, @JsonKey(name: 'type_name')@FlexibleStringConverter()  String name)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'type_id')  int id, @JsonKey(name: 'type_pid')  int parentId, @JsonKey(name: 'type_name')  String name)?  $default,) {final _that = this;
 switch (_that) {
 case _CmsCategory() when $default != null:
 return $default(_that.id,_that.parentId,_that.name);case _:
@@ -507,12 +507,12 @@ return $default(_that.id,_that.parentId,_that.name);case _:
 @JsonSerializable()
 
 class _CmsCategory implements CmsCategory {
-  const _CmsCategory({@JsonKey(name: 'type_id')@FlexibleIntConverter() this.id = 0, @JsonKey(name: 'type_pid')@FlexibleIntConverter() this.parentId = 0, @JsonKey(name: 'type_name')@FlexibleStringConverter() this.name = ''});
+  const _CmsCategory({@JsonKey(name: 'type_id') this.id = 0, @JsonKey(name: 'type_pid') this.parentId = 0, @JsonKey(name: 'type_name') this.name = ''});
   factory _CmsCategory.fromJson(Map<String, dynamic> json) => _$CmsCategoryFromJson(json);
 
-@override@JsonKey(name: 'type_id')@FlexibleIntConverter() final  int id;
-@override@JsonKey(name: 'type_pid')@FlexibleIntConverter() final  int parentId;
-@override@JsonKey(name: 'type_name')@FlexibleStringConverter() final  String name;
+@override@JsonKey(name: 'type_id') final  int id;
+@override@JsonKey(name: 'type_pid') final  int parentId;
+@override@JsonKey(name: 'type_name') final  String name;
 
 /// Create a copy of CmsCategory
 /// with the given fields replaced by the non-null parameter values.
@@ -547,7 +547,7 @@ abstract mixin class _$CmsCategoryCopyWith<$Res> implements $CmsCategoryCopyWith
   factory _$CmsCategoryCopyWith(_CmsCategory value, $Res Function(_CmsCategory) _then) = __$CmsCategoryCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'type_id')@FlexibleIntConverter() int id,@JsonKey(name: 'type_pid')@FlexibleIntConverter() int parentId,@JsonKey(name: 'type_name')@FlexibleStringConverter() String name
+@JsonKey(name: 'type_id') int id,@JsonKey(name: 'type_pid') int parentId,@JsonKey(name: 'type_name') String name
 });
 
 
@@ -580,7 +580,7 @@ as String,
 /// @nodoc
 mixin _$VodItem {
 
-@JsonKey(name: 'vod_id')@FlexibleIntConverter() int get id;@JsonKey(name: 'type_id')@FlexibleIntConverter() int get typeId;@JsonKey(name: 'type_id_1')@FlexibleIntConverter() int get parentTypeId;@JsonKey(name: 'vod_name')@FlexibleStringConverter() String get name;@JsonKey(name: 'type_name')@FlexibleStringConverter() String get typeName;@JsonKey(name: 'vod_pic')@FlexibleStringConverter() String get picture;@JsonKey(name: 'vod_remarks')@FlexibleStringConverter() String get remarks;@JsonKey(name: 'vod_year')@FlexibleStringConverter() String get year;@JsonKey(name: 'vod_area')@FlexibleStringConverter() String get area;@JsonKey(name: 'vod_lang')@FlexibleStringConverter() String get language;@JsonKey(name: 'vod_score')@FlexibleStringConverter() String get score;@JsonKey(name: 'vod_douban_score')@FlexibleStringConverter() String get doubanScore;@JsonKey(name: 'vod_actor')@FlexibleStringConverter() String get actor;@JsonKey(name: 'vod_director')@FlexibleStringConverter() String get director;@JsonKey(name: 'vod_class')@FlexibleStringConverter() String get category;@JsonKey(name: 'vod_blurb', readValue: readVodSummary)@CmsTextConverter() String get summary;@JsonKey(name: 'vod_duration')@FlexibleStringConverter() String get duration;@JsonKey(name: 'vod_play_from')@FlexibleStringConverter() String get playFrom;@JsonKey(name: 'vod_play_url')@FlexibleStringConverter() String get playUrl;
+@JsonKey(name: 'vod_id') int get id;@JsonKey(name: 'type_id') int get typeId;@JsonKey(name: 'type_id_1') int get parentTypeId;@JsonKey(name: 'vod_name') String get name;@JsonKey(name: 'type_name') String get typeName;@JsonKey(name: 'vod_pic') String get picture;@JsonKey(name: 'vod_remarks') String get remarks;@JsonKey(name: 'vod_year') String get year;@JsonKey(name: 'vod_area') String get area;@JsonKey(name: 'vod_lang') String get language;@JsonKey(name: 'vod_score') String get score;@JsonKey(name: 'vod_douban_score') String get doubanScore;@JsonKey(name: 'vod_actor') String get actor;@JsonKey(name: 'vod_director') String get director;@JsonKey(name: 'vod_class') String get category;@JsonKey(name: 'vod_blurb') String get summary;@JsonKey(name: 'vod_duration') String get duration;@JsonKey(name: 'vod_play_from') String get playFrom;@JsonKey(name: 'vod_play_url') String get playUrl;
 /// Create a copy of VodItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -613,7 +613,7 @@ abstract mixin class $VodItemCopyWith<$Res>  {
   factory $VodItemCopyWith(VodItem value, $Res Function(VodItem) _then) = _$VodItemCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'vod_id')@FlexibleIntConverter() int id,@JsonKey(name: 'type_id')@FlexibleIntConverter() int typeId,@JsonKey(name: 'type_id_1')@FlexibleIntConverter() int parentTypeId,@JsonKey(name: 'vod_name')@FlexibleStringConverter() String name,@JsonKey(name: 'type_name')@FlexibleStringConverter() String typeName,@JsonKey(name: 'vod_pic')@FlexibleStringConverter() String picture,@JsonKey(name: 'vod_remarks')@FlexibleStringConverter() String remarks,@JsonKey(name: 'vod_year')@FlexibleStringConverter() String year,@JsonKey(name: 'vod_area')@FlexibleStringConverter() String area,@JsonKey(name: 'vod_lang')@FlexibleStringConverter() String language,@JsonKey(name: 'vod_score')@FlexibleStringConverter() String score,@JsonKey(name: 'vod_douban_score')@FlexibleStringConverter() String doubanScore,@JsonKey(name: 'vod_actor')@FlexibleStringConverter() String actor,@JsonKey(name: 'vod_director')@FlexibleStringConverter() String director,@JsonKey(name: 'vod_class')@FlexibleStringConverter() String category,@JsonKey(name: 'vod_blurb', readValue: readVodSummary)@CmsTextConverter() String summary,@JsonKey(name: 'vod_duration')@FlexibleStringConverter() String duration,@JsonKey(name: 'vod_play_from')@FlexibleStringConverter() String playFrom,@JsonKey(name: 'vod_play_url')@FlexibleStringConverter() String playUrl
+@JsonKey(name: 'vod_id') int id,@JsonKey(name: 'type_id') int typeId,@JsonKey(name: 'type_id_1') int parentTypeId,@JsonKey(name: 'vod_name') String name,@JsonKey(name: 'type_name') String typeName,@JsonKey(name: 'vod_pic') String picture,@JsonKey(name: 'vod_remarks') String remarks,@JsonKey(name: 'vod_year') String year,@JsonKey(name: 'vod_area') String area,@JsonKey(name: 'vod_lang') String language,@JsonKey(name: 'vod_score') String score,@JsonKey(name: 'vod_douban_score') String doubanScore,@JsonKey(name: 'vod_actor') String actor,@JsonKey(name: 'vod_director') String director,@JsonKey(name: 'vod_class') String category,@JsonKey(name: 'vod_blurb') String summary,@JsonKey(name: 'vod_duration') String duration,@JsonKey(name: 'vod_play_from') String playFrom,@JsonKey(name: 'vod_play_url') String playUrl
 });
 
 
@@ -736,7 +736,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'vod_id')@FlexibleIntConverter()  int id, @JsonKey(name: 'type_id')@FlexibleIntConverter()  int typeId, @JsonKey(name: 'type_id_1')@FlexibleIntConverter()  int parentTypeId, @JsonKey(name: 'vod_name')@FlexibleStringConverter()  String name, @JsonKey(name: 'type_name')@FlexibleStringConverter()  String typeName, @JsonKey(name: 'vod_pic')@FlexibleStringConverter()  String picture, @JsonKey(name: 'vod_remarks')@FlexibleStringConverter()  String remarks, @JsonKey(name: 'vod_year')@FlexibleStringConverter()  String year, @JsonKey(name: 'vod_area')@FlexibleStringConverter()  String area, @JsonKey(name: 'vod_lang')@FlexibleStringConverter()  String language, @JsonKey(name: 'vod_score')@FlexibleStringConverter()  String score, @JsonKey(name: 'vod_douban_score')@FlexibleStringConverter()  String doubanScore, @JsonKey(name: 'vod_actor')@FlexibleStringConverter()  String actor, @JsonKey(name: 'vod_director')@FlexibleStringConverter()  String director, @JsonKey(name: 'vod_class')@FlexibleStringConverter()  String category, @JsonKey(name: 'vod_blurb', readValue: readVodSummary)@CmsTextConverter()  String summary, @JsonKey(name: 'vod_duration')@FlexibleStringConverter()  String duration, @JsonKey(name: 'vod_play_from')@FlexibleStringConverter()  String playFrom, @JsonKey(name: 'vod_play_url')@FlexibleStringConverter()  String playUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'vod_id')  int id, @JsonKey(name: 'type_id')  int typeId, @JsonKey(name: 'type_id_1')  int parentTypeId, @JsonKey(name: 'vod_name')  String name, @JsonKey(name: 'type_name')  String typeName, @JsonKey(name: 'vod_pic')  String picture, @JsonKey(name: 'vod_remarks')  String remarks, @JsonKey(name: 'vod_year')  String year, @JsonKey(name: 'vod_area')  String area, @JsonKey(name: 'vod_lang')  String language, @JsonKey(name: 'vod_score')  String score, @JsonKey(name: 'vod_douban_score')  String doubanScore, @JsonKey(name: 'vod_actor')  String actor, @JsonKey(name: 'vod_director')  String director, @JsonKey(name: 'vod_class')  String category, @JsonKey(name: 'vod_blurb')  String summary, @JsonKey(name: 'vod_duration')  String duration, @JsonKey(name: 'vod_play_from')  String playFrom, @JsonKey(name: 'vod_play_url')  String playUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VodItem() when $default != null:
 return $default(_that.id,_that.typeId,_that.parentTypeId,_that.name,_that.typeName,_that.picture,_that.remarks,_that.year,_that.area,_that.language,_that.score,_that.doubanScore,_that.actor,_that.director,_that.category,_that.summary,_that.duration,_that.playFrom,_that.playUrl);case _:
@@ -757,7 +757,7 @@ return $default(_that.id,_that.typeId,_that.parentTypeId,_that.name,_that.typeNa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'vod_id')@FlexibleIntConverter()  int id, @JsonKey(name: 'type_id')@FlexibleIntConverter()  int typeId, @JsonKey(name: 'type_id_1')@FlexibleIntConverter()  int parentTypeId, @JsonKey(name: 'vod_name')@FlexibleStringConverter()  String name, @JsonKey(name: 'type_name')@FlexibleStringConverter()  String typeName, @JsonKey(name: 'vod_pic')@FlexibleStringConverter()  String picture, @JsonKey(name: 'vod_remarks')@FlexibleStringConverter()  String remarks, @JsonKey(name: 'vod_year')@FlexibleStringConverter()  String year, @JsonKey(name: 'vod_area')@FlexibleStringConverter()  String area, @JsonKey(name: 'vod_lang')@FlexibleStringConverter()  String language, @JsonKey(name: 'vod_score')@FlexibleStringConverter()  String score, @JsonKey(name: 'vod_douban_score')@FlexibleStringConverter()  String doubanScore, @JsonKey(name: 'vod_actor')@FlexibleStringConverter()  String actor, @JsonKey(name: 'vod_director')@FlexibleStringConverter()  String director, @JsonKey(name: 'vod_class')@FlexibleStringConverter()  String category, @JsonKey(name: 'vod_blurb', readValue: readVodSummary)@CmsTextConverter()  String summary, @JsonKey(name: 'vod_duration')@FlexibleStringConverter()  String duration, @JsonKey(name: 'vod_play_from')@FlexibleStringConverter()  String playFrom, @JsonKey(name: 'vod_play_url')@FlexibleStringConverter()  String playUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'vod_id')  int id, @JsonKey(name: 'type_id')  int typeId, @JsonKey(name: 'type_id_1')  int parentTypeId, @JsonKey(name: 'vod_name')  String name, @JsonKey(name: 'type_name')  String typeName, @JsonKey(name: 'vod_pic')  String picture, @JsonKey(name: 'vod_remarks')  String remarks, @JsonKey(name: 'vod_year')  String year, @JsonKey(name: 'vod_area')  String area, @JsonKey(name: 'vod_lang')  String language, @JsonKey(name: 'vod_score')  String score, @JsonKey(name: 'vod_douban_score')  String doubanScore, @JsonKey(name: 'vod_actor')  String actor, @JsonKey(name: 'vod_director')  String director, @JsonKey(name: 'vod_class')  String category, @JsonKey(name: 'vod_blurb')  String summary, @JsonKey(name: 'vod_duration')  String duration, @JsonKey(name: 'vod_play_from')  String playFrom, @JsonKey(name: 'vod_play_url')  String playUrl)  $default,) {final _that = this;
 switch (_that) {
 case _VodItem():
 return $default(_that.id,_that.typeId,_that.parentTypeId,_that.name,_that.typeName,_that.picture,_that.remarks,_that.year,_that.area,_that.language,_that.score,_that.doubanScore,_that.actor,_that.director,_that.category,_that.summary,_that.duration,_that.playFrom,_that.playUrl);case _:
@@ -777,7 +777,7 @@ return $default(_that.id,_that.typeId,_that.parentTypeId,_that.name,_that.typeNa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'vod_id')@FlexibleIntConverter()  int id, @JsonKey(name: 'type_id')@FlexibleIntConverter()  int typeId, @JsonKey(name: 'type_id_1')@FlexibleIntConverter()  int parentTypeId, @JsonKey(name: 'vod_name')@FlexibleStringConverter()  String name, @JsonKey(name: 'type_name')@FlexibleStringConverter()  String typeName, @JsonKey(name: 'vod_pic')@FlexibleStringConverter()  String picture, @JsonKey(name: 'vod_remarks')@FlexibleStringConverter()  String remarks, @JsonKey(name: 'vod_year')@FlexibleStringConverter()  String year, @JsonKey(name: 'vod_area')@FlexibleStringConverter()  String area, @JsonKey(name: 'vod_lang')@FlexibleStringConverter()  String language, @JsonKey(name: 'vod_score')@FlexibleStringConverter()  String score, @JsonKey(name: 'vod_douban_score')@FlexibleStringConverter()  String doubanScore, @JsonKey(name: 'vod_actor')@FlexibleStringConverter()  String actor, @JsonKey(name: 'vod_director')@FlexibleStringConverter()  String director, @JsonKey(name: 'vod_class')@FlexibleStringConverter()  String category, @JsonKey(name: 'vod_blurb', readValue: readVodSummary)@CmsTextConverter()  String summary, @JsonKey(name: 'vod_duration')@FlexibleStringConverter()  String duration, @JsonKey(name: 'vod_play_from')@FlexibleStringConverter()  String playFrom, @JsonKey(name: 'vod_play_url')@FlexibleStringConverter()  String playUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'vod_id')  int id, @JsonKey(name: 'type_id')  int typeId, @JsonKey(name: 'type_id_1')  int parentTypeId, @JsonKey(name: 'vod_name')  String name, @JsonKey(name: 'type_name')  String typeName, @JsonKey(name: 'vod_pic')  String picture, @JsonKey(name: 'vod_remarks')  String remarks, @JsonKey(name: 'vod_year')  String year, @JsonKey(name: 'vod_area')  String area, @JsonKey(name: 'vod_lang')  String language, @JsonKey(name: 'vod_score')  String score, @JsonKey(name: 'vod_douban_score')  String doubanScore, @JsonKey(name: 'vod_actor')  String actor, @JsonKey(name: 'vod_director')  String director, @JsonKey(name: 'vod_class')  String category, @JsonKey(name: 'vod_blurb')  String summary, @JsonKey(name: 'vod_duration')  String duration, @JsonKey(name: 'vod_play_from')  String playFrom, @JsonKey(name: 'vod_play_url')  String playUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _VodItem() when $default != null:
 return $default(_that.id,_that.typeId,_that.parentTypeId,_that.name,_that.typeName,_that.picture,_that.remarks,_that.year,_that.area,_that.language,_that.score,_that.doubanScore,_that.actor,_that.director,_that.category,_that.summary,_that.duration,_that.playFrom,_that.playUrl);case _:
@@ -792,28 +792,28 @@ return $default(_that.id,_that.typeId,_that.parentTypeId,_that.name,_that.typeNa
 @JsonSerializable()
 
 class _VodItem implements VodItem {
-  const _VodItem({@JsonKey(name: 'vod_id')@FlexibleIntConverter() this.id = 0, @JsonKey(name: 'type_id')@FlexibleIntConverter() this.typeId = 0, @JsonKey(name: 'type_id_1')@FlexibleIntConverter() this.parentTypeId = 0, @JsonKey(name: 'vod_name')@FlexibleStringConverter() this.name = '', @JsonKey(name: 'type_name')@FlexibleStringConverter() this.typeName = '', @JsonKey(name: 'vod_pic')@FlexibleStringConverter() this.picture = '', @JsonKey(name: 'vod_remarks')@FlexibleStringConverter() this.remarks = '', @JsonKey(name: 'vod_year')@FlexibleStringConverter() this.year = '', @JsonKey(name: 'vod_area')@FlexibleStringConverter() this.area = '', @JsonKey(name: 'vod_lang')@FlexibleStringConverter() this.language = '', @JsonKey(name: 'vod_score')@FlexibleStringConverter() this.score = '', @JsonKey(name: 'vod_douban_score')@FlexibleStringConverter() this.doubanScore = '', @JsonKey(name: 'vod_actor')@FlexibleStringConverter() this.actor = '', @JsonKey(name: 'vod_director')@FlexibleStringConverter() this.director = '', @JsonKey(name: 'vod_class')@FlexibleStringConverter() this.category = '', @JsonKey(name: 'vod_blurb', readValue: readVodSummary)@CmsTextConverter() this.summary = '', @JsonKey(name: 'vod_duration')@FlexibleStringConverter() this.duration = '', @JsonKey(name: 'vod_play_from')@FlexibleStringConverter() this.playFrom = '', @JsonKey(name: 'vod_play_url')@FlexibleStringConverter() this.playUrl = ''});
+  const _VodItem({@JsonKey(name: 'vod_id') this.id = 0, @JsonKey(name: 'type_id') this.typeId = 0, @JsonKey(name: 'type_id_1') this.parentTypeId = 0, @JsonKey(name: 'vod_name') this.name = '', @JsonKey(name: 'type_name') this.typeName = '', @JsonKey(name: 'vod_pic') this.picture = '', @JsonKey(name: 'vod_remarks') this.remarks = '', @JsonKey(name: 'vod_year') this.year = '', @JsonKey(name: 'vod_area') this.area = '', @JsonKey(name: 'vod_lang') this.language = '', @JsonKey(name: 'vod_score') this.score = '', @JsonKey(name: 'vod_douban_score') this.doubanScore = '', @JsonKey(name: 'vod_actor') this.actor = '', @JsonKey(name: 'vod_director') this.director = '', @JsonKey(name: 'vod_class') this.category = '', @JsonKey(name: 'vod_blurb') this.summary = '', @JsonKey(name: 'vod_duration') this.duration = '', @JsonKey(name: 'vod_play_from') this.playFrom = '', @JsonKey(name: 'vod_play_url') this.playUrl = ''});
   factory _VodItem.fromJson(Map<String, dynamic> json) => _$VodItemFromJson(json);
 
-@override@JsonKey(name: 'vod_id')@FlexibleIntConverter() final  int id;
-@override@JsonKey(name: 'type_id')@FlexibleIntConverter() final  int typeId;
-@override@JsonKey(name: 'type_id_1')@FlexibleIntConverter() final  int parentTypeId;
-@override@JsonKey(name: 'vod_name')@FlexibleStringConverter() final  String name;
-@override@JsonKey(name: 'type_name')@FlexibleStringConverter() final  String typeName;
-@override@JsonKey(name: 'vod_pic')@FlexibleStringConverter() final  String picture;
-@override@JsonKey(name: 'vod_remarks')@FlexibleStringConverter() final  String remarks;
-@override@JsonKey(name: 'vod_year')@FlexibleStringConverter() final  String year;
-@override@JsonKey(name: 'vod_area')@FlexibleStringConverter() final  String area;
-@override@JsonKey(name: 'vod_lang')@FlexibleStringConverter() final  String language;
-@override@JsonKey(name: 'vod_score')@FlexibleStringConverter() final  String score;
-@override@JsonKey(name: 'vod_douban_score')@FlexibleStringConverter() final  String doubanScore;
-@override@JsonKey(name: 'vod_actor')@FlexibleStringConverter() final  String actor;
-@override@JsonKey(name: 'vod_director')@FlexibleStringConverter() final  String director;
-@override@JsonKey(name: 'vod_class')@FlexibleStringConverter() final  String category;
-@override@JsonKey(name: 'vod_blurb', readValue: readVodSummary)@CmsTextConverter() final  String summary;
-@override@JsonKey(name: 'vod_duration')@FlexibleStringConverter() final  String duration;
-@override@JsonKey(name: 'vod_play_from')@FlexibleStringConverter() final  String playFrom;
-@override@JsonKey(name: 'vod_play_url')@FlexibleStringConverter() final  String playUrl;
+@override@JsonKey(name: 'vod_id') final  int id;
+@override@JsonKey(name: 'type_id') final  int typeId;
+@override@JsonKey(name: 'type_id_1') final  int parentTypeId;
+@override@JsonKey(name: 'vod_name') final  String name;
+@override@JsonKey(name: 'type_name') final  String typeName;
+@override@JsonKey(name: 'vod_pic') final  String picture;
+@override@JsonKey(name: 'vod_remarks') final  String remarks;
+@override@JsonKey(name: 'vod_year') final  String year;
+@override@JsonKey(name: 'vod_area') final  String area;
+@override@JsonKey(name: 'vod_lang') final  String language;
+@override@JsonKey(name: 'vod_score') final  String score;
+@override@JsonKey(name: 'vod_douban_score') final  String doubanScore;
+@override@JsonKey(name: 'vod_actor') final  String actor;
+@override@JsonKey(name: 'vod_director') final  String director;
+@override@JsonKey(name: 'vod_class') final  String category;
+@override@JsonKey(name: 'vod_blurb') final  String summary;
+@override@JsonKey(name: 'vod_duration') final  String duration;
+@override@JsonKey(name: 'vod_play_from') final  String playFrom;
+@override@JsonKey(name: 'vod_play_url') final  String playUrl;
 
 /// Create a copy of VodItem
 /// with the given fields replaced by the non-null parameter values.
@@ -848,7 +848,7 @@ abstract mixin class _$VodItemCopyWith<$Res> implements $VodItemCopyWith<$Res> {
   factory _$VodItemCopyWith(_VodItem value, $Res Function(_VodItem) _then) = __$VodItemCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'vod_id')@FlexibleIntConverter() int id,@JsonKey(name: 'type_id')@FlexibleIntConverter() int typeId,@JsonKey(name: 'type_id_1')@FlexibleIntConverter() int parentTypeId,@JsonKey(name: 'vod_name')@FlexibleStringConverter() String name,@JsonKey(name: 'type_name')@FlexibleStringConverter() String typeName,@JsonKey(name: 'vod_pic')@FlexibleStringConverter() String picture,@JsonKey(name: 'vod_remarks')@FlexibleStringConverter() String remarks,@JsonKey(name: 'vod_year')@FlexibleStringConverter() String year,@JsonKey(name: 'vod_area')@FlexibleStringConverter() String area,@JsonKey(name: 'vod_lang')@FlexibleStringConverter() String language,@JsonKey(name: 'vod_score')@FlexibleStringConverter() String score,@JsonKey(name: 'vod_douban_score')@FlexibleStringConverter() String doubanScore,@JsonKey(name: 'vod_actor')@FlexibleStringConverter() String actor,@JsonKey(name: 'vod_director')@FlexibleStringConverter() String director,@JsonKey(name: 'vod_class')@FlexibleStringConverter() String category,@JsonKey(name: 'vod_blurb', readValue: readVodSummary)@CmsTextConverter() String summary,@JsonKey(name: 'vod_duration')@FlexibleStringConverter() String duration,@JsonKey(name: 'vod_play_from')@FlexibleStringConverter() String playFrom,@JsonKey(name: 'vod_play_url')@FlexibleStringConverter() String playUrl
+@JsonKey(name: 'vod_id') int id,@JsonKey(name: 'type_id') int typeId,@JsonKey(name: 'type_id_1') int parentTypeId,@JsonKey(name: 'vod_name') String name,@JsonKey(name: 'type_name') String typeName,@JsonKey(name: 'vod_pic') String picture,@JsonKey(name: 'vod_remarks') String remarks,@JsonKey(name: 'vod_year') String year,@JsonKey(name: 'vod_area') String area,@JsonKey(name: 'vod_lang') String language,@JsonKey(name: 'vod_score') String score,@JsonKey(name: 'vod_douban_score') String doubanScore,@JsonKey(name: 'vod_actor') String actor,@JsonKey(name: 'vod_director') String director,@JsonKey(name: 'vod_class') String category,@JsonKey(name: 'vod_blurb') String summary,@JsonKey(name: 'vod_duration') String duration,@JsonKey(name: 'vod_play_from') String playFrom,@JsonKey(name: 'vod_play_url') String playUrl
 });
 
 
