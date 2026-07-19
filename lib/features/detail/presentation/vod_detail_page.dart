@@ -284,7 +284,7 @@ class VodDetailContent extends StatelessWidget {
           else
             for (final source in sources) ...[
               Text(
-                "数据源:${source.name}",
+                "路线:${source.name}",
                 style: TextStyle(
                   color: CupertinoColors.label.resolveFrom(context),
                   fontSize: 20,
