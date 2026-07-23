@@ -9,11 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 class VodCatalogPage extends HookConsumerWidget {
-  const VodCatalogPage({
-    required this.typeId,
-    required this.title,
-    super.key,
-  });
+  const VodCatalogPage({required this.typeId, required this.title, super.key});
 
   final int typeId;
   final String title;

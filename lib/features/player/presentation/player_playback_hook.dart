@@ -48,15 +48,11 @@ PlayerPlaybackController usePlayerPlayback({
     initialEpisodeIndex < 0 ? 0 : initialEpisodeIndex,
   );
   final activeEpisode = source.episodes[episodeIndex.value];
-  final session = useMemoized(
-    () => PlayerPlaybackSession(player: Player()),
-    [activeEpisode.url],
-  );
+  final session = useMemoized(() => PlayerPlaybackSession(player: Player()), [
+    activeEpisode.url,
+  ]);
   final player = session.player;
-  final videoController = useMemoized(
-    () => VideoController(player),
-    [player],
-  );
+  final videoController = useMemoized(() => VideoController(player), [player]);
   final playbackPosition = activeEpisode.url == initialEpisode.url
       ? initialPosition
       : Duration.zero;

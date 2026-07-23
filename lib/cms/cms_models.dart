@@ -13,9 +13,7 @@ abstract class CmsResponseDto with _$CmsResponseDto {
     @Default(0) int limit,
     @Default(0) int total,
     @JsonKey(name: 'list') @Default([]) List<VodItem> items,
-    @JsonKey(name: 'class')
-    @Default([])
-    List<CmsCategory> categories,
+    @JsonKey(name: 'class') @Default([]) List<CmsCategory> categories,
   }) = _CmsResponseDto;
 
   factory CmsResponseDto.fromJson(Map<String, dynamic> json) =>

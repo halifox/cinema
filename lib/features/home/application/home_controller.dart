@@ -12,10 +12,7 @@ typedef HomeCatalogData = ({
 });
 
 class HomeFilterState {
-  const HomeFilterState({
-    this.selectedPrimaryId,
-    this.selectedSecondaryId,
-  });
+  const HomeFilterState({this.selectedPrimaryId, this.selectedSecondaryId});
 
   final int? selectedPrimaryId;
   final int? selectedSecondaryId;
@@ -26,8 +23,7 @@ class HomeFilterController extends Notifier<HomeFilterState> {
   HomeFilterState build() => const HomeFilterState();
 
   void selectPrimary({required int id}) {
-    if (state.selectedPrimaryId == id &&
-        state.selectedSecondaryId == null) {
+    if (state.selectedPrimaryId == id && state.selectedSecondaryId == null) {
       return;
     }
     state = HomeFilterState(selectedPrimaryId: id);
@@ -42,10 +38,7 @@ class HomeFilterController extends Notifier<HomeFilterState> {
   }
 }
 
-final homeFilterProvider =
-    NotifierProvider(
-      HomeFilterController.new,
-    );
+final homeFilterProvider = NotifierProvider(HomeFilterController.new);
 
 final homeCatalogProvider = Provider((ref) {
   final filter = ref.watch(homeFilterProvider);
@@ -63,9 +56,8 @@ final homeCatalogProvider = Provider((ref) {
       );
     }
 
-    final selectedPrimaryId = primary.any(
-      (category) => category.id == filter.selectedPrimaryId,
-    )
+    final selectedPrimaryId =
+        primary.any((category) => category.id == filter.selectedPrimaryId)
         ? filter.selectedPrimaryId!
         : primary.first.id;
     final secondary = page.categories

@@ -12,8 +12,8 @@ typedef VodResumeData = ({
   PlayEpisode episode,
 });
 
-final vodResumeDataProvider = Provider
-    .family<VodResumeData?, VodDetailArguments>((ref, arguments) {
+final vodResumeDataProvider =
+    Provider.family<VodResumeData?, VodDetailArguments>((ref, arguments) {
       final detail = ref.watch(vodDetailProvider(arguments));
       final progress = ref.watch(vodViewingProgressProvider(arguments.id));
       if (!detail.hasValue || !progress.hasValue) return null;

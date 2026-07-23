@@ -143,10 +143,11 @@ class LibraryDatabase extends _$LibraryDatabase {
         ),
       );
 
-      final overflow = await (select(searchHistories)
-            ..orderBy([(row) => OrderingTerm.desc(row.searchedAt)])
-            ..limit(1000, offset: maximumSearchHistoryEntries))
-          .get();
+      final overflow =
+          await (select(searchHistories)
+                ..orderBy([(row) => OrderingTerm.desc(row.searchedAt)])
+                ..limit(1000, offset: maximumSearchHistoryEntries))
+              .get();
       if (overflow.isNotEmpty) {
         await (delete(searchHistories)..where(
               (row) => row.normalizedQuery.isIn(
@@ -179,17 +180,16 @@ class LibraryDatabase extends _$LibraryDatabase {
   }
 
   Stream<bool> watchFavorite({required int vodId}) {
-    final query = select(vodFavorites)
-      ..where((row) => row.vodId.equals(vodId));
+    final query = select(vodFavorites)..where((row) => row.vodId.equals(vodId));
     return query.watchSingleOrNull().map((favorite) => favorite != null);
   }
 
   Future<void> toggleFavorite({required VodItem item}) async {
     await transaction(() async {
       await upsertVod(item: item);
-      final favorite = await (select(vodFavorites)
-            ..where((row) => row.vodId.equals(item.id)))
-          .getSingleOrNull();
+      final favorite = await (select(
+        vodFavorites,
+      )..where((row) => row.vodId.equals(item.id))).getSingleOrNull();
       if (favorite == null) {
         await into(vodFavorites).insert(
           VodFavoritesCompanion.insert(
@@ -198,8 +198,9 @@ class LibraryDatabase extends _$LibraryDatabase {
           ),
         );
       } else {
-        await (delete(vodFavorites)..where((row) => row.vodId.equals(item.id)))
-            .go();
+        await (delete(
+          vodFavorites,
+        )..where((row) => row.vodId.equals(item.id))).go();
       }
     });
   }

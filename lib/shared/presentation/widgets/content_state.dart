@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-
 typedef ErrorPresentation = (IconData icon, String title, String message);
 
 class ContentStateSliver extends StatelessWidget {
@@ -155,11 +154,7 @@ class ContentStateSliver extends StatelessWidget {
             '服务异常',
             message,
           ),
-          _ => (
-            CupertinoIcons.exclamationmark_triangle_fill,
-            '加载失败',
-            message,
-          ),
+          _ => (CupertinoIcons.exclamationmark_triangle_fill, '加载失败', message),
         };
       }
 
@@ -217,11 +212,8 @@ class ContentStateSliver extends StatelessWidget {
     }
 
     return switch (error) {
-      FormatException() || TypeError() => (
-        CupertinoIcons.doc_text_search,
-        '数据异常',
-        '',
-      ),
+      FormatException() ||
+      TypeError() => (CupertinoIcons.doc_text_search, '数据异常', ''),
       StateError() => (
         CupertinoIcons.exclamationmark_triangle_fill,
         '状态异常',

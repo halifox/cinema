@@ -9,10 +9,9 @@ final categoriesProvider = FutureProvider((ref) async {
 });
 
 final catalogProvider =
-    AsyncNotifierProvider
-        .family<CatalogNotifier, PagePagingData<VodItem>, int>(
-          CatalogNotifier.new,
-        );
+    AsyncNotifierProvider.family<CatalogNotifier, PagePagingData<VodItem>, int>(
+      CatalogNotifier.new,
+    );
 
 class CatalogNotifier extends AsyncNotifier<PagePagingData<VodItem>>
     with PagePagingNotifierMixin<VodItem> {
@@ -37,12 +36,11 @@ class CatalogNotifier extends AsyncNotifier<PagePagingData<VodItem>>
 }
 
 final searchResultsProvider =
-    AsyncNotifierProvider
-        .family<
-          SearchResultsNotifier,
-          PagePagingData<VodItem>,
-          String
-        >(SearchResultsNotifier.new);
+    AsyncNotifierProvider.family<
+      SearchResultsNotifier,
+      PagePagingData<VodItem>,
+      String
+    >(SearchResultsNotifier.new);
 
 class SearchResultsNotifier extends AsyncNotifier<PagePagingData<VodItem>>
     with PagePagingNotifierMixin<VodItem> {
@@ -68,16 +66,13 @@ class SearchResultsNotifier extends AsyncNotifier<PagePagingData<VodItem>>
 
 typedef VodDetailArguments = ({int id, VodItem? initialItem});
 
-final vodDetailProvider =
-    StreamProvider.family<VodItem, VodDetailArguments>(
-      (ref, arguments) {
-        final repository = ref.watch(vodRepositoryProvider);
-        return streamVodDetail(
-          repository: repository,
-          arguments: arguments,
-        );
-      },
-    );
+final vodDetailProvider = StreamProvider.family<VodItem, VodDetailArguments>((
+  ref,
+  arguments,
+) {
+  final repository = ref.watch(vodRepositoryProvider);
+  return streamVodDetail(repository: repository, arguments: arguments);
+});
 
 Stream<VodItem> streamVodDetail({
   required VodRepository repository,

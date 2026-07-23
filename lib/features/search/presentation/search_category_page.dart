@@ -1,4 +1,3 @@
-
 import 'package:cinema/cms/cms_models.dart';
 import 'package:cinema/cms/cms_providers.dart';
 import 'package:cinema/features/catalog/presentation/vod_catalog_page.dart';
@@ -52,48 +51,50 @@ class SearchCategoryPage extends HookConsumerWidget {
                 8,
               ),
             ),
-            ref.watch(categoriesProvider).when(
-              data: (page) {
-                final categories = categoryEntries(
-                  categories: page.categories,
-                );
-                if (categories.isEmpty) {
-                  return const ContentStateSliver.empty(
-                    icon: CupertinoIcons.square_grid_2x2,
-                    title: '暂无分类',
-                    message: '分类接口没有返回可用内容。',
-                  );
-                }
-                return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
-                  sliver: SliverGrid.builder(
-                    itemCount: categories.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 1.65,
-                        ),
-                    itemBuilder: (context, index) {
-                      final category = categories[index];
-                      return VodCategoryCard(
-                        category: category,
-                        color: vodCategoryColor(
-                          context: context,
-                          seed: category.id,
-                        ),
+            ref
+                .watch(categoriesProvider)
+                .when(
+                  data: (page) {
+                    final categories = categoryEntries(
+                      categories: page.categories,
+                    );
+                    if (categories.isEmpty) {
+                      return const ContentStateSliver.empty(
+                        icon: CupertinoIcons.square_grid_2x2,
+                        title: '暂无分类',
+                        message: '分类接口没有返回可用内容。',
                       );
-                    },
+                    }
+                    return SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
+                      sliver: SliverGrid.builder(
+                        itemCount: categories.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 1.65,
+                            ),
+                        itemBuilder: (context, index) {
+                          final category = categories[index];
+                          return VodCategoryCard(
+                            category: category,
+                            color: vodCategoryColor(
+                              context: context,
+                              seed: category.id,
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  loading: () => const ContentStateSliver.loading(),
+                  error: (error, stackTrace) => ContentStateSliver.error(
+                    error: error,
+                    onRetry: () => ref.invalidate(categoriesProvider),
                   ),
-                );
-              },
-              loading: () => const ContentStateSliver.loading(),
-              error: (error, stackTrace) => ContentStateSliver.error(
-                error: error,
-                onRetry: () => ref.invalidate(categoriesProvider),
-              ),
-            ),
+                ),
           ],
         ),
       ),
@@ -101,19 +102,14 @@ class SearchCategoryPage extends HookConsumerWidget {
   }
 }
 
-List<CmsCategory> categoryEntries({
-  required List<CmsCategory> categories,
-}) {
+List<CmsCategory> categoryEntries({required List<CmsCategory> categories}) {
   final children = categories
       .where((category) => category.parentId != 0)
       .toList(growable: false);
   return children.isEmpty ? categories : children;
 }
 
-Color vodCategoryColor({
-  required BuildContext context,
-  required int seed,
-}) {
+Color vodCategoryColor({required BuildContext context, required int seed}) {
   final hue = (seed * 0.618033988749895 * 360) % 360;
   return CupertinoDynamicColor.withBrightness(
     color: HSLColor.fromAHSL(1, hue, .58, .74).toColor(),
@@ -136,10 +132,8 @@ class VodCategoryCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
         CupertinoPageRoute(
-          builder: (routeContext) => VodCatalogPage(
-            typeId: category.id,
-            title: category.name,
-          ),
+          builder: (routeContext) =>
+              VodCatalogPage(typeId: category.id, title: category.name),
         ),
       ),
       child: ClipRRect(

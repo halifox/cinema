@@ -27,9 +27,7 @@ class AmbientGlowBackground extends StatelessWidget {
                     translation: const Offset(0.3, -0.25),
                     child: AmbientGlowBlob(
                       size: 360,
-                      color: const Color(
-                        0xFFFFC7C9,
-                      ).withValues(alpha: .55),
+                      color: const Color(0xFFFFC7C9).withValues(alpha: .55),
                     ),
                   ),
                 ),
@@ -39,9 +37,7 @@ class AmbientGlowBackground extends StatelessWidget {
                     translation: const Offset(-0.4, -0.1),
                     child: AmbientGlowBlob(
                       size: 420,
-                      color: const Color(
-                        0xFFC9D7FF,
-                      ).withValues(alpha: .5),
+                      color: const Color(0xFFC9D7FF).withValues(alpha: .5),
                     ),
                   ),
                 ),
@@ -51,9 +47,7 @@ class AmbientGlowBackground extends StatelessWidget {
                     translation: const Offset(0.15, 0.45),
                     child: AmbientGlowBlob(
                       size: 800,
-                      color: const Color(
-                        0xFFDCCBFF,
-                      ).withValues(alpha: .5),
+                      color: const Color(0xFFDCCBFF).withValues(alpha: .5),
                     ),
                   ),
                 ),

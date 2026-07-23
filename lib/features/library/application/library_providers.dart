@@ -11,10 +11,7 @@ final favoritesProvider = StreamProvider((ref) {
   return ref.watch(libraryDatabaseProvider).watchFavoriteVods();
 });
 
-final vodFavoriteProvider = StreamProvider.family<bool, int>((
-  ref,
-  vodId,
-) {
+final vodFavoriteProvider = StreamProvider.family<bool, int>((ref, vodId) {
   return ref.watch(libraryDatabaseProvider).watchFavorite(vodId: vodId);
 });
 
@@ -22,8 +19,8 @@ final vodHistoryProvider = StreamProvider((ref) {
   return ref.watch(libraryDatabaseProvider).watchViewingHistory();
 });
 
-final vodViewingProgressProvider = StreamProvider
-    .family<VodViewingProgress?, int>((ref, vodId) {
+final vodViewingProgressProvider =
+    StreamProvider.family<VodViewingProgress?, int>((ref, vodId) {
       return ref
           .watch(libraryDatabaseProvider)
           .watchViewingProgress(vodId: vodId);

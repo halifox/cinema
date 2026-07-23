@@ -335,8 +335,7 @@ class PlayerControlsOverlay extends HookWidget {
                     onPointerDown: (event) => showControls(keepVisible: true),
                     child: PlayerPlaybackRateAction(
                       selectedRate: selectedPlaybackRate.value,
-                      onSelected: (rate) =>
-                          selectPlaybackRate(rate: rate),
+                      onSelected: (rate) => selectPlaybackRate(rate: rate),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -415,47 +414,43 @@ class PlayerPlaybackRateAction extends StatelessWidget {
     final formattedRate = formatPlaybackRate(rate: selectedRate);
     final controlIconColor = CupertinoColors.label.resolveFrom(context);
     return GlassMenu(
-        menuAlignment: GlassMenuAlignment.bottomRight,
-        menuWidth: 180,
-        menuPadding: const EdgeInsets.all(12),
-        autoAdjustToScreen: true,
-        triggerBuilder: (context, toggleMenu) => GlassButton.custom(
-          width: 92,
-          height: 44,
-          shape: const LiquidRoundedSuperellipse(borderRadius: 44),
-          onTap: toggleMenu,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                CupertinoIcons.speedometer,
-                size: 18,
-                color: controlIconColor,
+      menuAlignment: GlassMenuAlignment.bottomRight,
+      menuWidth: 180,
+      menuPadding: const EdgeInsets.all(12),
+      autoAdjustToScreen: true,
+      triggerBuilder: (context, toggleMenu) => GlassButton.custom(
+        width: 92,
+        height: 44,
+        shape: const LiquidRoundedSuperellipse(borderRadius: 44),
+        onTap: toggleMenu,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(CupertinoIcons.speedometer, size: 18, color: controlIconColor),
+            const SizedBox(width: 7),
+            Text(
+              '$formattedRate 倍',
+              style: const TextStyle(
+                color: CupertinoColors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                fontFeatures: [FontFeature.tabularFigures()],
               ),
-              const SizedBox(width: 7),
-              Text(
-                '$formattedRate 倍',
-                style: const TextStyle(
-                  color: CupertinoColors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  fontFeatures: [FontFeature.tabularFigures()],
-                ),
-              ),
-            ],
-          ),
-        ),
-        items: [
-          for (final rate in playerPlaybackRates)
-            GlassMenuItem(
-              title: '${formatPlaybackRate(rate: rate)} 倍',
-              trailing: rate == selectedRate
-                  ? const Icon(CupertinoIcons.check_mark)
-                  : null,
-              onTap: () => onSelected(rate),
             ),
-        ],
+          ],
+        ),
+      ),
+      items: [
+        for (final rate in playerPlaybackRates)
+          GlassMenuItem(
+            title: '${formatPlaybackRate(rate: rate)} 倍',
+            trailing: rate == selectedRate
+                ? const Icon(CupertinoIcons.check_mark)
+                : null,
+            onTap: () => onSelected(rate),
+          ),
+      ],
     );
   }
 }
