@@ -71,10 +71,10 @@ class ContentStateSliver extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               loading
-                  ? const Center(
+                  ? Center(
                       child: GlassProgressIndicator.circular(
                         size: 40,
-                        color: AppTheme.seedColor,
+                        color: CupertinoTheme.of(context).primaryColor,
                       ),
                     )
                   : Icon(icon, size: 48, color: iconColor),
