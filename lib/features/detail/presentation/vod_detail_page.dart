@@ -167,7 +167,7 @@ class VodSourceAction extends StatelessWidget {
       items: [
         for (final (index, source) in sources.indexed)
           GlassMenuItem(
-            title: "路线${index + 1}",
+            title: '路线${index + 1}',
             trailing: index == effectiveSourceIndex
                 ? const Icon(CupertinoIcons.check_mark)
                 : null,

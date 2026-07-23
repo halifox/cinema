@@ -149,7 +149,7 @@ class ContentStateSliver extends StatelessWidget {
           ),
           422 => (CupertinoIcons.doc_text_search, '内容无法处理', message),
           429 => (CupertinoIcons.hourglass, '请求过于频繁', message),
-          int code when code >= 500 => (
+          final int code when code >= 500 => (
             CupertinoIcons.exclamationmark_triangle_fill,
             '服务异常',
             message,
