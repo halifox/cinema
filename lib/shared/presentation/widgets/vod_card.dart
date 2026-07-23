@@ -17,7 +17,7 @@ class VodCard extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () {
           Navigator.of(context).push(
-            CupertinoPageRoute<void>(
+            CupertinoPageRoute(
               builder: (routeContext) =>
                   VodDetailPage(vodId: item.id, initialItem: item),
             ),

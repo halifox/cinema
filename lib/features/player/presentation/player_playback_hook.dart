@@ -76,8 +76,10 @@ PlayerPlaybackController usePlayerPlayback({
   final saveTimer = useRef<Timer?>(null);
 
   useEffect(() {
-    unawaited(configurePlaybackChrome());
-    return () => unawaited(restoreAppChrome());
+    configurePlaybackChrome();
+    return () {
+      restoreAppChrome();
+    };
   }, const []);
 
   useEffect(
@@ -109,21 +111,21 @@ PlayerPlaybackController usePlayerPlayback({
         if (saveTimer.value != null) return;
         saveTimer.value = Timer(const Duration(seconds: 2), () {
           saveTimer.value = null;
-          unawaited(saveProgress());
+          saveProgress();
         });
       }
 
       final positionSubscription = player.stream.position.listen(
         (position) => scheduleProgressSave(),
       );
-      unawaited(trackInitialization());
-      unawaited(saveProgress());
+      trackInitialization();
+      saveProgress();
       return () {
-        unawaited(positionSubscription.cancel());
+        positionSubscription.cancel();
         saveTimer.value?.cancel();
         saveTimer.value = null;
-        unawaited(saveProgress());
-        unawaited(session.dispose());
+        saveProgress();
+        session.dispose();
       };
     },
     [

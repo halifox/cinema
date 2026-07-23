@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'cms_api.dart';
 
-final cmsDioProvider = Provider<Dio>((ref) {
+final cmsDioProvider = Provider((ref) {
   final dio = Dio(
     BaseOptions(
       baseUrl: 'https://example.com',
@@ -52,6 +52,6 @@ final cmsDioProvider = Provider<Dio>((ref) {
   return dio;
 });
 
-final cmsApiProvider = Provider<CmsApi>((ref) {
+final cmsApiProvider = Provider((ref) {
   return CmsApi(ref.watch(cmsDioProvider));
 });

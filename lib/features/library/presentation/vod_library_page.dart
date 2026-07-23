@@ -31,7 +31,7 @@ class VodLibraryPage extends HookConsumerWidget {
             icon: const Icon(CupertinoIcons.clock),
             onPressed: () {
               Navigator.of(context).push(
-                CupertinoPageRoute<void>(
+                CupertinoPageRoute(
                   builder: (routeContext) => const VodHistoryPage(),
                 ),
               );
@@ -41,7 +41,7 @@ class VodLibraryPage extends HookConsumerWidget {
       ),
       body: CustomScrollView(
         controller: titleController.scrollController,
-        key: const PageStorageKey<String>('library-scroll'),
+        key: const PageStorageKey('library-scroll'),
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),

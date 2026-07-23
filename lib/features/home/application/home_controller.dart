@@ -43,11 +43,11 @@ class HomeFilterController extends Notifier<HomeFilterState> {
 }
 
 final homeFilterProvider =
-    NotifierProvider<HomeFilterController, HomeFilterState>(
+    NotifierProvider(
       HomeFilterController.new,
     );
 
-final homeCatalogProvider = Provider<AsyncValue<HomeCatalogData>>((ref) {
+final homeCatalogProvider = Provider((ref) {
   final filter = ref.watch(homeFilterProvider);
   return ref.watch(categoriesProvider).whenData((page) {
     final primary = page.categories

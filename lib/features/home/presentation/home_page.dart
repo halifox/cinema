@@ -41,7 +41,7 @@ class HomePage extends HookConsumerWidget {
       topEdgeFadeExtent: 64,
       bottomEdgeFadeExtent: 64,
       body: CustomScrollView(
-        key: const PageStorageKey<String>('home-scroll'),
+        key: const PageStorageKey('home-scroll'),
         controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
@@ -78,7 +78,7 @@ class HomePage extends HookConsumerWidget {
                     ),
                   ),
                   CatalogFeed(
-                    key: ValueKey<int>(activeTypeId),
+                    key: ValueKey(activeTypeId),
                     typeId: activeTypeId,
                   ),
                 ],
@@ -142,7 +142,7 @@ class CategoryRows extends StatelessWidget {
                 : SizedBox(
                     width: double.infinity,
                     child: SecondaryCategoryBar(
-                      key: ValueKey<int>(selectedPrimaryId),
+                      key: ValueKey(selectedPrimaryId),
                       categories: secondary,
                       selectedId: selectedSecondaryId,
                       onSelected: onSecondarySelected,
@@ -345,7 +345,7 @@ class CatalogFeed extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = catalogProvider(typeId);
-    return CupertinoPagingSliverView<VodItem>(
+    return CupertinoPagingSliverView(
       state: ref.watch(provider),
       onLoadNext: () => ref.read(provider.notifier).loadNext(),
       onRetry: () => ref.read(provider.notifier).forceRefresh(),

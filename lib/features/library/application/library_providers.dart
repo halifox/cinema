@@ -3,11 +3,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../cms/cms_models.dart';
 import '../data/library_database.dart';
 
-final searchHistoryProvider = StreamProvider<List<String>>((ref) {
+final searchHistoryProvider = StreamProvider((ref) {
   return ref.watch(libraryDatabaseProvider).watchSearchHistory();
 });
 
-final favoritesProvider = StreamProvider<List<VodItem>>((ref) {
+final favoritesProvider = StreamProvider((ref) {
   return ref.watch(libraryDatabaseProvider).watchFavoriteVods();
 });
 
@@ -18,7 +18,7 @@ final vodFavoriteProvider = StreamProvider.family<bool, int>((
   return ref.watch(libraryDatabaseProvider).watchFavorite(vodId: vodId);
 });
 
-final vodHistoryProvider = StreamProvider<List<VodItem>>((ref) {
+final vodHistoryProvider = StreamProvider((ref) {
   return ref.watch(libraryDatabaseProvider).watchViewingHistory();
 });
 
@@ -29,7 +29,7 @@ final vodViewingProgressProvider = StreamProvider
           .watchViewingProgress(vodId: vodId);
     });
 
-final libraryCommandsProvider = Provider<LibraryCommands>((ref) {
+final libraryCommandsProvider = Provider((ref) {
   return LibraryCommands(database: ref.watch(libraryDatabaseProvider));
 });
 

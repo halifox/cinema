@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -69,6 +67,7 @@ class VodDetailPage extends HookConsumerWidget {
 
     return GlassScaffold(
       edgeToEdge: true,
+      topEdgeFade: false,
       contentAwareBrightness: true,
       statusBarStyle: GlassStatusBarStyle.auto,
       background: const AmbientGlowBackground(),
@@ -202,9 +201,8 @@ class VodFavoriteAction extends ConsumerWidget {
                 ? CupertinoIcons.rectangle_stack_fill
                 : CupertinoIcons.rectangle_stack_badge_plus,
           ),
-          onPressed: () => unawaited(
-            ref.read(libraryCommandsProvider).toggleFavorite(item: item),
-          ),
+          onPressed: () =>
+              ref.read(libraryCommandsProvider).toggleFavorite(item: item),
         ),
         loading: buildToolbarLoading,
         error: (error, stackTrace) => GlassIconButton(
@@ -237,7 +235,7 @@ class VodDetailCoverSliver extends ConsumerWidget {
       child: ClipRect(
         child: SizedBox(
           height: vodDetailCoverHeight,
-          child: ValueListenableBuilder<double>(
+          child: ValueListenableBuilder(
             valueListenable: scrollOffset,
             builder: (context, offset, child) => Transform.translate(
               offset: Offset(0, offset * .5),
@@ -535,7 +533,7 @@ void openEpisode({
   Duration initialPosition = Duration.zero,
 }) {
   Navigator.of(context).push(
-    CupertinoPageRoute<void>(
+    CupertinoPageRoute(
       builder: (routeContext) => PlayerPage(
         item: item,
         source: source,

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cinema/features/library/application/library_providers.dart';
 import 'package:cinema/features/search/presentation/search_results_page.dart';
 import 'package:cinema/shared/presentation/widgets/ambient_glow_background.dart';
@@ -101,13 +99,11 @@ class SearchHistoryPage extends HookConsumerWidget {
                                     fontWeight: FontWeight.w500,
                                   ),
                                   onTap: () {
-                                    unawaited(
-                                      ref
-                                          .read(libraryCommandsProvider)
-                                          .recordSearch(query: query),
-                                    );
+                                    ref
+                                        .read(libraryCommandsProvider)
+                                        .recordSearch(query: query);
                                     Navigator.of(context).push(
-                                      CupertinoPageRoute<void>(
+                                      CupertinoPageRoute(
                                         builder: (routeContext) =>
                                             SearchResultsPage(query: query),
                                       ),
@@ -118,11 +114,9 @@ class SearchHistoryPage extends HookConsumerWidget {
                                       CupertinoIcons.trash,
                                       color: CupertinoColors.systemRed,
                                     ),
-                                    onPressed: () => unawaited(
-                                      ref
-                                          .read(libraryCommandsProvider)
-                                          .removeSearch(query: query),
-                                    ),
+                                    onPressed: () => ref
+                                        .read(libraryCommandsProvider)
+                                        .removeSearch(query: query),
                                   ),
                                 ),
                             ],

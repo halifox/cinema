@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'cms_client_providers.dart';
 import 'cms_models.dart';
 
-final cmsVodRepositoryProvider = Provider<VodRepository>(
+final cmsVodRepositoryProvider = Provider(
   (ref) => CmsVodRepository(ref: ref),
 );
 

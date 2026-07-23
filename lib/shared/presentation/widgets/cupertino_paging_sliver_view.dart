@@ -42,7 +42,7 @@ class CupertinoPagingSliverView<Item> extends StatelessWidget {
 
     return switch (data.loadNextStatus) {
       LoadNextStatus.idle => VisibilityDetector(
-        key: ValueKey<String>('paging-end-${data.items.length}'),
+        key: ValueKey('paging-end-${data.items.length}'),
         onVisibilityChanged: (info) {
           if (info.visibleFraction > .1) onLoadNext();
         },

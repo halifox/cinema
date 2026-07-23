@@ -54,7 +54,7 @@ class SearchResultsPage extends HookConsumerWidget {
               8,
             ),
           ),
-          CupertinoPagingSliverView<VodItem>(
+          CupertinoPagingSliverView(
             state: ref.watch(provider),
             onLoadNext: () => ref.read(provider.notifier).loadNext(),
             onRetry: () => ref.read(provider.notifier).forceRefresh(),

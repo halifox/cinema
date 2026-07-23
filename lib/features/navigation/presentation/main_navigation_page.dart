@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cinema/features/home/presentation/home_page.dart';
 import 'package:cinema/features/library/application/library_providers.dart';
 import 'package:cinema/features/library/presentation/vod_library_page.dart';
@@ -65,15 +63,11 @@ class MainNavigationPage extends HookConsumerWidget {
                 onSubmitted: (value) {
                   final query = value.trim();
                   if (query.isEmpty) return;
-                  unawaited(
-                    ref
-                        .read(libraryCommandsProvider)
-                        .recordSearch(query: query),
-                  );
+                  ref.read(libraryCommandsProvider).recordSearch(query: query);
                   searchController.clear();
                   FocusManager.instance.primaryFocus?.unfocus();
                   Navigator.of(context).push(
-                    CupertinoPageRoute<void>(
+                    CupertinoPageRoute(
                       builder: (routeContext) =>
                           SearchResultsPage(query: query),
                     ),

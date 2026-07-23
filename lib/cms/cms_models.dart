@@ -12,9 +12,9 @@ abstract class CmsResponseDto with _$CmsResponseDto {
     @JsonKey(name: 'pagecount') @Default(1) int pageCount,
     @Default(0) int limit,
     @Default(0) int total,
-    @JsonKey(name: 'list') @Default(<VodItem>[]) List<VodItem> items,
+    @JsonKey(name: 'list') @Default([]) List<VodItem> items,
     @JsonKey(name: 'class')
-    @Default(<CmsCategory>[])
+    @Default([])
     List<CmsCategory> categories,
   }) = _CmsResponseDto;
 
@@ -93,7 +93,7 @@ extension CmsResponseMapping on CmsResponseDto {
     if (code != 1) {
       throw StateError(message.isEmpty ? '请求失败' : message);
     }
-    return CmsPage<VodItem>(
+    return CmsPage(
       page: page,
       pageCount: pageCount,
       total: total,

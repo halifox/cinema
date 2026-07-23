@@ -9,7 +9,7 @@ import '../../../cms/cms_models.dart';
 
 enum PlayerOverlayState { hidden, controls }
 
-const playerPlaybackRates = <double>[4, 3, 2, 1.5, 1, 0.5];
+const playerPlaybackRates = [4.0, 3.0, 2.0, 1.5, 1.0, 0.5];
 
 class PlayerControlsOverlay extends HookWidget {
   const PlayerControlsOverlay({
@@ -144,7 +144,7 @@ class PlayerControlsOverlay extends HookWidget {
         return;
       }
       showControls();
-      unawaited(playing ? player.pause() : player.play());
+      playing ? player.pause() : player.play();
     }
 
     Future<void> selectPlaybackRate({required double rate}) async {
@@ -196,7 +196,7 @@ class PlayerControlsOverlay extends HookWidget {
         }
       }
 
-      unawaited(restorePlaybackRate());
+      restorePlaybackRate();
       return () => effectActive = false;
     }, [player]);
 
@@ -313,10 +313,8 @@ class PlayerControlsOverlay extends HookWidget {
                       onChangeEnd: duration > Duration.zero
                           ? (value) {
                               draggedPosition.value = null;
-                              unawaited(
-                                player.seek(
-                                  Duration(milliseconds: value.round()),
-                                ),
+                              player.seek(
+                                Duration(milliseconds: value.round()),
                               );
                               showControls();
                             }
@@ -338,7 +336,7 @@ class PlayerControlsOverlay extends HookWidget {
                     child: PlayerPlaybackRateAction(
                       selectedRate: selectedPlaybackRate.value,
                       onSelected: (rate) =>
-                          unawaited(selectPlaybackRate(rate: rate)),
+                          selectPlaybackRate(rate: rate),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -486,7 +484,7 @@ class PlayerOverlayAnimatedSwitcher extends StatelessWidget {
         transitionBuilder: (child, animation) => FadeTransition(
           opacity: animation,
           child: SlideTransition(
-            position: Tween<Offset>(
+            position: Tween(
               begin: hiddenOffset,
               end: Offset.zero,
             ).animate(animation),

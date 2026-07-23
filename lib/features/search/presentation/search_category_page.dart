@@ -136,7 +136,7 @@ class VodCategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
-        CupertinoPageRoute<void>(
+        CupertinoPageRoute(
           builder: (routeContext) => VodCatalogPage(
             typeId: category.id,
             title: category.name,

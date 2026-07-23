@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -43,9 +41,9 @@ class PlayerPage extends HookConsumerWidget {
       if (context.mounted) Navigator.of(context).pop();
     }
 
-    return PopScope<void>(
+    return PopScope(
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop) unawaited(playback.pause());
+        if (didPop) playback.pause();
       },
       child: CupertinoTheme(
         data: CupertinoTheme.of(context).copyWith(brightness: Brightness.dark),
@@ -72,7 +70,7 @@ class PlayerPage extends HookConsumerWidget {
                     playback.initialization.connectionState !=
                     ConnectionState.done,
                 error: playback.initialization.error,
-                onExit: () => unawaited(exitPlayback()),
+                onExit: exitPlayback,
                 onEpisodeSelected: (index) =>
                     playback.selectEpisode(index: index),
               ),

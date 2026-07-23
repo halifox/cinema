@@ -4,7 +4,7 @@ import 'package:riverpod_paging_utils/riverpod_paging_utils.dart';
 
 import 'cms_models.dart';
 
-final categoriesProvider = FutureProvider<CmsPage<VodItem>>((ref) async {
+final categoriesProvider = FutureProvider((ref) async {
   return ref.watch(vodRepositoryProvider).getCategories();
 });
 

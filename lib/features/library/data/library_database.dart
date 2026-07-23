@@ -6,7 +6,7 @@ import '../../../cms/cms_models.dart';
 
 part 'library_database.g.dart';
 
-final libraryDatabaseProvider = Provider<LibraryDatabase>((ref) {
+final libraryDatabaseProvider = Provider((ref) {
   final database = LibraryDatabase();
   ref.onDispose(database.close);
   return database;
