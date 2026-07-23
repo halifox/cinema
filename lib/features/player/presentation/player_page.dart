@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 import '../../../cms/cms_models.dart';
@@ -48,9 +49,12 @@ class PlayerPage extends HookConsumerWidget {
       },
       child: CupertinoTheme(
         data: CupertinoTheme.of(context).copyWith(brightness: Brightness.dark),
-        child: CupertinoPageScaffold(
-          backgroundColor: CupertinoColors.black,
-          child: Stack(
+        child: GlassScaffold(
+          edgeToEdge: true,
+          contentAwareBrightness: false,
+          statusBarStyle: GlassStatusBarStyle.auto,
+          background: const ColoredBox(color: CupertinoColors.black),
+          body: Stack(
             fit: StackFit.expand,
             children: [
               if (!playback.initialization.hasError)

@@ -1,11 +1,11 @@
+import 'package:cinema/features/library/application/library_providers.dart';
+import 'package:cinema/shared/presentation/hooks/glass_large_title_hook.dart';
+import 'package:cinema/shared/presentation/widgets/ambient_glow_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-import '../../../shared/presentation/hooks/glass_large_title_hook.dart';
-import '../../../shared/presentation/widgets/ambient_glow_background.dart';
-import '../../library/application/library_providers.dart';
-import '../../library/presentation/vod_library_grid.dart';
+import 'vod_library_grid.dart';
 
 class VodHistoryPage extends HookConsumerWidget {
   const VodHistoryPage({super.key});
@@ -13,7 +13,6 @@ class VodHistoryPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final titleController = useGlassLargeTitleController();
-    final history = ref.watch(vodHistoryProvider);
 
     return GlassScaffold(
       edgeToEdge: true,
@@ -35,32 +34,30 @@ class VodHistoryPage extends HookConsumerWidget {
         ),
         actions: [
           GlassIconButton(
-              icon: const Icon(
-                CupertinoIcons.trash,
-                color: CupertinoColors.systemRed,
-              ),
-              onPressed: () async {
-                final shouldClear = await GlassDialog.show<bool>(
-                  context: context,
-                  title: '清空历史？',
-                  message: '此操作无法撤销。',
-                  actions: [
-                    GlassDialogAction(
-                      label: '取消',
-                      onPressed: () => Navigator.of(context).pop(false),
-                    ),
-                    GlassDialogAction(
-                      label: '清空',
-                      isDestructive: true,
-                      onPressed: () => Navigator.of(context).pop(true),
-                    ),
-                  ],
-                );
-                if (shouldClear != true || !context.mounted) return;
-                await ref
-                    .read(libraryCommandsProvider)
-                    .clearViewingHistory();
-              },
+            icon: const Icon(
+              CupertinoIcons.trash,
+              color: CupertinoColors.systemRed,
+            ),
+            onPressed: () async {
+              final shouldClear = await GlassDialog.show<bool>(
+                context: context,
+                title: '清空历史？',
+                message: '此操作无法撤销。',
+                actions: [
+                  GlassDialogAction(
+                    label: '取消',
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  GlassDialogAction(
+                    label: '清空',
+                    isDestructive: true,
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
+              );
+              if (shouldClear != true || !context.mounted) return;
+              await ref.read(libraryCommandsProvider).clearViewingHistory();
+            },
           ),
         ],
       ),
@@ -81,7 +78,7 @@ class VodHistoryPage extends HookConsumerWidget {
             ),
           ),
           VodLibraryGrid(
-            items: history,
+            items: ref.watch(vodHistoryProvider),
             emptyIcon: CupertinoIcons.clock,
             emptyTitle: '暂无观看历史',
             emptyMessage: '播放过的影片会显示在这里',

@@ -1,20 +1,19 @@
+import 'package:cinema/features/library/application/library_providers.dart';
+import 'package:cinema/shared/presentation/hooks/glass_large_title_hook.dart';
+import 'package:cinema/shared/presentation/widgets/ambient_glow_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-import '../../../shared/presentation/hooks/glass_large_title_hook.dart';
-import '../../../shared/presentation/widgets/ambient_glow_background.dart';
-import '../../history/presentation/vod_history_page.dart';
-import '../../library/application/library_providers.dart';
-import '../../library/presentation/vod_library_grid.dart';
+import 'vod_history_page.dart';
+import 'vod_library_grid.dart';
 
-class FavoritePage extends HookConsumerWidget {
-  const FavoritePage({super.key});
+class VodLibraryPage extends HookConsumerWidget {
+  const VodLibraryPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final titleController = useGlassLargeTitleController();
-    final favorites = ref.watch(favoritesProvider);
 
     return GlassScaffold(
       edgeToEdge: true,
@@ -29,20 +28,20 @@ class FavoritePage extends HookConsumerWidget {
       header: GlassAppBar(
         actions: [
           GlassIconButton(
-              icon: const Icon(CupertinoIcons.clock),
-              onPressed: () {
-                Navigator.of(context).push(
-                  CupertinoPageRoute<void>(
-                    builder: (routeContext) => const VodHistoryPage(),
-                  ),
-                );
-              },
+            icon: const Icon(CupertinoIcons.clock),
+            onPressed: () {
+              Navigator.of(context).push(
+                CupertinoPageRoute<void>(
+                  builder: (routeContext) => const VodHistoryPage(),
+                ),
+              );
+            },
           ),
         ],
       ),
       body: CustomScrollView(
         controller: titleController.scrollController,
-        key: const PageStorageKey<String>('favorite-scroll'),
+        key: const PageStorageKey<String>('library-scroll'),
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),
@@ -58,7 +57,7 @@ class FavoritePage extends HookConsumerWidget {
             ),
           ),
           VodLibraryGrid(
-            items: favorites,
+            items: ref.watch(favoritesProvider),
             emptyIcon: CupertinoIcons.rectangle_stack,
             emptyTitle: '片单还是空的',
             emptyMessage: '在影片详情页将影片加入片单，稍后就能从这里快速找到。',

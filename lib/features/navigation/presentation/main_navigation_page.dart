@@ -1,83 +1,47 @@
 import 'dart:async';
 
+import 'package:cinema/features/home/presentation/home_page.dart';
+import 'package:cinema/features/library/application/library_providers.dart';
+import 'package:cinema/features/library/presentation/vod_library_page.dart';
+import 'package:cinema/features/search/presentation/search_category_page.dart';
+import 'package:cinema/features/search/presentation/search_history_page.dart';
+import 'package:cinema/features/search/presentation/search_results_page.dart';
+import 'package:cinema/shared/presentation/hooks/glass_large_title_hook.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
-
-import '../../favorites/presentation/favorite_page.dart';
-import '../../home/presentation/home_page.dart';
-import '../../library/application/library_providers.dart';
-import '../../search/presentation/search_page.dart';
-import '../../search/presentation/search_results_page.dart';
-
-enum MainContentTab {
-  home(
-    label: '首页',
-    icon: CupertinoIcons.house,
-    activeIcon: CupertinoIcons.house_fill,
-  ),
-  favorite(
-    label: '片单',
-    icon: CupertinoIcons.rectangle_stack,
-    activeIcon: CupertinoIcons.rectangle_stack_fill,
-    glowColor: Color(0xFFFF375F),
-  );
-
-  const MainContentTab({
-    required this.label,
-    required this.icon,
-    required this.activeIcon,
-    this.glowColor,
-  });
-
-  final String label;
-  final IconData icon;
-  final IconData activeIcon;
-  final Color? glowColor;
-
-  Widget buildPage() => switch (this) {
-    MainContentTab.home => const HomePage(),
-    MainContentTab.favorite => const FavoritePage(),
-  };
-}
-
-typedef MainNavigationState = ({
-  MainContentTab selectedTab,
-  bool isSearching,
-});
 
 class MainNavigationPage extends HookConsumerWidget {
   const MainNavigationPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final navigation = useState<MainNavigationState>(
-      (selectedTab: MainContentTab.home, isSearching: false),
-    );
+    final selectedIndex = useState(0);
+    final lastContentIndex = useState(0);
     final searchController = useTextEditingController();
-
-    void showTab({required MainContentTab tab}) {
-      navigation.value = (selectedTab: tab, isSearching: false);
-    }
-
-    void setSearchActive({required bool active}) {
-      navigation.value = (
-        selectedTab: navigation.value.selectedTab,
-        isSearching: active,
-      );
-    }
-
+    final searchTitleController = useGlassLargeTitleController();
     return Stack(
       children: [
-        navigation.value.isSearching
-            ? SearchPage(
-                onDismiss: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  setSearchActive(active: false);
-                },
-              )
-            : navigation.value.selectedTab.buildPage(),
+        switch (selectedIndex.value) {
+          0 => const HomePage(),
+          1 => const VodLibraryPage(),
+          4 => SearchCategoryPage(
+            titleController: searchTitleController,
+            onDismiss: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              selectedIndex.value = lastContentIndex.value;
+            },
+          ),
+          5 => SearchHistoryPage(
+            titleController: searchTitleController,
+            onDismiss: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              selectedIndex.value = lastContentIndex.value;
+            },
+          ),
+          _ => const SizedBox.shrink(),
+        },
         Positioned(
           left: 0,
           right: 0,
@@ -85,16 +49,18 @@ class MainNavigationPage extends HookConsumerWidget {
           child: SafeArea(
             top: false,
             child: GlassTabBar.searchable(
-              selectedIndex: navigation.value.selectedTab.index,
-              isSearchActive: navigation.value.isSearching,
-              onTabSelected: (index) {
-                showTab(tab: MainContentTab.values[index]);
+              selectedIndex: lastContentIndex.value,
+              isSearchActive:
+                  selectedIndex.value == 4 || selectedIndex.value == 5,
+              onTabSelected: (value) {
+                selectedIndex.value = value;
+                lastContentIndex.value = value;
               },
               searchConfig: GlassSearchBarConfig(
                 controller: searchController,
                 hintText: '搜索电影、剧集、综艺',
-                autoFocusOnExpand: true,
-                showsCancelButton: false,
+                autoFocusOnExpand: false,
+                showsCancelButton: true,
                 textInputAction: TextInputAction.search,
                 onSubmitted: (value) {
                   final query = value.trim();
@@ -114,7 +80,19 @@ class MainNavigationPage extends HookConsumerWidget {
                   );
                 },
                 onSearchToggle: (active) {
-                  setSearchActive(active: active);
+                  if (active) {
+                    if (selectedIndex.value < 2) {
+                      lastContentIndex.value = selectedIndex.value;
+                    }
+                    selectedIndex.value = 4;
+                  } else {
+                    selectedIndex.value = lastContentIndex.value;
+                  }
+                },
+                onSearchFocusChanged: (focused) {
+                  if (selectedIndex.value == 4 || selectedIndex.value == 5) {
+                    selectedIndex.value = focused ? 5 : 4;
+                  }
                 },
               ),
               barHeight: 62,
@@ -127,16 +105,19 @@ class MainNavigationPage extends HookConsumerWidget {
               interactionGlowColor: CupertinoTheme.of(context).primaryColor,
               selectedIconColor: CupertinoColors.label.resolveFrom(context),
               unselectedIconColor: CupertinoColors.label.resolveFrom(context),
-              tabs: [
-                for (final tab in MainContentTab.values)
-                  GlassTab(
-                    icon: Icon(tab.icon),
-                    activeIcon: Icon(tab.activeIcon),
-                    label: tab.label,
-                    glowColor:
-                        tab.glowColor ??
-                        CupertinoTheme.of(context).primaryColor,
-                  ),
+              tabs: const [
+                GlassTab(
+                  icon: Icon(CupertinoIcons.house),
+                  activeIcon: Icon(CupertinoIcons.house_fill),
+                  label: '首页',
+                  glowColor: Color(0xFFFF5A5F),
+                ),
+                GlassTab(
+                  icon: Icon(CupertinoIcons.rectangle_stack),
+                  activeIcon: Icon(CupertinoIcons.rectangle_stack_fill),
+                  label: '片单',
+                  glowColor: Color(0xFF5C9AF6),
+                ),
               ],
             ),
           ),
