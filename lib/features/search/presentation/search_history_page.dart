@@ -70,7 +70,7 @@ class SearchHistoryPage extends HookConsumerWidget {
                           18,
                           16,
                           18,
-                          MediaQuery.viewInsetsOf(context).bottom + 72,
+                          MediaQuery.paddingOf(context).bottom + 72,
                         ),
                         child: Align(
                           alignment: Alignment.bottomCenter,
