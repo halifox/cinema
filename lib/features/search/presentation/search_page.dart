@@ -19,22 +19,29 @@ class SearchPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final titleController = useGlassLargeTitleController();
 
-    return GlassScaffold(
-      edgeToEdge: true,
-      contentAwareBrightness: true,
-      statusBarStyle: GlassStatusBarStyle.auto,
-      background: const AmbientGlowBackground(),
-      topEdgeFade: true,
-      bottomEdgeFade: true,
-      topEdgeFadeExtent: 64,
-      bottomEdgeFadeExtent: 64,
-      headerScrollController: titleController.scrollController,
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          onDismiss();
-        },
-        child: SearchHistory(titleController: titleController),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        onDismiss();
+      },
+      child: GlassScaffold(
+        edgeToEdge: true,
+        contentAwareBrightness: true,
+        statusBarStyle: GlassStatusBarStyle.auto,
+        background: const AmbientGlowBackground(),
+        topEdgeFade: true,
+        bottomEdgeFade: true,
+        topEdgeFadeExtent: 64,
+        bottomEdgeFadeExtent: 64,
+        headerScrollController: titleController.scrollController,
+        body: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            onDismiss();
+          },
+          child: SearchHistory(titleController: titleController),
+        ),
       ),
     );
   }
@@ -83,17 +90,13 @@ class SearchHistory extends ConsumerWidget {
                     18,
                     16,
                     18,
-                    MediaQuery.paddingOf(context).bottom +
-                        keyboardHeight +
-                        72,
+                    MediaQuery.paddingOf(context).bottom + keyboardHeight + 72,
                   ),
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: GlassGroupedSection(
                       margin: EdgeInsets.zero,
-                      shape: const LiquidRoundedSuperellipse(
-                        borderRadius: 28,
-                      ),
+                      shape: const LiquidRoundedSuperellipse(borderRadius: 28),
                       children: [
                         for (final query in items.reversed)
                           GlassListTile(
@@ -109,9 +112,7 @@ class SearchHistory extends ConsumerWidget {
                               right: 6,
                             ),
                             titleStyle: TextStyle(
-                              color: CupertinoColors.label.resolveFrom(
-                                context,
-                              ),
+                              color: CupertinoColors.label.resolveFrom(context),
                               fontSize: 17,
                               fontWeight: FontWeight.w500,
                             ),
@@ -129,15 +130,15 @@ class SearchHistory extends ConsumerWidget {
                               );
                             },
                             trailing: GlassIconButton(
-                                icon: const Icon(
-                                  CupertinoIcons.trash,
-                                  color: CupertinoColors.systemRed,
-                                ),
-                                onPressed: () => unawaited(
-                                  ref
-                                      .read(libraryCommandsProvider)
-                                      .removeSearch(query: query),
-                                ),
+                              icon: const Icon(
+                                CupertinoIcons.trash,
+                                color: CupertinoColors.systemRed,
+                              ),
+                              onPressed: () => unawaited(
+                                ref
+                                    .read(libraryCommandsProvider)
+                                    .removeSearch(query: query),
+                              ),
                             ),
                           ),
                       ],
