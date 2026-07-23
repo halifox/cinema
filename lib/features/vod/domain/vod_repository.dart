@@ -1,7 +1,7 @@
 import 'package:cinema/cms/cms_models.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final vodRepositoryProvider = Provider(
+final vodRepositoryProvider = Provider<VodRepository>(
   (ref) => throw UnimplementedError('VodRepository must be overridden'),
 );
 

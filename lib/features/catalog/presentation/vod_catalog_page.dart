@@ -1,4 +1,3 @@
-import 'package:cinema/cms/cms_models.dart';
 import 'package:cinema/cms/cms_providers.dart';
 import 'package:cinema/shared/presentation/hooks/glass_large_title_hook.dart';
 import 'package:cinema/shared/presentation/widgets/ambient_glow_background.dart';

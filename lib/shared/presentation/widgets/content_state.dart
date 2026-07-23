@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
-import '../theme/app_theme.dart';
 
 typedef ErrorPresentation = (IconData icon, String title, String message);
 
@@ -43,14 +42,11 @@ class ContentStateSliver extends StatelessWidget {
   });
 
   const ContentStateSliver.empty({
-    required IconData icon,
-    required String title,
-    required String message,
+    required this.icon,
+    required this.title,
+    required this.message,
     super.key,
-  }) : icon = icon,
-       title = title,
-       message = message,
-       iconColor = const Color(0xFFFF5A5F),
+  }) : iconColor = const Color(0xFFFF5A5F),
        loading = false,
        onRetry = null;
 

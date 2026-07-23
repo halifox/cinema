@@ -241,7 +241,7 @@ class PlayerControlsOverlay extends HookWidget {
                 alignment: Alignment.centerLeft,
                 shape: const LiquidRoundedSuperellipse(borderRadius: 46),
                 child: Text(
-                  '${title} · ${episodeName}',
+                  '$title · $episodeName',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(

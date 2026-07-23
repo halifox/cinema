@@ -67,7 +67,7 @@ class AmbientGlowBackground extends StatelessWidget {
 }
 
 class AmbientGlowBlob extends StatelessWidget {
-  const AmbientGlowBlob({required this.size, required this.color});
+  const AmbientGlowBlob({super.key, required this.size, required this.color});
 
   final double size;
   final Color color;
