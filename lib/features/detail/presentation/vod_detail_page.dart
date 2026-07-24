@@ -33,15 +33,11 @@ class VodDetailPage extends HookConsumerWidget {
   const VodDetailPage({
     required this.vodId,
     required this.initialItem,
-    required this.name,
-    required this.cover,
     super.key,
   });
 
   final int vodId;
   final VodItem initialItem;
-  final String name;
-  final String cover;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,7 +48,7 @@ class VodDetailPage extends HookConsumerWidget {
     final selectedSourceIndex = useState(0);
     final episodesDescending = useState(false);
     final toolbarIconColor = ref
-        .watch(vodDetailToolbarIconColorProvider(cover))
+        .watch(vodDetailToolbarIconColorProvider(initialItem.picture))
         .value;
 
     useEffect(() {
