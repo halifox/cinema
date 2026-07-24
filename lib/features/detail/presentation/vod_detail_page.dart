@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 import '../../../cms/cms_models.dart';
 import '../../../cms/cms_providers.dart';
@@ -15,6 +16,33 @@ import '../../player/presentation/player_page.dart';
 import '../application/vod_detail_providers.dart';
 
 const vodDetailCoverHeight = 500.0;
+
+final vodDetailToolbarIconColorProvider =
+    FutureProvider.autoDispose.family<Color?, VodDetailArguments>((
+      ref,
+      arguments,
+    ) async {
+      final picture = ref
+          .watch(vodDetailProvider(arguments))
+          .when(
+            data: (item) => item.picture,
+            loading: () => arguments.initialItem?.picture ?? '',
+            error: (error, stackTrace) =>
+                arguments.initialItem?.picture ?? '',
+          );
+      if (picture.isEmpty) return null;
+
+      final palette = await PaletteGenerator.fromImageProvider(
+        ResizeImage(
+          CachedNetworkImageProvider(picture),
+          width: 64,
+          height: 96,
+        ),
+        size: const Size(64, 96),
+        maximumColorCount: 12,
+      );
+      return palette.dominantColor?.bodyTextColor.withAlpha(255);
+    });
 
 class VodDetailPage extends HookConsumerWidget {
   const VodDetailPage({
@@ -34,6 +62,9 @@ class VodDetailPage extends HookConsumerWidget {
     final scrollOffset = useValueNotifier(0.0);
     final selectedSourceIndex = useState(0);
     final episodesDescending = useState(false);
+    final toolbarIconColor = ref
+        .watch(vodDetailToolbarIconColorProvider(detailArguments))
+        .value;
 
     useEffect(() {
       void onScroll() {
@@ -73,11 +104,18 @@ class VodDetailPage extends HookConsumerWidget {
       background: const AmbientGlowBackground(),
       appBar: GlassAppBar(
         leading: GlassIconButton(
-          icon: const Icon(CupertinoIcons.chevron_back),
+          icon: Icon(
+            CupertinoIcons.chevron_back,
+            color: toolbarIconColor,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          VodFavoriteAction(vodId: vodId, detailArguments: detailArguments),
+          VodFavoriteAction(
+            vodId: vodId,
+            detailArguments: detailArguments,
+            iconColor: toolbarIconColor,
+          ),
         ],
       ),
       bottomBar: continuePlayingBar,
@@ -182,11 +220,13 @@ class VodFavoriteAction extends ConsumerWidget {
   const VodFavoriteAction({
     required this.vodId,
     required this.detailArguments,
+    required this.iconColor,
     super.key,
   });
 
   final int vodId;
   final VodDetailArguments detailArguments;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -200,13 +240,14 @@ class VodFavoriteAction extends ConsumerWidget {
             favorite
                 ? CupertinoIcons.rectangle_stack_fill
                 : CupertinoIcons.rectangle_stack_badge_plus,
+            color: iconColor,
           ),
           onPressed: () =>
               ref.read(libraryCommandsProvider).toggleFavorite(item: item),
         ),
         loading: buildToolbarLoading,
         error: (error, stackTrace) => GlassIconButton(
-          icon: const Icon(CupertinoIcons.refresh),
+          icon: Icon(CupertinoIcons.refresh, color: iconColor),
           onPressed: () => ref.invalidate(vodFavoriteProvider(vodId)),
         ),
       ),
