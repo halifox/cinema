@@ -83,11 +83,18 @@ class ContentStateSliver extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: CupertinoColors.secondaryLabel.resolveFrom(context),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: SingleChildScrollView(
+                  child: Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: CupertinoColors.secondaryLabel.resolveFrom(
+                        context,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               if (onRetry != null) ...[
@@ -213,13 +220,17 @@ class ContentStateSliver extends StatelessWidget {
 
     return switch (error) {
       FormatException() ||
-      TypeError() => (CupertinoIcons.doc_text_search, '数据异常', ''),
+      TypeError() => (CupertinoIcons.doc_text_search, '数据异常', error.toString()),
       StateError() => (
         CupertinoIcons.exclamationmark_triangle_fill,
         '状态异常',
-        '',
+        error.toString(),
       ),
-      _ => (CupertinoIcons.exclamationmark_triangle_fill, '出现问题', ''),
+      _ => (
+        CupertinoIcons.exclamationmark_triangle_fill,
+        '出现问题',
+        error.toString(),
+      ),
     };
   }
 
