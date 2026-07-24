@@ -426,18 +426,10 @@ class PlayerPlaybackRateAction extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
+          spacing: 8,
           children: [
             Icon(CupertinoIcons.speedometer, size: 18, color: controlIconColor),
-            const SizedBox(width: 7),
-            Text(
-              '$formattedRate 倍',
-              style: const TextStyle(
-                color: CupertinoColors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                fontFeatures: [FontFeature.tabularFigures()],
-              ),
-            ),
+            Text('$formattedRate 倍'),
           ],
         ),
       ),
