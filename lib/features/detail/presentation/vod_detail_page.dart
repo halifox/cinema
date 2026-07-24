@@ -24,6 +24,7 @@ final vodDetailToolbarIconColorProvider = FutureProvider.autoDispose.family((
   final palette = await PaletteGenerator.fromImageProvider(
     ResizeImage(CachedNetworkImageProvider(cover), width: 64, height: 96),
     size: const Size(64, 96),
+    region: const Rect.fromLTWH(0, 0, 64, 24),
     maximumColorCount: 12,
   );
   return palette.dominantColor?.bodyTextColor.withAlpha(255);
