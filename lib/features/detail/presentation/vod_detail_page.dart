@@ -17,42 +17,31 @@ import '../application/vod_detail_providers.dart';
 
 const vodDetailCoverHeight = 500.0;
 
-final vodDetailToolbarIconColorProvider =
-    FutureProvider.autoDispose.family<Color?, VodDetailArguments>((
-      ref,
-      arguments,
-    ) async {
-      final picture = ref
-          .watch(vodDetailProvider(arguments))
-          .when(
-            data: (item) => item.picture,
-            loading: () => arguments.initialItem?.picture ?? '',
-            error: (error, stackTrace) =>
-                arguments.initialItem?.picture ?? '',
-          );
-      if (picture.isEmpty) return null;
-
-      final palette = await PaletteGenerator.fromImageProvider(
-        ResizeImage(
-          CachedNetworkImageProvider(picture),
-          width: 64,
-          height: 96,
-        ),
-        size: const Size(64, 96),
-        maximumColorCount: 12,
-      );
-      return palette.dominantColor?.bodyTextColor.withAlpha(255);
-    });
+final vodDetailToolbarIconColorProvider = FutureProvider.autoDispose.family((
+  ref,
+  String cover,
+) async {
+  final palette = await PaletteGenerator.fromImageProvider(
+    ResizeImage(CachedNetworkImageProvider(cover), width: 64, height: 96),
+    size: const Size(64, 96),
+    maximumColorCount: 12,
+  );
+  return palette.dominantColor?.bodyTextColor.withAlpha(255);
+});
 
 class VodDetailPage extends HookConsumerWidget {
   const VodDetailPage({
     required this.vodId,
     required this.initialItem,
+    required this.name,
+    required this.cover,
     super.key,
   });
 
   final int vodId;
   final VodItem initialItem;
+  final String name;
+  final String cover;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -63,7 +52,7 @@ class VodDetailPage extends HookConsumerWidget {
     final selectedSourceIndex = useState(0);
     final episodesDescending = useState(false);
     final toolbarIconColor = ref
-        .watch(vodDetailToolbarIconColorProvider(detailArguments))
+        .watch(vodDetailToolbarIconColorProvider(cover))
         .value;
 
     useEffect(() {
@@ -104,10 +93,7 @@ class VodDetailPage extends HookConsumerWidget {
       background: const AmbientGlowBackground(),
       appBar: GlassAppBar(
         leading: GlassIconButton(
-          icon: Icon(
-            CupertinoIcons.chevron_back,
-            color: toolbarIconColor,
-          ),
+          icon: Icon(CupertinoIcons.chevron_back, color: toolbarIconColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
