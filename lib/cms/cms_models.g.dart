@@ -18,12 +18,12 @@ _CmsResponseDto _$CmsResponseDtoFromJson(Map<String, dynamic> json) =>
           (json['list'] as List<dynamic>?)
               ?.map((e) => VodItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
-          const <VodItem>[],
+          const [],
       categories:
           (json['class'] as List<dynamic>?)
               ?.map((e) => CmsCategory.fromJson(e as Map<String, dynamic>))
               .toList() ??
-          const <CmsCategory>[],
+          const [],
     );
 
 Map<String, dynamic> _$CmsResponseDtoToJson(_CmsResponseDto instance) =>

@@ -45,21 +45,15 @@
 ### 获取并运行
 
 ```bash
-# 克隆仓库
 git clone https://github.com/halifox/cinema.git
 cd cinema
 
-# 安装依赖
 flutter pub get
 
-# 生成 Retrofit、Freezed、JSON 与 Drift 相关代码
 dart run build_runner build --delete-conflicting-outputs
 
-# 运行应用
-flutter run
+flutter run --dart-define="CMS_BASE_URL=https://example.com"
 ```
-
-仓库已包含当前生成的代码。修改数据模型、接口定义或本地数据库表后，请重新执行代码生成命令。
 
 ## 技术栈
 

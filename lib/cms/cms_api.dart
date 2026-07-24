@@ -5,7 +5,7 @@ import 'cms_models.dart';
 
 part 'cms_api.g.dart';
 
-@RestApi(baseUrl: 'https://example.com')
+@RestApi()
 abstract class CmsApi {
   factory CmsApi(Dio dio, {String? baseUrl}) = _CmsApi;
 

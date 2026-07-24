@@ -7,15 +7,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'cms_api.dart';
 
 final cmsDioProvider = Provider((ref) {
+  const cmsBaseUrl = String.fromEnvironment('CMS_BASE_URL');
+  if (cmsBaseUrl.isEmpty) {
+    throw StateError('未配置 CMS_BASE_URL，请通过 --dart-define 注入有效的 CMS 服务地址');
+  }
   final dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://example.com',
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 30),
-      responseType: ResponseType.json,
-      headers: {'Accept': 'application/json'},
-      validateStatus: (status) => status == 200,
-    ),
+    BaseOptions(baseUrl: cmsBaseUrl, validateStatus: (status) => status == 200),
   );
   dio.interceptors.add(
     InterceptorsWrapper(
