@@ -38,25 +38,8 @@ class VodHistoryPage extends HookConsumerWidget {
               CupertinoIcons.trash,
               color: CupertinoColors.systemRed,
             ),
-            onPressed: () async {
-              final shouldClear = await GlassDialog.show<bool>(
-                context: context,
-                title: '清空历史？',
-                message: '此操作无法撤销。',
-                actions: [
-                  GlassDialogAction(
-                    label: '取消',
-                    onPressed: () => Navigator.of(context).pop(false),
-                  ),
-                  GlassDialogAction(
-                    label: '清空',
-                    isDestructive: true,
-                    onPressed: () => Navigator.of(context).pop(true),
-                  ),
-                ],
-              );
-              if (shouldClear != true || !context.mounted) return;
-              await ref.read(libraryCommandsProvider).clearViewingHistory();
+            onPressed: () {
+              ref.read(libraryCommandsProvider).clearViewingHistory();
             },
           ),
         ],
