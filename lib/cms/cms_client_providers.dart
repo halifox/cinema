@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sentry_dio/sentry_dio.dart';
 
 import 'cms_api.dart';
 
@@ -45,6 +46,7 @@ final cmsDioProvider = Provider((ref) {
       LogInterceptor(requestBody: false, responseBody: false),
     );
   }
+  dio.addSentry();
   ref.onDispose(() => dio.close(force: true));
   return dio;
 });
