@@ -45,23 +45,11 @@ class VodDetailPage extends HookConsumerWidget {
     final detailArguments = (id: vodId, initialItem: initialItem);
     final resumeData = ref.watch(vodResumeDataProvider(detailArguments));
     final scrollController = useScrollController();
-    final scrollOffset = useValueNotifier(0.0);
     final selectedSourceIndex = useState(0);
     final episodesDescending = useState(false);
     final toolbarIconColor = ref
         .watch(vodDetailToolbarIconColorProvider(initialItem.picture))
         .value;
-
-    useEffect(() {
-      void onScroll() {
-        scrollOffset.value = scrollController.offset;
-      }
-
-      scrollController.addListener(onScroll);
-      return () {
-        scrollController.removeListener(onScroll);
-      };
-    }, [scrollController, scrollOffset]);
 
     final continuePlayingBar = resumeData == null
         ? null
@@ -112,7 +100,6 @@ class VodDetailPage extends HookConsumerWidget {
           VodDetailCoverSliver(
             detailArguments: detailArguments,
             initialItem: initialItem,
-            scrollOffset: scrollOffset,
           ),
           VodDetailContentSliver(
             detailArguments: detailArguments,
@@ -244,34 +231,30 @@ class VodDetailCoverSliver extends ConsumerWidget {
   const VodDetailCoverSliver({
     required this.detailArguments,
     required this.initialItem,
-    required this.scrollOffset,
     super.key,
   });
 
   final VodDetailArguments detailArguments;
   final VodItem initialItem;
-  final ValueNotifier<double> scrollOffset;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final detail = ref.watch(vodDetailProvider(detailArguments));
-    return SliverToBoxAdapter(
-      child: ClipRect(
-        child: SizedBox(
-          height: vodDetailCoverHeight,
-          child: ValueListenableBuilder(
-            valueListenable: scrollOffset,
-            builder: (context, offset, child) => Transform.translate(
-              offset: Offset(0, offset * .5),
-              child: child,
-            ),
-            child: Hero(
-              tag: 'vod-cover-${initialItem.id}',
-              child: detail.when(
-                data: (item) => VodDetailCoverImage(item: item),
-                loading: () => VodDetailCoverImage(item: initialItem),
-                error: (error, stackTrace) =>
-                    VodDetailCoverImage(item: initialItem),
+    return SliverLayoutBuilder(
+      builder: (context, constraints) => SliverToBoxAdapter(
+        child: ClipRect(
+          child: SizedBox(
+            height: vodDetailCoverHeight,
+            child: Transform.translate(
+              offset: Offset(0, constraints.scrollOffset * .5),
+              child: Hero(
+                tag: 'vod-cover-${initialItem.id}',
+                child: detail.when(
+                  data: (item) => VodDetailCoverImage(item: item),
+                  loading: () => VodDetailCoverImage(item: initialItem),
+                  error: (error, stackTrace) =>
+                      VodDetailCoverImage(item: initialItem),
+                ),
               ),
             ),
           ),
