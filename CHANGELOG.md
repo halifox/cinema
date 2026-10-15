@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/halifox/cinema/compare/v1.1.0...v1.1.1) (2026-10-15)
+
+
+### Bug Fixes
+
+* improve VOD cover parallax scrolling ([496046c](https://github.com/halifox/cinema/commit/496046c50ee0beb0b9a6c94221e3a6b796090eaf))
+
 ## [1.1.0](https://github.com/halifox/cinema/compare/v1.0.0...v1.1.0) (2026-10-15)
 
 
