@@ -48,7 +48,7 @@ dependencies:
   riverpod_paging_utils: ^1.0.0
   visibility_detector: ^0.4.0+2
   path_provider: ^2.1.6
-  drift: ^2.34.1
+  drift: ^2.34.4
   drift_flutter: ^0.3.1
   scrollable_positioned_list: ^0.3.8
   flutter_launcher_icons: ^0.14.4
