@@ -49,26 +49,11 @@ class VodDetailPage extends HookConsumerWidget {
     final episodesDescending = useState(false);
     final toolbarIconColor = ref
         .watch(vodDetailToolbarIconColorProvider(initialItem.picture))
-        .value;
-
-    final continuePlayingBar = resumeData == null
-        ? null
-        : ContinuePlayingButton(
-            title: '继续播放',
-            subtitle:
-                '${resumeData.progress.sourceName} · '
-                '${resumeData.progress.episodeName} · '
-                '${formatPlaybackPosition(milliseconds: resumeData.progress.positionMilliseconds)}',
-            onTap: () => openEpisode(
-              context: context,
-              item: resumeData.item,
-              source: resumeData.source,
-              episode: resumeData.episode,
-              initialPosition: Duration(
-                milliseconds: resumeData.progress.positionMilliseconds,
-              ),
-            ),
-          );
+        .when(
+          data: (color) => color,
+          loading: () => null,
+          error: (error, stackTrace) => null,
+        );
 
     return GlassScaffold(
       edgeToEdge: true,
@@ -89,8 +74,25 @@ class VodDetailPage extends HookConsumerWidget {
           ),
         ],
       ),
-      bottomBar: continuePlayingBar,
-      bottomBarHeight: continuePlayingBar == null ? null : 84,
+      bottomBar: resumeData == null
+          ? null
+          : ContinuePlayingButton(
+              title: '继续播放',
+              subtitle:
+                  '${resumeData.progress.sourceName} · '
+                  '${resumeData.progress.episodeName} · '
+                  '${formatPlaybackPosition(milliseconds: resumeData.progress.positionMilliseconds)}',
+              onTap: () => openEpisode(
+                context: context,
+                item: resumeData.item,
+                source: resumeData.source,
+                episode: resumeData.episode,
+                initialPosition: Duration(
+                  milliseconds: resumeData.progress.positionMilliseconds,
+                ),
+              ),
+            ),
+      bottomBarHeight: resumeData == null ? null : 84,
       body: CustomScrollView(
         controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(
