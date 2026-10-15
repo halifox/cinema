@@ -35,10 +35,10 @@
   <img src="screenshots/screenshot_2.webp" width="24%" alt="影片详情" />
   <img src="screenshots/screenshot_3.webp" width="24%" alt="影片播放" />
   <img src="screenshots/screenshot_8.webp" width="24%" alt="播放控制" />
-  <img src="screenshots/screenshot_4.webp" width="24%" alt="搜索界面" />
-  <img src="screenshots/screenshot_5.webp" width="24%" alt="搜索结果" />
-  <img src="screenshots/screenshot_6.webp" width="24%" alt="片单" />
-  <img src="screenshots/screenshot_7.webp" width="24%" alt="观看记录" />
+  <img src="screenshots/screenshot_4.webp" width="48%" alt="搜索界面" />
+  <img src="screenshots/screenshot_5.webp" width="48%" alt="搜索结果" />
+  <img src="screenshots/screenshot_6.webp" width="48%" alt="片单" />
+  <img src="screenshots/screenshot_7.webp" width="48%" alt="观看记录" />
 </div>
 
 ## 安装
