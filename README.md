@@ -1,13 +1,14 @@
 <div align="center">
-  <img src="assets/icon/app_icon.png" width="128" alt="哈狸影视 应用图标" />
+
+  <img src="assets/icon/app_icon.png" alt="哈狸影视 应用图标" width="128" />
 
 # 哈狸影视
 
 一款采用 iOS Liquid Glass 界面风格的苹果 CMS 影视第三方客户端。
 
 [![Built with Flutter](https://img.shields.io/badge/built%20with-Flutter-02569B)](#从源码运行与构建)
-[![Android](https://img.shields.io/badge/Android-3DDC84)](#安装)
-[![iOS](https://img.shields.io/badge/iOS-555555)](#安装)
+[![Android arm64](https://img.shields.io/badge/Android-arm64-3DDC84)](#安装)
+[![iOS unsigned IPA](https://img.shields.io/badge/iOS-unsigned%20IPA-555555)](#安装)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-lightgrey)](LICENSE)
 
 [功能](#功能概览) · [预览](#界面预览) · [安装](#安装) · [构建](#从源码运行与构建) · [数据与隐私](#数据与隐私)
@@ -21,79 +22,85 @@
 
 ## 功能概览
 
-- 按一级与二级分类浏览影视内容，并支持分页加载；
-- 关键词搜索、搜索历史记录与一键清空；
-- 影片详情、简介、演职员信息、多播放源与分集选集；
-- 基于 media_kit 的在线播放、进度恢复、倍速与播放控制；
-- 本地片单收藏、观看记录与继续播放；
-- 适配浅色、深色系统外观的 Cupertino 液态玻璃界面。
+- 按一级与二级分类浏览影视内容，支持分页加载；
+- 通过关键词搜索影片，查看搜索历史；
+- 将影片加入本地片单，查看观看记录；
+- 查看影片详情、简介和演职员信息，切换播放源与分集；
+- 支持在线播放、倍速与播放控制，记录播放进度，继续上次观看；
+- 使用 Cupertino 风格界面，支持浅色与深色外观，并在导航和交互控件中使用液态玻璃效果。
 
 ## 界面预览
 
 <div align="center">
-  <img src="screenshots/screenshot_1.webp" width="24%" alt="首页分类浏览" />
-  <img src="screenshots/screenshot_2.webp" width="24%" alt="影片详情" />
-  <img src="screenshots/screenshot_3.webp" width="24%" alt="影片播放" />
-  <img src="screenshots/screenshot_8.webp" width="24%" alt="播放控制" />
-  <img src="screenshots/screenshot_4.webp" width="48%" alt="搜索界面" />
-  <img src="screenshots/screenshot_5.webp" width="48%" alt="搜索结果" />
-  <img src="screenshots/screenshot_6.webp" width="48%" alt="片单" />
-  <img src="screenshots/screenshot_7.webp" width="48%" alt="观看记录" />
+  <img src="screenshots/screenshot_1.webp" width="24%" />
+  <img src="screenshots/screenshot_2.webp" width="24%" />
+  <img src="screenshots/screenshot_3.webp" width="24%" />
+  <img src="screenshots/screenshot_8.webp" width="24%" />
+  <img src="screenshots/screenshot_4.webp" width="48%" />
+  <img src="screenshots/screenshot_5.webp" width="48%" />
+  <img src="screenshots/screenshot_6.webp" width="48%" />
+  <img src="screenshots/screenshot_7.webp" width="48%" />
 </div>
 
 ## 安装
 
 ### Android
 
-可按下方源码构建步骤生成 APK，将其传输至 Android 设备后按系统提示安装。当前仓库未配置自动发布工作流。
+从 [GitHub Releases](https://github.com/halifox/cinema/releases/latest) 下载 `.apk` 文件，打开后按系统提示安装。目前提供 arm64 安装包。
 
 ### iOS
 
-需在 macOS 上使用 Xcode 配置开发团队和签名后，构建并安装到设备。未签名的应用产物不能直接安装。
+从 [GitHub Releases](https://github.com/halifox/cinema/releases/latest) 下载未签名的 `.ipa` 文件，使用 SideStore 安装。
+
+首次使用请按 [SideStore 官方安装教程](https://docs.sidestore.io/docs/installation/install) 完成配置，再在 SideStore 的 **My Apps → +** 中选择下载的 IPA。免费 Apple 账号签名通常需每 7 天刷新一次。
+
+版本变化见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 使用说明与限制
 
 - 分类、详情、播放源和分集信息来自所配置的苹果 CMS v10 内容服务，浏览与播放需要可访问相应服务的网络连接。
-- 第三方服务接口、内容与播放地址变化可能影响加载或播放。遇到失败时，可检查网络后使用页面提供的重试或刷新操作。
+- 第三方服务的接口、线路或内容变化可能影响加载或播放。遇到失败时，可检查网络后使用页面提供的重试或刷新操作。
 - 片单、观看进度与搜索历史保存在本机，当前不提供账号登录或跨设备同步。
-- 当前不提供影片下载或离线片库；图片缓存不代表影片可离线播放。
-- 本文提供 Android 和 iOS 构建说明，其他平台目录不代表已有对应发行包或经过完整验证。
+- 图片缓存用于减少重复加载，当前不提供影片下载或离线片库；缓存不等同于可完整离线观看。
+- 当前发布流程面向 Android arm64 和 iOS。仓库中的其他平台目录不代表已有对应发行包或经过完整验证。
 
 ## 从源码运行与构建
 
 ### 环境要求
 
 - Flutter SDK（包含 Dart 3.12.2 或兼容的 3.x 版本，以 `pubspec.yaml` 为准）
-- 已配置对应目标平台的 Flutter 开发环境
+- 对应目标平台的 Flutter 开发环境
 - Android 构建需要 Android SDK 和 Java 17；iOS 构建需要 macOS、Xcode 与对应的签名配置
 - 可访问内容服务的网络连接
 
-### 配置内容服务
+### 获取并运行
 
 准备兼容苹果 CMS v10 接口的服务地址，并通过
 `--dart-define="CMS_BASE_URL=https://example.com"` 在编译时直接注入地址。请将示例地址替换为实际服务地址；未配置或传入空地址时，应用会显示配置错误。
 
-### 获取并运行
-
 ```bash
+# 克隆仓库
 git clone https://github.com/halifox/cinema.git
 cd cinema
 
+# 安装依赖
 flutter pub get
 
+# 生成 Retrofit、Freezed、JSON 与 Drift 相关代码
 dart run build_runner build --delete-conflicting-outputs
 
+# 运行应用
 flutter run --dart-define="CMS_BASE_URL=https://example.com"
 ```
 
-仓库已包含当前生成的代码；当数据模型、API 或数据库定义发生变化时，需要重新执行代码生成。
+仓库已经包含当前生成的代码；当数据模型、API 或数据库定义发生变化时，需要重新执行代码生成。
 
 ### 构建安装包
 
 在仓库根目录运行，并替换内容服务地址：
 
 ```bash
-# Android arm64 Release APK
+# Android arm64 Release APK：需先配置 android/key.properties 和签名密钥
 flutter build apk --release --target-platform android-arm64 --dart-define="CMS_BASE_URL=https://example.com"
 
 # iOS 未签名应用：需在 macOS 上运行，产物不能直接安装
@@ -103,11 +110,11 @@ flutter build ios --release --no-codesign --dart-define="CMS_BASE_URL=https://ex
 flutter build ipa --release --dart-define="CMS_BASE_URL=https://example.com"
 ```
 
-Android APK 输出到 `build/app/outputs/flutter-apk/`；iOS 未签名应用输出到 `build/ios/iphoneos/`，签名 IPA 输出到 `build/ios/ipa/`。当前 Android Release 配置使用调试签名，正式分发前需配置自己的发布签名。
+Android APK 输出到 `build/app/outputs/flutter-apk/`；iOS 未签名应用输出到 `build/ios/iphoneos/`，签名 IPA 输出到 `build/ios/ipa/`。仓库的发布工作流会将未签名 iOS 应用另行打包为 IPA。
 
 ### 技术栈
 
-- **UI 框架** — Flutter / Cupertino / liquid_glass_widgets
+- **UI 框架** — Flutter / liquid_glass_widgets
 - **状态管理** — Riverpod / Flutter Hooks
 - **网络请求** — Dio / Retrofit
 - **数据模型** — Freezed / json_serializable
@@ -122,11 +129,13 @@ Android APK 输出到 `build/app/outputs/flutter-apk/`；iOS 未签名应用输�
 
 片单收藏、影片信息、观看记录、播放进度与搜索历史通过 Drift 存储在本地 SQLite 数据库中；网络图片由图片缓存组件管理。
 
-可在搜索历史页面清空搜索记录。Android 可通过系统应用设置清除应用存储，删除本地数据库、设置和缓存；此操作不可撤销。
+可在观看记录页面清空观看记录，在搜索历史页面删除单条搜索记录。清空观看记录不会同时删除片单收藏、搜索历史或所有分集进度。Android 可通过系统应用设置清除应用存储，删除本地数据库、设置和缓存；此操作不可撤销。
 
 ### 网络请求与诊断
 
 浏览和搜索时，应用会向所配置的内容服务发送请求，包含相应的分类、分页、搜索关键词或影片标识。加载海报和播放影片时，还会访问内容服务返回的图片与媒体地址。
+
+项目已接入 Sentry 错误与性能诊断，发布工作流通过构建配置传入 Sentry DSN。配置有效时，可能发送异常、堆栈、请求诊断信息和设备信息；当前配置启用了默认个人信息收集、性能追踪，以及错误会话和部分普通会话的回放采样。因此，本项目不作“无遥测”或“所有数据仅保留在本机”的承诺。
 
 调试构建启用 Dio 网络日志，可能包含请求地址、参数和请求头。提交 Issue 或分享日志前，请删除个人信息与其他敏感内容。
 
