@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/halifox/cinema/compare/v1.1.1...v1.1.2) (2026-10-25)
+
+
+### Bug Fixes
+
+* **ci:** use conventional Dependabot commit messages ([bd98aad](https://github.com/halifox/cinema/commit/bd98aadd892c019f63bb005834409a7634fb17e6))
+* **ci:** use conventional Dependabot commit messages ([c690ace](https://github.com/halifox/cinema/commit/c690ace10832a44c462cfba703995206ca42793c))
+
 ## [1.1.1](https://github.com/halifox/cinema/compare/v1.1.0...v1.1.1) (2026-10-15)
 
 
