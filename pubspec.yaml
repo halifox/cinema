@@ -48,7 +48,7 @@ dependencies:
   riverpod_paging_utils: ^1.0.0
   visibility_detector: ^0.4.0+2
   path_provider: ^2.1.6
-  drift: ^2.34.4
+  drift: ^2.35.3
   drift_flutter: ^0.3.1
   scrollable_positioned_list: ^0.3.8
   flutter_launcher_icons: ^0.14.4
@@ -71,9 +71,9 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   build_runner: ^2.15.1
   retrofit_generator: ^10.2.7
-  freezed: ^3.2.6-dev.1
+  freezed: ^4.0.1
   json_serializable: ^6.14.1
-  drift_dev: 2.34.0
+  drift_dev: 2.35.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
